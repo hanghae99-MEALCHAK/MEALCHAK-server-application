@@ -23,8 +23,8 @@ public class JwtTokenProvider {
     //시크릿키값,배포시 해당키 application.properties에 넣고 수정할것
     private String secretKey = "Lu92sdgh8sfyw";
 
-    // 토큰 유효시간 30분 , 1000L = 1초
-    private long tokenValidTime = 30 * 60 * 1000L;
+    // 토큰 유효시간 360분 , 1L = 1ms
+    private long tokenValidTime = 360 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
