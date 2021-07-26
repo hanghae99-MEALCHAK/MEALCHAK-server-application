@@ -33,23 +33,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors();
-        http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.headers().frameOptions().disable();
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS).permitAll()
-                //테스트를 위해 임시로 전부개방 배포시 반드시 주석처리후 antMatchers 추가
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-
-    }
-
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -67,5 +50,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**",configuration);
         return source;
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors();
+        http
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.headers().frameOptions().disable();
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                //테스트를 위해 임시로 전부개방 배포시 반드시 주석처리후 antMatchers 추가
+                .antMatchers("/**").permitAll()
+
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
     }
 }
