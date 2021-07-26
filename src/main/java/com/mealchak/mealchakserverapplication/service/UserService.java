@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -28,6 +30,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.kakaoOAuth2 = kakaoOAuth2;
         this.authenticationManager = authenticationManager;
+    }
+
+    public User getUser(String email){
+        User member = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
+        return member;
     }
 
 
