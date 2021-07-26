@@ -1,7 +1,7 @@
 package com.mealchak.mealchakserverapplication.controller;
 
-import com.mealchak.mealchakserverapplication.dto.HeaderDto;
-import com.mealchak.mealchakserverapplication.dto.UserInfoDto;
+import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -44,12 +44,13 @@ public class UserController {
     @ResponseBody
     //X-AUTH-TOKEN 헤더값을 확인합니다
     public Object getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        //헤더값이 비었다면 로그인되지 않았음을 알립니다
+        //헤더로 보내진 토큰에서 유저정보를 읽어올수 없거나 헤더값이 없다면
         if (userDetails == null) {
             return "로그인 상태가 아니거나 토큰이 만료되었습니다.";
         } else {
             //정상적인 토큰이라면 해당토큰에서 id와 username 정보를 읽어 보내줍니다.
             UserInfoDto userInfoDto = new UserInfoDto();
+//            UserInfoDto userInfoDto = new UserInfoDto(userDetails.getUser());
             userInfoDto.setUser_id(userDetails.getUser().getUserId());
             userInfoDto.setUser_nickname(userDetails.getUser().getUsername());
             return userInfoDto;
