@@ -19,5 +19,4 @@ public class MealchakServerApplication {
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
-
 }

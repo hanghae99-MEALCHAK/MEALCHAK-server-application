@@ -1,0 +1,75 @@
+package com.mealchak.mealchakserverapplication.model;
+
+import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@NoArgsConstructor // 기본생성자를 만듭니다.
+@Getter
+@Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
+public class Post extends Timestamped {
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private int headCount;
+
+    @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String orderTime;
+
+    @Column(nullable = false)
+    private String contents;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name="User_ID",nullable = false)
+//    private User user;
+
+    public Post(String title, int headCount, String category, String address, String orderTime, String contents) {
+        this.title = title;
+        this.headCount = headCount;
+        this.category = category;
+        this.address = address;
+        this.orderTime = orderTime;
+        this.contents = contents;
+    }
+
+//    public Post(User user, PostRequestDto requestDto) {
+//        this.user = user;
+//        this.title = requestDto.getTitle();
+//        this.headCount = requestDto.getHeadCount();
+//        this.category = requestDto.getCategory();
+//        this.address = requestDto.getAddress();
+//        this.orderTime = requestDto.getOrderTime();
+//        this.contents = requestDto.getContents();
+//    }
+
+    public Post(PostRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.headCount = requestDto.getHeadCount();
+        this.category = requestDto.getCategory();
+        this.address = requestDto.getAddress();
+        this.orderTime = requestDto.getOrderTime();
+        this.contents = requestDto.getContents();
+    }
+
+    public void update(PostRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.headCount = requestDto.getHeadCount();
+        this.category = requestDto.getCategory();
+        this.address = requestDto.getAddress();
+        this.orderTime = requestDto.getOrderTime();
+        this.contents = requestDto.getContents();
+    }
+}
