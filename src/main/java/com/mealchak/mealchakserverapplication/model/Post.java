@@ -1,8 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

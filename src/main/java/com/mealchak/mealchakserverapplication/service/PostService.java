@@ -46,4 +46,9 @@ public class PostService {
 
     public Post getPost(Long postId){
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));    }
+
+    // 모집글 검색
+    public List<Post> getSearch(String text) {
+        return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text,text,text);
+    }
 }
