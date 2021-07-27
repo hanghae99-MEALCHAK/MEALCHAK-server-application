@@ -19,9 +19,10 @@ public class PostService {
     // 모집글 생성
     @Transactional
     public void createPost(User user, PostRequestDto requestDto) {
-        Post post = new Post(user.getUsername(),requestDto);
+        Post post = new Post(user.getUsername(), requestDto);
         postRepository.save(post);
     }
+
     // 모집글 전체 조회
     public List<Post> getAllPost() {
         return postRepository.findAll();
@@ -44,11 +45,12 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public Post getPost(Long postId){
-        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));    }
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+    }
 
     // 모집글 검색
     public List<Post> getSearch(String text) {
-        return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text,text,text);
+        return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text, text, text);
     }
 }
