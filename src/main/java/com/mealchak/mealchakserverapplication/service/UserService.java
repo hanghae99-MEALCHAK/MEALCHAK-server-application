@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.service;
 
+import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
