@@ -1,4 +1,4 @@
-package com.mealchak.mealchakserverapplication.dto;
+package com.mealchak.mealchakserverapplication.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

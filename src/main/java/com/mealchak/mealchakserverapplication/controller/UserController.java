@@ -1,9 +1,9 @@
 package com.mealchak.mealchakserverapplication.controller;
 
-import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.dto.HeaderDto;
-import com.mealchak.mealchakserverapplication.dto.UserInfoDto;
+
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
+import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -34,8 +34,7 @@ public class UserController {
         //서비스에 정의된 kakaoLogin이 email을 반환합니다
         String email = userService.kakaoLogin(code);
         //해당 이메일로 db에서 해당유저의 row를 가져옵니다
-        User member = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
+        User member = userService.getUser(email);
         //토큰을 담을 Dto 객체를 만들고
         HeaderDto headerDto = new HeaderDto();
         //해당 dto안에있는 TOKEN값에 jwt를 생성하여 담습니다
@@ -50,7 +49,7 @@ public class UserController {
     @ResponseBody
     //X-AUTH-TOKEN 헤더값을 확인합니다
     public Object getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        //헤더값이 비었다면 로그인되지 않았음을 알립니다
+        //헤더로 보내진 토큰에서 유저정보를 읽어올수 없거나 헤더값이 없다면
         if (userDetails == null) {
             return "로그인 상태가 아니거나 토큰이 만료되었습니다.";
         } else {

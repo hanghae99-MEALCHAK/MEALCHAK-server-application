@@ -21,6 +21,7 @@ public class KakaoOAuth2 {
         return userInfo;
     }
 
+
     public String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
