@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.service.PostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +41,13 @@ public class PostController {
     @GetMapping("/posts/{postId}")
     public Post getPostDetail(@PathVariable Long postId) {
         return postService.getPostDetail(postId);
+    }
+
+    // 검색하여 모집글 불러오기
+    @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
+    @PostMapping("/posts")
+    public List<Post> getSearch(@RequestBody String text) {
+        return postService.getSearch(text);
     }
 
     // 특정 모집글 수정
