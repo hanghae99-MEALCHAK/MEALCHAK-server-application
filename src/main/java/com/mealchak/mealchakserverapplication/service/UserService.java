@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -71,4 +72,18 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return email;
     }
+
+    @Transactional
+    public void registerUser(SignupRequestDto requestDto) {
+        String username = requestDto.getUsername();
+        String password;
+
+
+        Optional<User> found = userRepository.findByUsername(username);
+
+        password = passwordEncoder.encode(requestDto.getPassword());
+        User user = new User(username, password);
+        userRepository.save(user);
+    }
+
 }

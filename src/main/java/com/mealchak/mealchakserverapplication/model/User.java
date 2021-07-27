@@ -29,6 +29,9 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String email;
 
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name="USER_ID",nullable = false)
+//    private List<Post> post = new ArrayList<>();
 
     public User(Long kakaoId, String Username, String password, String email) {
         this.kakaoId = kakaoId;
@@ -36,5 +39,10 @@ public class User extends Timestamped {
         this.password = password;
         this.email = email;
     }
-
+    public User(String Username, String password) {
+        this.kakaoId = 123L;
+        this.username = Username;
+        this.password = password;
+        this.email = "test";
+    }
 }
