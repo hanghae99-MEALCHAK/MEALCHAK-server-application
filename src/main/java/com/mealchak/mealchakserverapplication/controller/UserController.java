@@ -1,23 +1,27 @@
 package com.mealchak.mealchakserverapplication.controller;
 
+import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
 import com.mealchak.mealchakserverapplication.dto.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.UserInfoDto;
+import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
+    private final BCryptPasswordEncoder encodePassword;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
@@ -56,5 +60,23 @@ public class UserController {
             userInfoDto.setUser_nickname(userDetails.getUser().getUsername());
             return userInfoDto;
         }
+    }
+
+    // 회원 가입 요청 처리
+    @ApiOperation(value="회원 가입 요청", notes="회원 가입 요청합니다.")
+    @PostMapping("/user/signup")
+    public void registerUser(@Valid @RequestBody SignupRequestDto requestDto) {
+        userService.registerUser(requestDto);
+    }
+
+    @ApiOperation(value="로그인 요청", notes="로그인 요청합니다.")
+    @PostMapping("/user/login")
+    public String login(@RequestBody SignupRequestDto requestDto) {
+        User user = userRepository.findByUsername(requestDto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다."));
+        if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId());
     }
 }

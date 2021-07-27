@@ -19,14 +19,10 @@ public class PostService {
     // 모집글 생성
     @Transactional
     public void createPost(User user, PostRequestDto requestDto) {
-        if (user == null) {
-            Post post = new Post(requestDto);
-            postRepository.save(post);
-        }
-//        Post post = new Post(user,requestDto);
-//        postRepository.save(post);
+        Post post = new Post(user.getUsername(),requestDto);
+        postRepository.save(post);
     }
-    // 모집글 조회
+    // 모집글 전체 조회
     public List<Post> getAllPost() {
         return postRepository.findAll();
     }

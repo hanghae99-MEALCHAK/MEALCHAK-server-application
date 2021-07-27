@@ -1,6 +1,8 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,36 +34,27 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="User_ID",nullable = false)
-//    private User user;
+    @Column(nullable = false)
+    private String username;
 
-    public Post(String title, int headCount, String category, String address, String orderTime, String contents) {
+    public Post(String title, int headCount, String category, String address, String orderTime, String contents, String username) {
         this.title = title;
         this.headCount = headCount;
         this.category = category;
         this.address = address;
         this.orderTime = orderTime;
         this.contents = contents;
+        this.username = username;
     }
 
-//    public Post(User user, PostRequestDto requestDto) {
-//        this.user = user;
-//        this.title = requestDto.getTitle();
-//        this.headCount = requestDto.getHeadCount();
-//        this.category = requestDto.getCategory();
-//        this.address = requestDto.getAddress();
-//        this.orderTime = requestDto.getOrderTime();
-//        this.contents = requestDto.getContents();
-//    }
-
-    public Post(PostRequestDto requestDto) {
+    public Post(String username, PostRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
         this.address = requestDto.getAddress();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
+        this.username = username;
     }
 
     public void update(PostRequestDto requestDto) {

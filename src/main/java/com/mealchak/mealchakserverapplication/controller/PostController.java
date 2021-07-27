@@ -26,8 +26,7 @@ public class PostController {
         if (userDetails != null) {
             postService.createPost(userDetails.getUser(), requestDto);
         } else {
-            postService.createPost(null, requestDto);
-//            throw new IllegalArgumentException("로그인 하지 않았습니다.");
+            throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
 
