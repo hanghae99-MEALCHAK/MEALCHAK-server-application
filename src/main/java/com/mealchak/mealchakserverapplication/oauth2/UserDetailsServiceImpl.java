@@ -13,12 +13,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Can't find " + username));
+    //이름은 loadByUsername이지만 현재 카카오방식에서는 username이 중복될수있는 상태이기에 로직을 email로 돌려두었음
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Can't find " + email));
 
         return new UserDetailsImpl(user);
     }
 }
-
-// TODO: 2021-07-25 유저컨트롤러추가하기 

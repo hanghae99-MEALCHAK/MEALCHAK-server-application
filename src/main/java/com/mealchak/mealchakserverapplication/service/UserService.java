@@ -34,6 +34,12 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
+    public User getUser(String email){
+        User member = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
+        return member;
+    }
+
 
     public String kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
