@@ -1,7 +1,6 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.ChatRoomRequestDto;
-import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/chat/create")
     //어떤 유저가 만들었는지 알아야하므로 userdetails를 함께 받음
