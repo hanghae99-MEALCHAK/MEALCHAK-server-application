@@ -14,8 +14,8 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
     //채팅방생성
-    public ChatRoom createChatRoom(ChatRoomRequestDto requestDto) {
-        ChatRoom chatRoom = new ChatRoom(requestDto);
+    public ChatRoom createChatRoom(ChatRoomRequestDto requestDto,Long userId) {
+        ChatRoom chatRoom = new ChatRoom(requestDto,userId);
         chatRoomRepository.save(chatRoom);
         return chatRoom;
     }

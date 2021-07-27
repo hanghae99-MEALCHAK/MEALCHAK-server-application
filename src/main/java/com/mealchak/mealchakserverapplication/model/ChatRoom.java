@@ -19,7 +19,11 @@ public class ChatRoom extends Timestamped{
     @Column(nullable = false)
     private String chatRoomName;
 
-    public ChatRoom(ChatRoomRequestDto requestDto){
+    @Column(nullable = false)
+    private Long ownUserId;
+
+    public ChatRoom(ChatRoomRequestDto requestDto,Long ownUserId){
         this.chatRoomName = requestDto.getChatRoomName();
+        this.ownUserId = ownUserId;
     }
 }
