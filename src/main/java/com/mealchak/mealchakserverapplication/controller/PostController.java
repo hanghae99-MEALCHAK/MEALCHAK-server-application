@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = {"1. 모집글"}) // Swagger # 1. 모집글
+@Api(tags = {"1. 모집글"}) // Swagger
 @RequiredArgsConstructor
 @RestController
 public class PostController {
@@ -36,8 +36,8 @@ public class PostController {
         return postService.getAllPost();
     }
 
-    // 특정 모집글 불러오기
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    // 해당 모집글 불러오기
+    @ApiOperation(value = "해당 모집글 조회", notes = "해당 모집글 조회합니다.")
     @GetMapping("/posts/{postId}")
     public Post getPostDetail(@PathVariable Long postId) {
         return postService.getPostDetail(postId);
@@ -50,15 +50,15 @@ public class PostController {
         return postService.getSearch(text);
     }
 
-    // 특정 모집글 수정
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    // 해당 모집글 수정
+    @ApiOperation(value = "해당 모집글 수정", notes = "해당 모집글 수정합니다.")
     @PutMapping("/posts/{postId}")
     public Post updatePostDetail(@PathVariable Long postId, @RequestBody PostRequestDto requestDto) {
         return postService.updatePostDetail(postId, requestDto);
     }
 
     // 특정 모집글 삭제
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    @ApiOperation(value = "해당 모집글 삭제", notes = "해당 모집글 삭제.")
     @DeleteMapping("/posts/{postId}")
     public void getPostDelete(@PathVariable Long postId) {
         postService.deletePost(postId);
