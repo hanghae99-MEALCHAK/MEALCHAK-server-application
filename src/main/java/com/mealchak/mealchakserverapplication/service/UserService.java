@@ -70,6 +70,7 @@ public class UserService {
         // 로그인 처리
         Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
+        System.out.println(123);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return email;
     }

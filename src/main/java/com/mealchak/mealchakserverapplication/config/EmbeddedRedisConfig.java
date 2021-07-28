@@ -6,7 +6,6 @@ import redis.embedded.RedisServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 
 @Profile("local")
 @Configuration
@@ -15,11 +14,11 @@ public class EmbeddedRedisConfig {
     private RedisServer redisServer;
 
 
-    @PostConstruct
-    public void start() {
-        redisServer = new RedisServer(6379);
-        redisServer.start();
-    }
+//    @PostConstruct
+//    public void start() {
+//        redisServer = new RedisServer(6379);
+//        redisServer.start();
+//    }
 
     @PreDestroy
     public void stop() {
