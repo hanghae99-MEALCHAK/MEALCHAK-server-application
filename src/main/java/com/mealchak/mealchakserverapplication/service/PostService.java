@@ -25,7 +25,7 @@ public class PostService {
 
     // 모집글 전체 조회
     public List<Post> getAllPost() {
-        return postRepository.findAll();
+        return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
     // 모집글 상세 조회
