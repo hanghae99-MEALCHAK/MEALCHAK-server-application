@@ -39,7 +39,7 @@ public class UserController {
         HeaderDto headerDto = new HeaderDto();
         //해당 dto안에있는 TOKEN값에 jwt를 생성하여 담습니다
         //현재 jwt에 저장되는 정보는 username과 id(pk)입니다
-        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getUsername(), member.getUserId()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getUsername(), member.getUserId(),member.getEmail()));
         //dto를 반환합니다. 후에 프론트에서 해당 dto에 담긴 token을 A-AUTH-TOKEN 헤더에 담아 전달해줄겁니다
         return headerDto;
     }
@@ -76,6 +76,6 @@ public class UserController {
         if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId());
+        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId(),user.getEmail());
     }
 }

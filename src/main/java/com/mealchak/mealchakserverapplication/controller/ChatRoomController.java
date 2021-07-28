@@ -1,10 +1,15 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.ChatRoomRequestDto;
+import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final ChatMessageService chatMessageService;
 
-    @GetMapping("/chat/create")
+    @PostMapping("/chat/create")
     //어떤 유저가 만들었는지 알아야하므로 userdetails를 함께 받음
     public ChatRoom createChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ChatRoomRequestDto requestDto){
         //생각해보니 중복된걸로받으면 안되니까 이부분은 프론트에서 받을때 uuid를 합성해서받거나 dto에서 uuid 합쳐줘야할듯
@@ -30,5 +36,11 @@ public class ChatRoomController {
     @GetMapping("/chat/{id}")
     public ChatRoom getChatRoom(@PathVariable Long id){
         return chatRoomService.getChatRoom(id);
+    }
+
+    //여기방채팅보여줘
+    @GetMapping("/chat/{id}/messages")
+    public Page<ChatMessage> getRoomMessage(@PathVariable String roomId, @PageableDefault Pageable pageable){
+        return chatMessageService.getChatMessageByRoomId(roomId, pageable);
     }
 }

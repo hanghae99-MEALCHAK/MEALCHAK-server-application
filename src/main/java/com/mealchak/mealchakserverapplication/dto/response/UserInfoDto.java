@@ -5,7 +5,7 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import lombok.Getter;
 import lombok.Setter;
 
-//@Getter
+@Getter
 @Setter
 public class UserInfoDto {
     private Long user_id;
