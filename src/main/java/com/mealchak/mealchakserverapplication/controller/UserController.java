@@ -3,12 +3,14 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
-import com.mealchak.mealchakserverapplication.dto.response.UserInfoDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.repository.UserInfoMapping;
+import com.mealchak.mealchakserverapplication.repository.UserInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Api(tags = {"2. User, kakao login"}) // Swagger
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -25,8 +28,9 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
+    private final UserInfoRepository userInfoRepository;
 
-
+    @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     //카카오 로그인 api로 코드를 받아옴
     @GetMapping("/user/kakao/callback")
     @ResponseBody
@@ -44,26 +48,24 @@ public class UserController {
         return headerDto;
     }
 
+    @ApiOperation(value = "유저 정보 조회", notes = "유저 정보 조회")
     @GetMapping("/user/info")
-    public UserInfoDto userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if(userDetails != null) {
-            UserInfoDto userInfoDto = new UserInfoDto();
-            userInfoDto.setId(userDetails.getUser().getId());
-            userInfoDto.setNickname(userDetails.getUser().getUsername());
-            return userInfoDto;
-        }else{
+    public UserInfoMapping userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+        } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
 
     // 회원 가입 요청 처리
-    @ApiOperation(value="회원 가입 요청", notes="회원 가입 요청합니다.")
+    @ApiOperation(value = "회원 가입 요청", notes = "회원 가입 요청합니다.")
     @PostMapping("/user/signup")
     public void registerUser(@Valid @RequestBody SignupRequestDto requestDto) {
         userService.registerUser(requestDto);
     }
 
-    @ApiOperation(value="로그인 요청", notes="로그인 요청합니다.")
+    @ApiOperation(value = "로그인 요청", notes = "로그인 요청합니다.")
     @PostMapping("/user/login")
     public String login(@RequestBody SignupRequestDto requestDto) {
         User user = userRepository.findByUsername(requestDto.getUsername())
@@ -71,6 +73,6 @@ public class UserController {
         if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getEmail(),user.getId() ,user.getUsername());
+        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
     }
 }

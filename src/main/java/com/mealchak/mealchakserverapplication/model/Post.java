@@ -38,7 +38,10 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String username;
 
-    public Post(String title, int headCount, String category, String address, String restaurant, String orderTime, String contents, String username) {
+    @Column(nullable = false)
+    private Long userId;
+
+    public Post(String title, int headCount, String category, String address, String restaurant, String orderTime, String contents, String username, Long userId) {
         this.title = title;
         this.headCount = headCount;
         this.category = category;
@@ -47,9 +50,10 @@ public class Post extends Timestamped {
         this.orderTime = orderTime;
         this.contents = contents;
         this.username = username;
+        this.userId = userId;
     }
 
-    public Post(String username, PostRequestDto requestDto) {
+    public Post(String username, Long userId, PostRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
@@ -58,6 +62,7 @@ public class Post extends Timestamped {
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
         this.username = username;
+        this.userId = userId;
     }
 
     public void update(PostRequestDto requestDto) {
