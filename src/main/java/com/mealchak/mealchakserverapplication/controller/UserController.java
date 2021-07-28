@@ -39,25 +39,20 @@ public class UserController {
         HeaderDto headerDto = new HeaderDto();
         //해당 dto안에있는 TOKEN값에 jwt를 생성하여 담습니다
         //현재 jwt에 저장되는 정보는 username과 id(pk)입니다
-        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getUsername(), member.getUserId()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getEmail(), member.getId(), member.getUsername()));
         //dto를 반환합니다. 후에 프론트에서 해당 dto에 담긴 token을 A-AUTH-TOKEN 헤더에 담아 전달해줄겁니다
         return headerDto;
     }
 
-
-    @GetMapping("user/info")
-    @ResponseBody
-    //X-AUTH-TOKEN 헤더값을 확인합니다
-    public Object getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        //헤더로 보내진 토큰에서 유저정보를 읽어올수 없거나 헤더값이 없다면
-        if (userDetails == null) {
-            return "로그인 상태가 아니거나 토큰이 만료되었습니다.";
-        } else {
-            //정상적인 토큰이라면 해당토큰에서 id와 username 정보를 읽어 보내줍니다.
+    @GetMapping("/user/info")
+    public UserInfoDto userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if(userDetails != null) {
             UserInfoDto userInfoDto = new UserInfoDto();
-            userInfoDto.setUser_id(userDetails.getUser().getUserId());
-            userInfoDto.setUser_nickname(userDetails.getUser().getUsername());
+            userInfoDto.setId(userDetails.getUser().getId());
+            userInfoDto.setNickname(userDetails.getUser().getUsername());
             return userInfoDto;
+        }else{
+            throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
 
@@ -76,6 +71,6 @@ public class UserController {
         if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId());
+        return jwtTokenProvider.createToken(user.getEmail(),user.getId() ,user.getUsername());
     }
 }

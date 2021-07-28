@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long userId;
+    private Long id;
 
     @Column(nullable = false)
     private Long kakaoId;
@@ -41,6 +41,6 @@ public class User extends Timestamped {
         this.kakaoId = 123L;
         this.username = Username;
         this.password = password;
-        this.email = "test";
+        this.email = Username;
     }
 }

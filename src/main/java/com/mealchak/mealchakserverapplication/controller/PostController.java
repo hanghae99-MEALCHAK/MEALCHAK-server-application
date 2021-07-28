@@ -19,7 +19,7 @@ public class PostController {
     private final PostService postService;
 
     // 모집글 생성
-    @ApiOperation(value = "모집글 작성", notes = "전체 모집글 조회합니다.")
+    @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         if (userDetails != null) {
