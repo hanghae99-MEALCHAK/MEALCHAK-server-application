@@ -48,6 +48,7 @@ public class UserService {
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
 
+
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
         String username = nickname;
@@ -68,9 +69,9 @@ public class UserService {
         }
 
         // 로그인 처리
-        Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(username, password);
+
+        Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
-        System.out.println(123);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return email;
     }

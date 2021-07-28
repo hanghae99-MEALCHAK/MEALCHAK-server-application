@@ -68,10 +68,10 @@
         },
         methods: {
             findRoom: function() {
-                axios.get('api/chat/room/'+1).then(response => { this.room = response.data; });
+                axios.get('api/chat/room/'+5).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/api/chat/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:username, message:this.message}));
+                ws.send("/pub/api/chat/message", {}, JSON.stringify({type:'TALK', roomId:5, sender:username, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -83,11 +83,11 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("/sub/api/chat/rooms"+1, function(message) {
+            ws.subscribe("/sub/api/chat/rooms/"+5, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
-            ws.send("/pub/api/chat/message", {}, JSON.stringify({type:'ENTER', roomId:1, sender:"태경2"}));
+            ws.send("/pub/api/chat/message", {}, JSON.stringify({type:'ENTER', roomId:5, sender:"태경2"}));
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {

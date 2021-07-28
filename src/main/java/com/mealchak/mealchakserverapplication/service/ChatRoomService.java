@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service
@@ -23,8 +24,8 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public ChatRoom createChatRoom(ChatRoomRequestDto requestDto, Long userId) {
-        ChatRoom chatRoom = new ChatRoom(requestDto, userId);
+    public ChatRoom createChatRoom(String name, Long userId) {
+        ChatRoom chatRoom = new ChatRoom(name, userId);
         chatRoomRepository.save(chatRoom);
         return chatRoom;
     }
@@ -35,6 +36,10 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("잘못된 접근이거나 이미 종료된 채팅방입니다.")
         );
         return chatRoom;
+    }
+    //채팅방전부찾기
+    public List<ChatRoom> getAll() {
+        return chatRoomRepository.findAll();
     }
 
     public void setUserEnterInfo(String sessionId, String roomId) {

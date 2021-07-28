@@ -34,12 +34,13 @@ public class UserController {
         //서비스에 정의된 kakaoLogin이 email을 반환합니다
         String email = userService.kakaoLogin(code);
         //해당 이메일로 db에서 해당유저의 row를 가져옵니다
-        User member = userService.getUser(email);
+        User member = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
         //토큰을 담을 Dto 객체를 만들고
         HeaderDto headerDto = new HeaderDto();
         //해당 dto안에있는 TOKEN값에 jwt를 생성하여 담습니다
         //현재 jwt에 저장되는 정보는 username과 id(pk)입니다
-        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getUsername(), member.getUserId(),member.getEmail()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getEmail(), member.getUserId(),member.getUsername()));
         //dto를 반환합니다. 후에 프론트에서 해당 dto에 담긴 token을 A-AUTH-TOKEN 헤더에 담아 전달해줄겁니다
         return headerDto;
     }
@@ -76,6 +77,6 @@ public class UserController {
         if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId(),user.getEmail());
+        return jwtTokenProvider.createToken(user.getEmail(),user.getUserId(),user.getUsername());
     }
 }
