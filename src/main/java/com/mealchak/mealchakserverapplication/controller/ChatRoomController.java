@@ -38,8 +38,8 @@ public class ChatRoomController {
 
     //여기방채팅보여줘
     @GetMapping("/chat/{id}/messages")
-    public Page<ChatMessage> getRoomMessage(@PathVariable String roomId, @PageableDefault Pageable pageable){
-        return chatMessageService.getChatMessageByRoomId(roomId, pageable);
+    public Page<ChatMessage> getRoomMessage(@PathVariable String id, @PageableDefault Pageable pageable){
+        return chatMessageService.getChatMessageByRoomId(id, pageable);
     }
 
     //필요없을것같지만 테스트를위해
