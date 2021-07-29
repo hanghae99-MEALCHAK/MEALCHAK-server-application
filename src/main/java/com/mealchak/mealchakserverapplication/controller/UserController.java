@@ -58,6 +58,16 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "유저 닉네임 수정", notes = "유저 닉네임 수정")
+    @PutMapping("/username/update")
+    public String updateUsername(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String newUsername) {
+        if (userDetails != null) {
+            return userService.updateUsername(userDetails.getUser(), newUsername);
+        } else {
+            throw new IllegalArgumentException("로그인 하지 않았습니다.");
+        }
+    }
+
     // 회원 가입 요청 처리
     @ApiOperation(value = "회원 가입 요청", notes = "회원 가입 요청합니다.")
     @PostMapping("/user/signup")

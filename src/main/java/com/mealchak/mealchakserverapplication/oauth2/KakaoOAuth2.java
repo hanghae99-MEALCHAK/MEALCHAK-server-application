@@ -34,6 +34,7 @@ public class KakaoOAuth2 {
         //테스트를 위한 url설정
 //        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
         params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+//        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
         params.add("code", authorizedCode);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -79,8 +80,8 @@ public class KakaoOAuth2 {
         Long id = body.getLong("id");
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
-        String thumbnailImg = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/f6d160ed-a475-4b84-b8a9-2d47685e12ac/profileDefaultImg.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20210729%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210729T013750Z&X-Amz-Expires=86400&X-Amz-Signature=ce9e2e1ef306a4e1223e05e5482854465231472911851c226bc4e93fed2b47c2&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22profileDefaultImg.jpg%22";
-        String profileImg = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/f6d160ed-a475-4b84-b8a9-2d47685e12ac/profileDefaultImg.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20210729%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210729T013750Z&X-Amz-Expires=86400&X-Amz-Signature=ce9e2e1ef306a4e1223e05e5482854465231472911851c226bc4e93fed2b47c2&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22profileDefaultImg.jpg%22";
+        String thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        String profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         try {
             thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
             profileImg = body.getJSONObject("properties").getString("profile_image");

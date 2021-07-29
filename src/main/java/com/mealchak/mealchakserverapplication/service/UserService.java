@@ -89,4 +89,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public String updateUsername(User oldUser, String newUsername) {
+        User user = userRepository.findById(oldUser.getId()).orElseThrow(()->new IllegalArgumentException("유저가 존재하지 않습니다."));
+        user.updateUsername(newUsername);
+        return user.getUsername();
+    }
 }

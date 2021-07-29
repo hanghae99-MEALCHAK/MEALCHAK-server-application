@@ -2,12 +2,10 @@ package com.mealchak.mealchakserverapplication.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor
 public class User extends Timestamped {
@@ -32,6 +30,10 @@ public class User extends Timestamped {
 
     @Column(nullable = false,columnDefinition = "TEXT")
     private String profileImg;
+
+    public void updateUsername(String newUsername) {
+        this.username = newUsername;
+    }
 
     public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg) {
         this.kakaoId = kakaoId;

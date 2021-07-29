@@ -19,7 +19,11 @@ public class PostService {
     // 모집글 생성
     @Transactional
     public void createPost(User user, PostRequestDto requestDto) {
-        Post post = new Post(user.getUsername(), user.getId(), requestDto);
+        Post post = new Post(user.getUsername(), user.getId(), user.getThumbnailImg(), requestDto);
+//        CategoryCounter categoryCounter = post.getCategoryCounter();
+
+
+
         postRepository.save(post);
     }
 

@@ -41,6 +41,13 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
+    private String userImg;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "CATEGORY_ID")
+//    private Category category;
+
     public Post(String title, int headCount, String category, String address, String restaurant, String orderTime, String contents, String username, Long userId) {
         this.title = title;
         this.headCount = headCount;
@@ -53,7 +60,7 @@ public class Post extends Timestamped {
         this.userId = userId;
     }
 
-    public Post(String username, Long userId, PostRequestDto requestDto) {
+    public Post(String username, Long userId, String userImg, PostRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
@@ -63,6 +70,7 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.username = username;
         this.userId = userId;
+        this.userImg = userImg;
     }
 
     public void update(PostRequestDto requestDto) {
