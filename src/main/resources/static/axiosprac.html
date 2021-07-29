@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        var ws = Stomp.over(new SockJS("/chatting"))
+        function connect(){
+            ws.connect({}, function(frame) {
+                ws.subscribe("/sub/api/chat/rooms/"+5);
+                ws.send("/pub/message", {}, JSON.stringify({type:'ENTER', roomId:5, sender:"태경",message:this.message}));
+                this.message = '내가왔다'
+            }, function(error) {
+                if(reconnect++ <= 5) {
+                    setTimeout(function() {
+                        console.log("connection reconnect");
+                        sock = new SockJS("/chatting");
+                        ws = Stomp.over(sock);
+                        connect();
+                    },10*1000);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<button onclick="connect()">저는 귀여운 버튼이에요</button>
+</body>
+</html>
