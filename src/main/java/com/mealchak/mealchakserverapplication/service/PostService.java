@@ -34,6 +34,7 @@ public class PostService {
     }
 
     // 모집글 수정
+    @Transactional
     public Post updatePostDetail(Long postId, PostRequestDto requestDto) {
         Post post = getPost(postId);
         post.update(requestDto);

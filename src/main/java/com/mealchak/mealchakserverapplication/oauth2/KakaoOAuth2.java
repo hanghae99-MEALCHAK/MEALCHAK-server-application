@@ -79,9 +79,15 @@ public class KakaoOAuth2 {
         Long id = body.getLong("id");
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
-        String smallImg = body.getJSONObject("properties").getString("thumbnail_image");
-        String bigImg = body.getJSONObject("properties").getString("profile_image");
-
-        return new KakaoUserInfo(id, email, nickname,smallImg,bigImg );
+        String thumbnailImg = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/f6d160ed-a475-4b84-b8a9-2d47685e12ac/profileDefaultImg.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20210729%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210729T013750Z&X-Amz-Expires=86400&X-Amz-Signature=ce9e2e1ef306a4e1223e05e5482854465231472911851c226bc4e93fed2b47c2&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22profileDefaultImg.jpg%22";
+        String profileImg = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/f6d160ed-a475-4b84-b8a9-2d47685e12ac/profileDefaultImg.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20210729%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210729T013750Z&X-Amz-Expires=86400&X-Amz-Signature=ce9e2e1ef306a4e1223e05e5482854465231472911851c226bc4e93fed2b47c2&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22profileDefaultImg.jpg%22";
+        try {
+            thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
+            profileImg = body.getJSONObject("properties").getString("profile_image");
+            Exception e = new Exception("프로필 없음");
+            throw e;
+        } catch (Exception e) {
+        }
+        return new KakaoUserInfo(id, email, nickname, thumbnailImg, profileImg);
     }
 }
