@@ -5,5 +5,5 @@ public interface UserInfoMapping {
     String getUsername();
     String getEmail();
     String getThumbnailImg();
-    String getBigImg();
+    String getProfileImg();
 }

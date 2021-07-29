@@ -47,8 +47,8 @@ public class UserService {
         Long kakaoId = userInfo.getId();
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
-        String smallImg = userInfo.getSmallImg();
-        String bigImg = userInfo.getBigImg();
+        String thumbnailImg = userInfo.getThumbnailImg();
+        String profileImg = userInfo.getProfileImg();
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
@@ -65,7 +65,7 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId,nickname,encodedPassword,email,smallImg,bigImg);
+            kakaoUser = new User(kakaoId,nickname,encodedPassword,email,thumbnailImg,profileImg);
             userRepository.save(kakaoUser);
         }
 
@@ -89,4 +89,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public String updateUsername(User oldUser, String newUsername) {
+        User user = userRepository.findById(oldUser.getId()).orElseThrow(()->new IllegalArgumentException("유저가 존재하지 않습니다."));
+        user.updateUsername(newUsername);
+        return user.getUsername();
+    }
 }
