@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,15 +15,18 @@ public class User extends Timestamped {
     private Long id;
 
     @Column(nullable = false)
+    @JsonIgnore
     private Long kakaoId;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String email;
 
     @Column(nullable = false,columnDefinition = "TEXT")

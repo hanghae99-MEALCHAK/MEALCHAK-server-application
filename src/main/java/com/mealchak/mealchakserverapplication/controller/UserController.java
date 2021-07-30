@@ -8,7 +8,7 @@ import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.UserInfoMapping;
+import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import com.mealchak.mealchakserverapplication.repository.UserInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.service.UserService;

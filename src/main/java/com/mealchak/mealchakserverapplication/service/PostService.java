@@ -1,30 +1,38 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.model.Menu;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
+    private final MenuRepository menuRepository;
 
     // 모집글 생성
     @Transactional
     public void createPost(User user, PostRequestDto requestDto) {
-        Post post = new Post(user.getUsername(), user.getId(), user.getThumbnailImg(), requestDto);
-//        CategoryCounter categoryCounter = post.getCategoryCounter();
-
-
-
+        Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
+        if (!menu.isPresent()) {
+            Menu newMenu = new Menu(requestDto.getCategory(), 1);
+            menuRepository.save(newMenu);
+            Post post = new Post(requestDto, user, newMenu);
+            postRepository.save(post);
+            return;
+        }
+        menu.get().updateMenuCount(+1);
+        Post post = new Post(requestDto, user, menu.get());
         postRepository.save(post);
     }
 
@@ -42,22 +50,31 @@ public class PostService {
     @Transactional
     public Post updatePostDetail(Long postId, PostRequestDto requestDto) {
         Post post = getPost(postId);
-        post.update(requestDto);
+        Menu menu = post.getMenu();
+        if (requestDto.getCategory() != menu.getCategory()) {
+            post.getMenu().updateMenuCount(-1);
+            menu = menuRepository.findByCategory(requestDto.getCategory()).orElseThrow(() -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
+            menu.updateMenuCount(+1);
+        }
+        post.update(requestDto, menu);
         return post;
     }
 
     // 모집글 삭제
     public void deletePost(Long postId) {
+        Post post = getPost(postId);
+        post.getMenu().updateMenuCount(-1);
         postRepository.deleteById(postId);
     }
 
+    // 해당 모집글 조회
     public Post getPost(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
     }
 
     // 모집글 검색
     public List<Post> getSearch(String text) {
-        return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text, text, text);
+        return postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
     }
 
 //    public List<Post> getPostByUserDist(Long id){

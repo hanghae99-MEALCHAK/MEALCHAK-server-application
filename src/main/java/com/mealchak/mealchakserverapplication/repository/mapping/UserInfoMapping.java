@@ -1,4 +1,4 @@
-package com.mealchak.mealchakserverapplication.repository;
+package com.mealchak.mealchakserverapplication.repository.mapping;
 
 import com.mealchak.mealchakserverapplication.model.Location;
 
