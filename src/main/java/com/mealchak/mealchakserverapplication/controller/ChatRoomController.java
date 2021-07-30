@@ -4,7 +4,6 @@ import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
-import com.mealchak.mealchakserverapplication.service.PostService;
 import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,12 +38,12 @@ public class ChatRoomController {
     //채팅방에 입장
     @GetMapping("/chat/join/{id}")
     public void joinChatRoom(@PathVariable String stringPostId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserRoom userRoom = new UserRoom();
-        userRoom.setUserId(userDetails.getUser().getUserId());
+        AllChatInfo allChatInfo = new AllChatInfo();
+        allChatInfo.setUserId(userDetails.getUser().getUserId());
         Long longPostId = Long.parseLong(stringPostId);
         ChatRoom chatRoom = chatRoomService.findByPostId(longPostId);
-        userRoom.setRoomId(chatRoom.getRoomId());
-        userRoomService.save(userRoom);
+        allChatInfo.setRoomId(chatRoom.getRoomId());
+        userRoomService.save(allChatInfo);
     }
 
 

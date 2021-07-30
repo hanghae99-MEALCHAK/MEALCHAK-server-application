@@ -2,7 +2,7 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.User;
-import com.mealchak.mealchakserverapplication.model.UserRoom;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +35,10 @@ public class ChatRoomService {
 
 
     public List<ChatRoom> getOnesChatRoom(User user) {
-        List<UserRoom> userRoomList = userRoomRepository.findAllByUserId(user.getUserId());
+        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getUserId());
         List<ChatRoom> chatRoomList = new ArrayList<>();
-        for ( UserRoom userRoom : userRoomList) {
-            Long roomId = userRoom.getRoomId();
+        for ( AllChatInfo allChatInfo : allChatInfoList) {
+            Long roomId = allChatInfo.getRoomId();
             chatRoomList.add(chatRoomRepository.findByRoomId(roomId));
         }
         return chatRoomList;

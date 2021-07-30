@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserRoom {
+public class AllChatInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class UserRoom {
     @Column
     private Long roomId;
 
-    public UserRoom(Long userId, Long roomId){
+    public AllChatInfo(Long userId, Long roomId){
         this.userId = userId;
         this.roomId = roomId;
 

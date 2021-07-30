@@ -1,6 +1,6 @@
 package com.mealchak.mealchakserverapplication.service;
 
-import com.mealchak.mealchakserverapplication.model.UserRoom;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserRoomService {
     private final UserRoomRepository userRoomRepository;
 
-    public void save(UserRoom userRoom){
-        userRoomRepository.save(userRoom);
+    public void save(AllChatInfo allChatInfo){
+        userRoomRepository.save(allChatInfo);
     }
 }
