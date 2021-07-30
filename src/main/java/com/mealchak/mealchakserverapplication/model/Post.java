@@ -37,6 +37,7 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String username;
 
+
     public Post(String title, int headCount, String category, String address, String orderTime, String contents, String username) {
         this.title = title;
         this.headCount = headCount;

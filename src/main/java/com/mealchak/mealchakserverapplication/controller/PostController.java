@@ -4,6 +4,7 @@ import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
+import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,19 +13,23 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Api(tags = {"1. 모집글"}) // Swagger # 1. 모집글
 @RequiredArgsConstructor
 @RestController
 public class PostController {
     private final PostService postService;
+    private final ChatRoomService chatRoomService;
 
     // 모집글 생성
     @ApiOperation(value = "모집글 작성", notes = "전체 모집글 조회합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         if (userDetails != null) {
-            postService.createPost(userDetails.getUser(), requestDto);
+            Long postId = postService.createPost(userDetails.getUser(), requestDto);
+            String uuid = UUID.randomUUID().toString();
+            chatRoomService.createChatRoom(postId,uuid, userDetails.getUser());
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }

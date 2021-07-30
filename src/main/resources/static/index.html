@@ -71,7 +71,7 @@
                 axios.get('api/chat/room/'+1).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:username, message:this.message}));
+                ws.send("/pub/message", {}, JSON.stringify({type:'TALK','ENTER', roomId:1, sender:username, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -83,9 +83,7 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("/sub/api/chat/rooms/"+1, function(message) {
-                var recv = JSON.parse(message.body);
-                vm.recvMessage(recv);
+            ws.subscribe("/sub/api/chat/rooms/"+roomid, function(message) {
             });
             ws.send("/pub/message", {}, JSON.stringify({type:'ENTER', roomId:1, sender:username}));
         }, function(error) {

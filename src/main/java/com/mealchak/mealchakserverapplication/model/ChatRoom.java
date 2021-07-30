@@ -18,13 +18,17 @@ public class ChatRoom extends Timestamped{
     private Long roomId;
 
     @Column(nullable = false)
-    private String chatRoomName;
+    private String uuid;
 
     @Column(nullable = false)
     private Long ownUserId;
 
-    public ChatRoom(ChatRoomCreateRequestDto requestDto, User user){
-        this.chatRoomName = requestDto.getChatRoomName();
+    @Column(nullable = false)
+    private Long postId;
+
+    public ChatRoom(Long postId, String uuid, User user){
+        this.postId = postId;
+        this.uuid = uuid;
         this.ownUserId = user.getUserId();
     }
 }

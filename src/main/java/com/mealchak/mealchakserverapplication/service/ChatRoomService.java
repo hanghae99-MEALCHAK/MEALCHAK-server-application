@@ -1,13 +1,9 @@
 package com.mealchak.mealchakserverapplication.service;
 
-import com.mealchak.mealchakserverapplication.dto.request.ChatRoomCreateRequestDto;
-import com.mealchak.mealchakserverapplication.dto.request.ChatRoomRequestDto;
-import com.mealchak.mealchakserverapplication.dto.response.ChatRoomCreateResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +24,9 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public ChatRoomCreateResponseDto createChatRoom(ChatRoomCreateRequestDto requestDto, User user) {
-        ChatRoom chatRoom = new ChatRoom(requestDto, user);
+    public void createChatRoom(Long postId,String uuid, User user) {
+        ChatRoom chatRoom = new ChatRoom(postId, uuid, user);
         chatRoomRepository.save(chatRoom);
-        return new ChatRoomCreateResponseDto(chatRoom);
     }
 
 
