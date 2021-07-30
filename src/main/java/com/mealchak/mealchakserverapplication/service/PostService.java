@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,4 +59,43 @@ public class PostService {
     public List<Post> getSearch(String text) {
         return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text, text, text);
     }
+
+//    public List<Post> getPostByUserDist(Long id){
+////        User user = userRepository.findById(id).orElseThrow(
+////                ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+//        List<Post> postList = postRepository.findAllByAddressIgnoreCase(user.getLocation().getAddress());
+//        List<Post> nearPost = new ArrayList<>();
+//        for (Post posts : postList) {
+//            double lat1 = user.getLocation().getLatitude();
+//            double lon1 = user.getLocation().getLongitude();
+//            double lat2 = posts.getLatitude();
+//            double lon2 = posts.getLongitude();
+//
+//            double theta = lon1 - lon2;
+//            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
+//                    * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+//
+//            dist = Math.acos(dist);
+//            dist = rad2deg(dist);
+//            dist = dist * 60 * 1.1515;
+//
+//            dist = dist * 1.609344;
+//            System.out.println(dist);
+//
+//            if (dist < 5) {
+//                posts.setDistance(dist);
+//                postRepository.save(posts);
+//                nearPost.add(posts);
+//            }
+//        }
+//        return nearPost;
+//    }
+//
+//    private static double deg2rad(double deg) {
+//        return (deg * Math.PI / 180.0);
+//    }
+//
+//    private static double rad2deg(double rad) {
+//        return (rad * 180 / Math.PI);
+//    }
 }

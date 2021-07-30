@@ -27,6 +27,12 @@ public class Post extends Timestamped {
     private String address;
 
     @Column(nullable = false)
+    private double latitude;
+
+    @Column(nullable = false)
+    private double longitude;
+
+    @Column(nullable = false)
     private String restaurant;
 
     @Column(nullable = false)
@@ -43,6 +49,9 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     private String userImg;
+
+//    @Transient
+//    private double distance;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "CATEGORY_ID")
@@ -65,6 +74,8 @@ public class Post extends Timestamped {
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
         this.address = requestDto.getAddress();
+        this.latitude = requestDto.getLatitude();
+        this.longitude = requestDto.getLongitude();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();

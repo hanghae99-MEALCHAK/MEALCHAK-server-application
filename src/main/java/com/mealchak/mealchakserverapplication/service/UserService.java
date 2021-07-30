@@ -1,6 +1,8 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
@@ -49,6 +51,10 @@ public class UserService {
         String email = userInfo.getEmail();
         String thumbnailImg = userInfo.getThumbnailImg();
         String profileImg = userInfo.getProfileImg();
+        String address = "강남구";
+        double latitude = 37.497910;
+        double longitutde = 127.027678;
+        Location location = new Location(address, latitude, longitutde);
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
@@ -65,7 +71,7 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId,nickname,encodedPassword,email,thumbnailImg,profileImg);
+            kakaoUser = new User(kakaoId,nickname,encodedPassword,email,thumbnailImg,profileImg,location);
             userRepository.save(kakaoUser);
         }
 
@@ -94,5 +100,13 @@ public class UserService {
         User user = userRepository.findById(oldUser.getId()).orElseThrow(()->new IllegalArgumentException("유저가 존재하지 않습니다."));
         user.updateUsername(newUsername);
         return user.getUsername();
+    }
+
+    @Transactional
+    public Location updateUser(UserUpdateDto updateDto, User user) {
+        User user1 = userRepository.findById(user.getId()).orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        Location location = new Location(updateDto);
+        user1.updateUserDisc(location);
+        return user1.getLocation();
     }
 }

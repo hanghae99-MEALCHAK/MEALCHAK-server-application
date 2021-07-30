@@ -2,8 +2,10 @@ package com.mealchak.mealchakserverapplication.controller;
 
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
+import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.UserInfoMapping;
@@ -84,5 +86,12 @@ public class UserController {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
         return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
+    }
+
+    // 유저 위치 저장 (위도, 경도, 주소)
+    @ApiOperation(value = "유저 위치 저장", notes = "유저의 위치를 저장합니다.")
+    @PutMapping("/user/location")
+    public Location updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserUpdateDto updateDto) {
+        return userService.updateUser(updateDto,userDetails.getUser());
     }
 }

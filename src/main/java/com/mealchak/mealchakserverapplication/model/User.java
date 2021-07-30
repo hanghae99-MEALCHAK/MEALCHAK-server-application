@@ -31,8 +31,15 @@ public class User extends Timestamped {
     @Column(nullable = false,columnDefinition = "TEXT")
     private String profileImg;
 
+    @Embedded
+    private Location location;
+
     public void updateUsername(String newUsername) {
         this.username = newUsername;
+    }
+
+    public void updateUserDisc(Location location) {
+        this.location = location;
     }
 
     public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg) {
@@ -42,6 +49,7 @@ public class User extends Timestamped {
         this.email = email;
         this.thumbnailImg = thumbnailImg;
         this.profileImg = profileImg;
+//        this.location = getLocation();
     }
 
     public User(String Username, String password) {
@@ -51,5 +59,16 @@ public class User extends Timestamped {
         this.email = Username;
         this.thumbnailImg = "test";
         this.profileImg = "test";
+//        this.location = getLocation();
+    }
+
+    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg, Location location) {
+        this.kakaoId = kakaoId;
+        this.username = Username;
+        this.password = password;
+        this.email = email;
+        this.thumbnailImg = thumbnailImg;
+        this.profileImg = profileImg;
+        this.location = location;
     }
 }
