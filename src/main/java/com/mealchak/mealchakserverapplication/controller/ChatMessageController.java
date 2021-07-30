@@ -4,8 +4,11 @@ import com.mealchak.mealchakserverapplication.dto.request.ChatJoinRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.ChatMessageCreateRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.ChatMessageCreateResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
+import com.mealchak.mealchakserverapplication.pubsub.RedisPublisher;
+import com.mealchak.mealchakserverapplication.pubsub.RedisSubscriber;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -16,13 +19,18 @@ import org.springframework.web.util.HtmlUtils;
 @RequiredArgsConstructor
 @Controller
 public class ChatMessageController {
+    private final RedisMessageListenerContainer redisMessageListener;
 
     private final ChatMessageService chatMessageService;
+    private final RedisPublisher redisPublisher;
+    private final RedisSubscriber redisSubscriber;
 
-    @MessageMapping("/chat")
-    public void chatMessage(ChatMessageCreateRequestDto requestDto) {
-        chatMessageService.createChatMessage(requestDto);
-    }
+
+
+//    @MessageMapping("/chat")
+//    public void chatMessage(ChatMessageCreateRequestDto requestDto) {
+//        chatMessageService.createChatMessage(requestDto);
+//    }
 
 //    @MessageMapping("/chats")
 //    @SendTo("/sub/chats")

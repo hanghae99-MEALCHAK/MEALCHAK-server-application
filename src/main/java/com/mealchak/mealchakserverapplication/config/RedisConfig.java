@@ -15,7 +15,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     /**
-     * redis pub/sub 메시지를 처리하는 listener 설정
+     * redis를 경청하고 있다가 메시지 발행(publish)이 오면 Listener가 처리합니다.
      */
     @Bean
     public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
@@ -26,7 +26,7 @@ public class RedisConfig {
 
 
     /**
-     * 어플리케이션에서 사용할 redisTemplate 설정
+     * pub/sub통신에 사용할 redisTemplate 설정
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {

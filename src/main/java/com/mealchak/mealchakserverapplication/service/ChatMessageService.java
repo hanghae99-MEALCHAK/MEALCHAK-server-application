@@ -37,6 +37,7 @@ public class ChatMessageService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
+
 //    @Transactional
 //    public ChatMessageCreateResponseDto createChatMessage(ChatMessageCreateRequestDto requestDto, Long roomId) {
 //        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByRoomId(roomId);
