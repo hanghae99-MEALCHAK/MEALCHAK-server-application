@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,7 +24,8 @@ public class PostService {
     // 모집글 생성
     @Transactional
     public void createPost(User user, PostRequestDto requestDto) {
-        Post post = new Post(user.getUsername(), user.getId(), user.getThumbnailImg(), requestDto);
+        Location location = new Location(requestDto);
+        Post post = new Post(user.getUsername(), user.getId(), user.getThumbnailImg(), requestDto, location);
 //        CategoryCounter categoryCounter = post.getCategoryCounter();
 
 
@@ -64,16 +65,17 @@ public class PostService {
         return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text, text, text);
     }
 
+    // 모집글 유저 위치 기반 조회
     public Map<Double, Post> getPostByUserDist(Long id){
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-        List<Post> postList = postRepository.findAllByAddressIgnoreCase(user.getLocation().getAddress());
+        List<Post> postList = postRepository.findAllByLocationAddressIgnoreCase(user.getLocation().getAddress());
         Map<Double, Post> nearPost = new TreeMap<>();
         for (Post posts : postList) {
             double lat1 = user.getLocation().getLatitude();
             double lon1 = user.getLocation().getLongitude();
-            double lat2 = posts.getLatitude();
-            double lon2 = posts.getLongitude();
+            double lat2 = posts.getLocation().getLatitude();
+            double lon2 = posts.getLocation().getLongitude();
 
             double theta = lon1 - lon2;
             double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))

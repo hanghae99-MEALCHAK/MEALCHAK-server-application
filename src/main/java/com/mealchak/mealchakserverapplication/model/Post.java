@@ -24,15 +24,6 @@ public class Post extends Timestamped {
     private String category;
 
     @Column(nullable = false)
-    private String address;
-
-    @Column(nullable = false)
-    private double latitude;
-
-    @Column(nullable = false)
-    private double longitude;
-
-    @Column(nullable = false)
     private String restaurant;
 
     @Column(nullable = false)
@@ -50,6 +41,9 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String userImg;
 
+    @Embedded
+    private Location location;
+
     @Transient
     private double distance;
 
@@ -62,38 +56,36 @@ public class Post extends Timestamped {
         this.distance = distance;
     }
 
-    public Post(String title, int headCount, String category, String address, String restaurant, String orderTime, String contents, String username, Long userId) {
+    public Post(String title, int headCount, String category, String restaurant, String orderTime, String contents,
+                String username, Long userId, Location location) {
         this.title = title;
         this.headCount = headCount;
         this.category = category;
-        this.address = address;
         this.restaurant = restaurant;
         this.orderTime = orderTime;
         this.contents = contents;
         this.username = username;
         this.userId = userId;
+        this.location = location;
     }
 
-    public Post(String username, Long userId, String userImg, PostRequestDto requestDto) {
+    public Post(String username, Long userId, String userImg, PostRequestDto requestDto, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
-        this.address = requestDto.getAddress();
-        this.latitude = requestDto.getLatitude();
-        this.longitude = requestDto.getLongitude();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
         this.username = username;
         this.userId = userId;
         this.userImg = userImg;
+        this.location = location;
     }
 
     public void update(PostRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
-        this.address = requestDto.getAddress();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();

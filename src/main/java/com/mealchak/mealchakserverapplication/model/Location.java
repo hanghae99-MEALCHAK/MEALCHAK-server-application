@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,12 @@ public class Location {
         this.latitude = updateDto.getLatitude();
         this.longitude = updateDto.getLongitude();
         this.address = updateDto.getAddress();
+    }
+
+    public Location(PostRequestDto requestDto) {
+        this.latitude = requestDto.getLatitude();
+        this.longitude = requestDto.getLongitude();
+        this.address = requestDto.getAddress();
     }
 
     public Location(String address, double latitude, double longitude) {
