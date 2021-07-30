@@ -56,8 +56,9 @@ public class User extends Timestamped {
         this.username = Username;
         this.password = password;
         this.email = Username;
-        this.thumbnailImg = "test";
-        this.profileImg = "test";
+        this.thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        this.profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        this.location = new Location("강남구",37.49791,127.027678);
     }
 
     public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg, Location location) {
