@@ -6,6 +6,7 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
+import com.mealchak.mealchakserverapplication.util.UUIDGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
     private final ChatRoomService chatRoomService;
+    private final UUIDGenerator uuidGenerator;
 
     // 모집글 생성
     @ApiOperation(value = "모집글 작성", notes = "전체 모집글 조회합니다.")
@@ -28,7 +30,7 @@ public class PostController {
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         if (userDetails != null) {
             Long postId = postService.createPost(userDetails.getUser(), requestDto);
-            String uuid = UUID.randomUUID().toString();
+            String uuid = uuidGenerator.generateUUID();
             chatRoomService.createChatRoom(postId,uuid, userDetails.getUser());
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
