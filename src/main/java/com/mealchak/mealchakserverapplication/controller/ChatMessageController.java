@@ -2,15 +2,10 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
-import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor

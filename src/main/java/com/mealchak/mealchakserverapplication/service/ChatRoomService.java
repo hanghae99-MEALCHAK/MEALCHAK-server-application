@@ -24,11 +24,10 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public void createChatRoom(Long postId,String uuid, User user) {
+    public void createChatRoom(Long postId, String uuid, User user) {
         ChatRoom chatRoom = new ChatRoom(postId, uuid, user);
         chatRoomRepository.save(chatRoom);
     }
-
 
 
     public List<ChatRoom> getOnesChatRoom(User user) {
@@ -53,6 +52,11 @@ public class ChatRoomService {
     //채팅방전부찾기
     public List<ChatRoom> getAll() {
         return chatRoomRepository.findAll();
+    }
+
+    //postId로 찾기
+    public ChatRoom findByPostId(Long postId) {
+        return chatRoomRepository.findByPostId(postId);
     }
 
 

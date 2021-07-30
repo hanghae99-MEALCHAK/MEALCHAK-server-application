@@ -2,10 +2,12 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Post;
+import com.mealchak.mealchakserverapplication.model.UserRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
+import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import com.mealchak.mealchakserverapplication.util.UUIDGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,15 +25,23 @@ public class PostController {
     private final PostService postService;
     private final ChatRoomService chatRoomService;
     private final UUIDGenerator uuidGenerator;
+    private final UserRoomService userRoomService;
 
     // 모집글 생성
     @ApiOperation(value = "모집글 작성", notes = "전체 모집글 조회합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         if (userDetails != null) {
+            //글 저장후 해당글의 id 반환
             Long postId = postService.createPost(userDetails.getUser(), requestDto);
+            //uuid생성
             String uuid = uuidGenerator.generateUUID();
+            //새로운 채팅방을 생성 -> uuid값과 postid값을 가짐
             chatRoomService.createChatRoom(postId,uuid, userDetails.getUser());
+            //본인이 해당 채팅방에 입장했다는 정보를 생성
+            UserRoom userRoom = new UserRoom(userDetails.getUser().getUserId(),postId);
+            //입장 정보를 저장
+            userRoomService.save(userRoom);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
