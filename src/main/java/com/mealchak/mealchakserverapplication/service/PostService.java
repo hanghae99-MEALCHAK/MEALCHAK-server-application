@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @RequiredArgsConstructor
 @Service
@@ -62,11 +64,11 @@ public class PostService {
         return postRepository.findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(text, text, text);
     }
 
-    public List<Post> getPostByUserDist(Long id){
+    public Map<Double, Post> getPostByUserDist(Long id){
         User user = userRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
         List<Post> postList = postRepository.findAllByAddressIgnoreCase(user.getLocation().getAddress());
-        List<Post> nearPost = new ArrayList<>();
+        Map<Double, Post> nearPost = new TreeMap<>();
         for (Post posts : postList) {
             double lat1 = user.getLocation().getLatitude();
             double lon1 = user.getLocation().getLongitude();
@@ -85,7 +87,7 @@ public class PostService {
 
             if (dist < 5) {
                 posts.updateDistance(dist);
-                nearPost.add(posts);
+                nearPost.put(posts.getDistance(), posts);
             }
         }
         return nearPost;
