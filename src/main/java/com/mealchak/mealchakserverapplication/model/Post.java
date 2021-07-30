@@ -50,12 +50,17 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String userImg;
 
-//    @Transient
-//    private double distance;
+    @Transient
+    private double distance;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "CATEGORY_ID")
 //    private Category category;
+
+
+    public void updateDistance(double distance) {
+        this.distance = distance;
+    }
 
     public Post(String title, int headCount, String category, String address, String restaurant, String orderTime, String contents, String username, Long userId) {
         this.title = title;

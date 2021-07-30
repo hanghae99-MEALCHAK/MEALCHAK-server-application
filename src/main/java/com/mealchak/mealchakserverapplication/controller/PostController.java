@@ -64,10 +64,10 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-//    // 유저 근처에 작성된 게시글 조회
-//    @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
-//    @GetMapping("/posts/{userId}")
-//    public List<Post> getPostByUserDist(@PathVariable(name = "userId") Long id) {
-//        return postService.getPostByUserDist(id);
-//    }
+    // 유저 근처에 작성된 게시글 조회
+    @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
+    @GetMapping("/posts/around/{userId}")
+    public List<Post> getPostByUserDist(@PathVariable(name = "userId") Long id) {
+        return postService.getPostByUserDist(id);
+    }
 }

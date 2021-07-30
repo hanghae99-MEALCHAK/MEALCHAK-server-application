@@ -49,7 +49,6 @@ public class User extends Timestamped {
         this.email = email;
         this.thumbnailImg = thumbnailImg;
         this.profileImg = profileImg;
-//        this.location = getLocation();
     }
 
     public User(String Username, String password) {
@@ -59,7 +58,6 @@ public class User extends Timestamped {
         this.email = Username;
         this.thumbnailImg = "test";
         this.profileImg = "test";
-//        this.location = getLocation();
     }
 
     public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg, Location location) {
