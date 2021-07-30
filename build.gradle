@@ -52,6 +52,12 @@ dependencies {
     //devtools (소스 실시간 반영)
     implementation 'org.springframework.boot:spring-boot-devtools:2.5.2'
 
+    implementation 'org.webjars.bower:bootstrap:4.3.1'
+    implementation 'org.webjars.bower:vue:2.5.16'
+    implementation 'org.webjars.bower:axios:0.17.1' 
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+
 }
 
 test {

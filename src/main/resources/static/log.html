@@ -14,7 +14,7 @@
         console.log("start pring log")
         $.ajax({
             type: "GET",
-            url: "http://34.64.109.170:7777/chat/1/messages",
+            url: "http://localhost:8080/chat/1/messages",
             success: function(response){
                 for(i=0;i<response.content.length;i++){
                     let data = response.content[i];
