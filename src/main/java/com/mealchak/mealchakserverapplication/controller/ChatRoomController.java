@@ -27,7 +27,6 @@ public class ChatRoomController {
     // 사용자별 채팅방 목록 조회
     @GetMapping("/chat/rooms/mine")
     public List<ChatRoom> getOnesChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 미완
         return chatRoomService.getOnesChatRoom(userDetails.getUser());
     }
 

@@ -2,12 +2,15 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.model.UserRoom;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +23,7 @@ public class ChatRoomService {
     private HashOperations<String, String, String> hashOpsEnterInfo;
 
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRoomRepository userRoomRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
 
@@ -31,8 +35,13 @@ public class ChatRoomService {
 
 
     public List<ChatRoom> getOnesChatRoom(User user) {
-        // 미완. 후에 데이터 관계 맵핑 or 불러오는 기획 설정 후 변경
-        return chatRoomRepository.findAllByOwnUserIdOrderByCreatedAtDesc(user.getUserId());
+        List<UserRoom> userRoomList = userRoomRepository.findAllByUserId(user.getUserId());
+        List<ChatRoom> chatRoomList = new ArrayList<>();
+        for ( UserRoom userRoom : userRoomList) {
+            Long roomId = userRoom.getRoomId();
+            chatRoomList.add(chatRoomRepository.findByRoomId(roomId));
+        }
+        return chatRoomList;
     }
 
 
