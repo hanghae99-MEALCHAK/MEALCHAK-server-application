@@ -14,23 +14,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    /**
-     * redis를 경청하고 있다가 메시지 발행(publish)이 오면 Listener가 처리합니다.
-     */
     @Bean
-    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        return container;
-    }
-
-
-    /**
-     * pub/sub통신에 사용할 redisTemplate 설정
-     */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory connectionFactory){
+        RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
@@ -38,7 +24,23 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic channelTopic() {
+    public ChannelTopic channelTopic(){
         return new ChannelTopic("chatroom");
+    }
+
+
+    @Bean
+    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory,
+                                                              MessageListenerAdapter listenerAdapter,
+                                                              ChannelTopic channelTopic){
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.addMessageListener(listenerAdapter, channelTopic);
+        return container;
+    }
+
+    @Bean
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber){
+        return new MessageListenerAdapter(subscriber, "sendMessage");
     }
 }

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,10 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     //시크릿키값,배포시 해당키 application.properties에 넣고 수정할것
-    private String secretKey = "Lu92sdgh8sfyw";
+//    private String secretKey = "Lu92sdgh8sfyw";
+
+    @Value("${spring.datasource.secretKey}")
+    private String secretKey;
 
     // 토큰 유효시간 360분 , 1L = 1ms
     private long tokenValidTime = 360 * 60 * 1000L;
@@ -35,9 +39,10 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public String createToken(String userPk,Long userId) {
+    public String createToken(String userPk,Long userId,String username) {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         claims.put("userId", userId); // 정보는 key / value 쌍으로 저장된다.
+        claims.put("username", username);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장

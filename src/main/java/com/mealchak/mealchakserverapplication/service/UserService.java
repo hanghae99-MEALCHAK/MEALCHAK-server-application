@@ -34,6 +34,12 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
+    public User getUser(String email){
+        User member = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
+        return member;
+    }
+
 
     public String kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
@@ -41,6 +47,7 @@ public class UserService {
         Long kakaoId = userInfo.getId();
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
+
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
@@ -62,7 +69,8 @@ public class UserService {
         }
 
         // 로그인 처리
-        Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(username, password);
+
+        Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return email;

@@ -1,9 +1,9 @@
 package com.mealchak.mealchakserverapplication.controller;
 
-import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.dto.HeaderDto;
-import com.mealchak.mealchakserverapplication.dto.UserInfoDto;
+
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
+import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -40,7 +40,7 @@ public class UserController {
         HeaderDto headerDto = new HeaderDto();
         //해당 dto안에있는 TOKEN값에 jwt를 생성하여 담습니다
         //현재 jwt에 저장되는 정보는 username과 id(pk)입니다
-        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getUsername(), member.getUserId()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(member.getEmail(), member.getUserId(),member.getUsername()));
         //dto를 반환합니다. 후에 프론트에서 해당 dto에 담긴 token을 A-AUTH-TOKEN 헤더에 담아 전달해줄겁니다
         return headerDto;
     }
@@ -50,7 +50,7 @@ public class UserController {
     @ResponseBody
     //X-AUTH-TOKEN 헤더값을 확인합니다
     public Object getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        //헤더값이 비었다면 로그인되지 않았음을 알립니다
+        //헤더로 보내진 토큰에서 유저정보를 읽어올수 없거나 헤더값이 없다면
         if (userDetails == null) {
             return "로그인 상태가 아니거나 토큰이 만료되었습니다.";
         } else {
@@ -77,6 +77,6 @@ public class UserController {
         if (!encodePassword.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getUsername(),user.getUserId());
+        return jwtTokenProvider.createToken(user.getEmail(),user.getUserId(),user.getUsername());
     }
 }

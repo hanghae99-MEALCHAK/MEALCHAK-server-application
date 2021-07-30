@@ -1,50 +1,32 @@
 package com.mealchak.mealchakserverapplication.controller;
 
-import com.mealchak.mealchakserverapplication.dto.request.ChatJoinRequestDto;
-import com.mealchak.mealchakserverapplication.dto.request.ChatMessageCreateRequestDto;
-import com.mealchak.mealchakserverapplication.dto.response.ChatMessageCreateResponseDto;
+import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
-import com.mealchak.mealchakserverapplication.pubsub.RedisPublisher;
-import com.mealchak.mealchakserverapplication.pubsub.RedisSubscriber;
+import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.util.HtmlUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class ChatMessageController {
-    private final RedisMessageListenerContainer redisMessageListener;
 
     private final ChatMessageService chatMessageService;
-    private final RedisPublisher redisPublisher;
-    private final RedisSubscriber redisSubscriber;
 
 
-
-//    @MessageMapping("/chat")
-//    public void chatMessage(ChatMessageCreateRequestDto requestDto) {
-//        chatMessageService.createChatMessage(requestDto);
-//    }
-
-//    @MessageMapping("/chats")
-//    @SendTo("/sub/chats")
-//    public ChatMessageCreateResponseDto chatMessage(ChatMessageCreateRequestDto requestDto) throws Exception {
-//        Thread.sleep(1000); // simulated delay
-//        return new ChatMessageCreateResponseDto(HtmlUtils.htmlEscape(requestDto.getUsername())
-//                +"님의 메세지 > "+ HtmlUtils.htmlEscape(requestDto.getMessage()));
-//    }
-
-
-//    @MessageMapping("/{roomId}")
-//    @SendTo("/sub/{roomId}")
-//    public ChatMessage chatMessage(@DestinationVariable Long roomId, ChatMessageCreateRequestDto requestDto) throws Exception {
-//        Thread.sleep(1000); // simulated delay
-//        return chatMessageService.createChatMessage(requestDto);
-//    }
+    @MessageMapping("/message")
+//    public void message(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ChatMessageRequestDto messageRequestDto){
+    public void message(@RequestBody ChatMessageRequestDto messageRequestDto) {
+        //임시로 주석처리
+//        messageRequestDto.setSender(userDetails.getUser().getUsername());
+        ChatMessage chatMessage = new ChatMessage(messageRequestDto);
+        chatMessageService.sendChatMessage(chatMessage);
+//        chatMessageService.save(chatMessage);
+    }
 }

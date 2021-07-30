@@ -1,51 +1,57 @@
 package com.mealchak.mealchakserverapplication.service;
 
-import com.mealchak.mealchakserverapplication.dto.request.ChatMessageCreateRequestDto;
-import com.mealchak.mealchakserverapplication.dto.response.ChatMessageCreateResponseDto;
-import com.mealchak.mealchakserverapplication.dto.response.ChatRoomCreateResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ChatMessageService {
 
-    private final ChatMessageRepository chatMessageRepository;
-//    private final SimpMessagingTemplate template;
-    private final RedisTemplate redisTemplate;
     private final ChannelTopic channelTopic;
+    private final RedisTemplate redisTemplate;
+    private final ChatMessageRepository chatMessageRepository;
+    private final UserService userService;
 
-
-    @Transactional
-    public void createChatMessage(ChatMessageCreateRequestDto requestDto) {
-        if (requestDto.getType().equals(ChatMessage.MessageType.ENTER)){
-            requestDto.setMessage("님이 입장하셨습니다.");
-        } else if (requestDto.getType().equals(ChatMessage.MessageType.QUIT)){
-            requestDto.setMessage("님이 퇴장하셨습니다.");
+    public String getRoomId(String destination) {
+        int lastIndex = destination.lastIndexOf('/');
+        if (lastIndex != -1) {
+            return destination.substring(lastIndex + 1);
+        } else {
+            return "";
         }
-        ChatMessage chatMessage = new ChatMessage(requestDto);
-        chatMessageRepository.save(chatMessage);
-//        template.convertAndSend("/sub/chat/" + requestDto.getRoomId(), requestDto );
-        redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
+    public void sendChatMessage(ChatMessage chatMessageRequestDto){
+        if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())){
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "가 입장했습니다.");
+            chatMessageRequestDto.setSender("[알림]");
+        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())){
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender()+"님이 퇴장했습니다.");
+            chatMessageRequestDto.setSender("[알림]");
+        }
+        redisTemplate.convertAndSend(channelTopic.getTopic(),chatMessageRequestDto);
+    }
 
-//    @Transactional
-//    public ChatMessageCreateResponseDto createChatMessage(ChatMessageCreateRequestDto requestDto, Long roomId) {
-//        List<ChatMessage> chatMessageList = chatMessageRepository.findAllByRoomId(roomId);
-//        ChatMessage chatMessage = new ChatMessage(requestDto);
-//        chatMessageRepository.save(chatMessage);
-//        return new ChatMessageCreateResponseDto(chatMessage, chatMessageList);
-//
-//    }
+    public void save(ChatMessage chatMessage) {
+        ChatMessage message = new ChatMessage();
+        message.setType(chatMessage.getType());
+        message.setRoomId(chatMessage.getRoomId());
+        message.setSender(chatMessage.getSender());
+        message.setMessage(chatMessage.getMessage());
+        chatMessageRepository.save(message);
+    }
 
+    public Page<ChatMessage> getChatMessageByRoomId(String roomId, Pageable pageable) {
+        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
+        pageable = PageRequest.of(page, 150);
+        return chatMessageRepository.findByRoomId(roomId, pageable);
+    }
 
 }

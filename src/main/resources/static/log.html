@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function(){
+        console.log("document is ready.");
+        loadlog();
+    });
+
+    function loadlog(){
+        console.log("start pring log")
+        $.ajax({
+            type: "GET",
+            url: "http://34.64.109.170:7777/chat/1/messages",
+            success: function(response){
+                for(i=0;i<response.content.length;i++){
+                    let data = response.content[i];
+                    let msg = data.message;
+                    temphtml = `<div>${msg}</div>`
+                    $('#asd').append(temphtml)
+                }
+            }
+        });
+    }
+  </script>
+</head>
+<body>
+<div id="asd">
+</div>
+
+</body>
+</html>

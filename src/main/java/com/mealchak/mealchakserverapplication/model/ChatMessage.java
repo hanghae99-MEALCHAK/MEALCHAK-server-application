@@ -1,40 +1,51 @@
 package com.mealchak.mealchakserverapplication.model;
 
-import com.mealchak.mealchakserverapplication.dto.request.ChatMessageCreateRequestDto;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
+import lombok.*;
 
 import javax.persistence.*;
 
-@NoArgsConstructor
 @Getter
+@Setter
 @Entity
-public class ChatMessage extends Timestamped {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatMessage extends Timestamped{
 
     public enum MessageType {
         ENTER, TALK, QUIT
     }
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private Long messageId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column
     private MessageType type;
 
     @Column
-    private Long roomId;
+    private String roomId;
 
     @Column
-    private String username;
+    private String sender;
 
     @Column
     private String message;
 
-    public ChatMessage(ChatMessageCreateRequestDto requestDto) {
-        this.type = requestDto.getType();
-        this.username = requestDto.getUsername();
-        this.message = requestDto.getMessage();
-        this.roomId = requestDto.getRoomId();
+
+    @Builder
+    public ChatMessage(MessageType type, String roomId, String sender, String message){
+        this.type = type;
+        this.roomId = roomId;
+        this.sender = sender;
+        this.message = message;
+    }
+
+    @Builder
+    public ChatMessage(ChatMessageRequestDto chatMessageRequestDto){
+        this.type = chatMessageRequestDto.getType();
+        this.roomId = chatMessageRequestDto.getRoomId();
+        this.sender = chatMessageRequestDto.getSender();
+        this.message = chatMessageRequestDto.getMessage();
     }
 }

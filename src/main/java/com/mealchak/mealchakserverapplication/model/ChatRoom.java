@@ -1,36 +1,30 @@
 package com.mealchak.mealchakserverapplication.model;
 
 import com.mealchak.mealchakserverapplication.dto.request.ChatRoomCreateRequestDto;
+import com.mealchak.mealchakserverapplication.dto.request.ChatRoomRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Optional;
 
-@Getter
-@NoArgsConstructor
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class ChatRoom extends Timestamped{
-
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
 
-    @Column
+    @Column(nullable = false)
     private String chatRoomName;
 
-    @Column
-    private Long userId;
-
-    @Column
-    private String username;
+    @Column(nullable = false)
+    private Long ownUserId;
 
     public ChatRoom(ChatRoomCreateRequestDto requestDto, User user){
         this.chatRoomName = requestDto.getChatRoomName();
-        this.username = user.getUsername();
-        this.userId = user.getUserId();
+        this.ownUserId = user.getUserId();
     }
-
 }
-
-

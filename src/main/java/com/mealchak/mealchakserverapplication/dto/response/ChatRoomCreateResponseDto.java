@@ -11,13 +11,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ChatRoomCreateResponseDto {
-    private Long roomId;
+
+    private  Long roomId;
     private String chatRoomName;
-    private String username;
+    private Long ownUserId;
 
     public ChatRoomCreateResponseDto(ChatRoom chatRoom) {
         this.roomId = chatRoom.getRoomId();
         this.chatRoomName = chatRoom.getChatRoomName();
-        this.username = chatRoom.getUsername();
+        this.ownUserId = chatRoom.getOwnUserId();
     }
 }

@@ -38,28 +38,20 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    //stomp
+
+    //여기부터 웹소켓 테스트
+
+    //스프링 웹소켓
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.webjars:webjars-locator-core'
-    implementation 'org.webjars:sockjs-client:1.0.2'
-    implementation 'org.webjars:stomp-websocket:2.3.3'
-    implementation 'org.webjars:bootstrap:3.3.7'
-    implementation 'org.webjars:jquery:3.1.1-1'
-
-    //reative redis
+    //스프링 redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-
     //embedded redis
     implementation 'it.ozimov:embedded-redis:0.7.2'
-    implementation 'org.webjars.bower:bootstrap:4.3.1'
-    implementation 'org.webjars.bower:vue:2.5.16'
-    implementation 'org.webjars.bower:axios:0.17.1'
-    implementation 'org.webjars:sockjs-client:1.1.2'
-    implementation 'org.webjars:stomp-websocket:2.3.3-1'
     implementation 'com.google.code.gson:gson:2.8.0'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api'
+    //devtools (소스 실시간 반영)
+    implementation 'org.springframework.boot:spring-boot-devtools:2.5.2'
+
 }
 
 test {
