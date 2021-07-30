@@ -26,6 +26,7 @@ public class ChatRoom extends Timestamped{
     @Column(nullable = false)
     private Long postId;
 
+
     public ChatRoom(Long postId, String uuid, User user){
         this.postId = postId;
         this.uuid = uuid;
