@@ -38,7 +38,7 @@ public class ChatRoomService {
 
     public List<ChatRoom> getOnesChatRoom(User user) {
         // 미완. 후에 데이터 관계 맵핑 or 불러오는 기획 설정 후 변경
-        return chatRoomRepository.findAllByUserIdOrderByCreatedAtDesc(user.getUserId());
+        return chatRoomRepository.findAllByOwnUserIdOrderByCreatedAtDesc(user.getUserId());
     }
 
 

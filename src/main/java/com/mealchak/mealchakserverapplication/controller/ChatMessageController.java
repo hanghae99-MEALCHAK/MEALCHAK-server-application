@@ -27,6 +27,6 @@ public class ChatMessageController {
 //        messageRequestDto.setSender(userDetails.getUser().getUsername());
         ChatMessage chatMessage = new ChatMessage(messageRequestDto);
         chatMessageService.sendChatMessage(chatMessage);
-        chatMessageService.save(chatMessage);
+//        chatMessageService.save(chatMessage);
     }
 }
