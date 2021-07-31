@@ -8,4 +8,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(String title, String contents, String category);
     List<Post> findAllByOrderByCreatedAtDesc();
+    List<Post> findAllByLocationAddressIgnoreCase(String address);
 }

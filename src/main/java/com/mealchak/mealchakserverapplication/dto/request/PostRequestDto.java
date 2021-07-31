@@ -8,6 +8,8 @@ public class PostRequestDto {
     private int headCount;
     private String category;
     private String address;
+    private double latitude;
+    private double longitude;
     private String restaurant;
     private String orderTime;
     private String contents;
