@@ -82,12 +82,13 @@ public class Post extends Timestamped {
         this.location = location;
     }
 
-    public void update(PostRequestDto requestDto) {
+    public void update(PostRequestDto requestDto, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.category = requestDto.getCategory();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
+        this.location = location;
     }
 }

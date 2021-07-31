@@ -46,8 +46,9 @@ public class PostService {
     // 모집글 수정
     @Transactional
     public Post updatePostDetail(Long postId, PostRequestDto requestDto) {
+        Location location = new Location(requestDto);
         Post post = getPost(postId);
-        post.update(requestDto);
+        post.update(requestDto, location);
         return post;
     }
 
@@ -87,9 +88,9 @@ public class PostService {
 
             dist = dist * 1.609344;
 
-            if (dist < 5) {
+            if (dist < 3) {
                 posts.updateDistance(dist);
-                nearPost.put(posts.getDistance(), posts);
+                nearPost.put(dist, posts);
             }
         }
         return nearPost;
