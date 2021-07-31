@@ -21,8 +21,6 @@ public class Post extends Timestamped {
     private int headCount;
 
     @Column(nullable = false)
-
-    @Column(nullable = false)
     private String restaurant;
 
     @Column(nullable = false)

@@ -29,10 +29,10 @@ public class User extends Timestamped {
     @JsonIgnore
     private String email;
 
-    @Column(nullable = false,columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String thumbnailImg;
 
-    @Column(nullable = false,columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String profileImg;
 
     @Embedded
@@ -62,7 +62,7 @@ public class User extends Timestamped {
         this.email = Username;
         this.thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         this.profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
-        this.location = new Location("강남구",37.49791,127.027678);
+        this.location = new Location("강남구", 37.49791, 127.027678);
     }
 
     public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg,
