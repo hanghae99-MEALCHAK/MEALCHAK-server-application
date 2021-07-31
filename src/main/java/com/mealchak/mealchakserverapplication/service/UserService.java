@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -36,7 +35,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User getUser(String email){
+    public User getUser(String email) {
         User member = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
         return member;
@@ -71,7 +70,7 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId,nickname,encodedPassword,email,thumbnailImg,profileImg,location);
+            kakaoUser = new User(kakaoId, nickname, encodedPassword, email, thumbnailImg, profileImg, location);
             userRepository.save(kakaoUser);
         }
 
@@ -86,10 +85,6 @@ public class UserService {
     public void registerUser(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password;
-
-
-        Optional<User> found = userRepository.findByUsername(username);
-
         password = passwordEncoder.encode(requestDto.getPassword());
         User user = new User(username, password);
         userRepository.save(user);
@@ -97,14 +92,14 @@ public class UserService {
 
     @Transactional
     public String updateUsername(User oldUser, String newUsername) {
-        User user = userRepository.findById(oldUser.getId()).orElseThrow(()->new IllegalArgumentException("유저가 존재하지 않습니다."));
+        User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         user.updateUsername(newUsername);
         return user.getUsername();
     }
 
     @Transactional
     public Location updateUser(UserUpdateDto updateDto, User user) {
-        User user1 = userRepository.findById(user.getId()).orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        User user1 = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
         Location location = new Location(updateDto);
         user1.updateUserDisc(location);
         return user1.getLocation();

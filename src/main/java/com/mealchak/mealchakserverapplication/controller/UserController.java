@@ -8,9 +8,9 @@ import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import com.mealchak.mealchakserverapplication.repository.UserInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import com.mealchak.mealchakserverapplication.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +30,8 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
-    private final UserInfoRepository userInfoRepository;
+    private final UserInfoRepository userInfoRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
+
 
     @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     //카카오 로그인 api로 코드를 받아옴
@@ -55,6 +56,7 @@ public class UserController {
     public UserInfoMapping userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) {
             return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
@@ -92,6 +94,6 @@ public class UserController {
     @ApiOperation(value = "유저 위치 저장", notes = "유저의 위치를 저장합니다.")
     @PutMapping("/user/location")
     public Location updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserUpdateDto updateDto) {
-        return userService.updateUser(updateDto,userDetails.getUser());
+        return userService.updateUser(updateDto, userDetails.getUser());
     }
 }
