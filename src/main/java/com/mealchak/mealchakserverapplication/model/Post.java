@@ -21,9 +21,6 @@ public class Post extends Timestamped {
     private int headCount;
 
     @Column(nullable = false)
-    private String category;
-
-    @Column(nullable = false)
     private String restaurant;
 
     @Column(nullable = false)
@@ -32,14 +29,13 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @Column(nullable = false)
-    private String username;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "User_ID")
+    private User user;
 
-    @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
-    private String userImg;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "Menu_ID")
+    private Menu menu;
 
     @Embedded
     private Location location;
@@ -47,48 +43,28 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "CATEGORY_ID")
-//    private Category category;
-
-
     public void updateDistance(double distance) {
-        this.distance = distance;
+    this.distance = distance;
     }
 
-    public Post(String title, int headCount, String category, String restaurant, String orderTime, String contents,
-                String username, Long userId, Location location) {
-        this.title = title;
-        this.headCount = headCount;
-        this.category = category;
-        this.restaurant = restaurant;
-        this.orderTime = orderTime;
-        this.contents = contents;
-        this.username = username;
-        this.userId = userId;
-        this.location = location;
-    }
-
-    public Post(String username, Long userId, String userImg, PostRequestDto requestDto, Location location) {
+    public Post(PostRequestDto requestDto, User user, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.category = requestDto.getCategory();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
-        this.username = username;
-        this.userId = userId;
-        this.userImg = userImg;
+        this.user = user;
+        this.menu = menu;
         this.location = location;
     }
 
-    public void update(PostRequestDto requestDto, Location location) {
+    public void update(PostRequestDto requestDto, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.category = requestDto.getCategory();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
+        this.menu = menu;
         this.location = location;
     }
 }

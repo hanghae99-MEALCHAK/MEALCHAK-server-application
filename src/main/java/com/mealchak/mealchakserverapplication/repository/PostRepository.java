@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByTitleContainingOrContentsContainingOrCategoryContainingOrderByCreatedAtDesc(String title, String contents, String category);
+    List<Post> findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(String title, String contents);
+
+//    @EntityGraph(attributePaths = {"User.username"}, type = EntityGraph.EntityGraphType.LOAD)
     List<Post> findAllByOrderByCreatedAtDesc();
     List<Post> findAllByLocationAddressIgnoreCase(String address);
 }
