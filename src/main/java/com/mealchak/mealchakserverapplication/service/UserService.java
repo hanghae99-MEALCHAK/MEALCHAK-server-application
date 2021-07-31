@@ -36,9 +36,8 @@ public class UserService {
     }
 
     public User getUser(String email) {
-        User member = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
-        return member;
     }
 
 
@@ -81,6 +80,7 @@ public class UserService {
         return email;
     }
 
+    // 테스트 회원가입
     @Transactional
     public void registerUser(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -90,9 +90,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 유저 닉네임 변경
     @Transactional
-    public String updateUsername(User oldUser, String newUsername) {
-        User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+    public String updateUsername(Long userId, String newUsername) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         user.updateUsername(newUsername);
         return user.getUsername();
     }

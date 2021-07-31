@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(String title, String contents);
-
-//    @EntityGraph(attributePaths = {"User.username"}, type = EntityGraph.EntityGraphType.LOAD)
-    List<Post> findAllByOrderByCreatedAtDesc();
-    List<Post> findAllByLocationAddressIgnoreCase(String address);
+    List<Post> findAllByOrderByCreatedAtAsc();
+    List<Post> findByLocationAddressContainingIgnoreCase(String address);
 }

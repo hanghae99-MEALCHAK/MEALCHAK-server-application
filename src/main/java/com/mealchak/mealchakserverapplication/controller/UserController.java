@@ -30,8 +30,7 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
-    private final UserInfoRepository userInfoRepository; // 테스트를위함, 나중에 서비스로 편입시킬것것
-
+    private final UserInfoRepository userInfoRepository;
 
     @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     //카카오 로그인 api로 코드를 받아옴
@@ -55,8 +54,7 @@ public class UserController {
     @GetMapping("/user/info")
     public UserInfoMapping userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) {
-            return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
-
+            return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다."));
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
@@ -66,7 +64,7 @@ public class UserController {
     @PutMapping("/username/update")
     public String updateUsername(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String newUsername) {
         if (userDetails != null) {
-            return userService.updateUsername(userDetails.getUser(), newUsername);
+            return userService.updateUsername(userDetails.getUser().getId(), newUsername);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
@@ -94,6 +92,6 @@ public class UserController {
     @ApiOperation(value = "유저 위치 저장", notes = "유저의 위치를 저장합니다.")
     @PutMapping("/user/location")
     public Location updateUserLocation(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserUpdateDto updateDto) {
-        return userService.updateUserLocation(updateDto,userDetails.getUser());
+        return userService.updateUserLocation(updateDto, userDetails.getUser());
     }
 }

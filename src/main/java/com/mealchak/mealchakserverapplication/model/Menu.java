@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class Menu {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     @Id
     private Long id;
 
