@@ -97,9 +97,10 @@ public class UserService {
         return user.getUsername();
     }
 
+    // 유저 위치 저장
     @Transactional
-    public Location updateUser(UserUpdateDto updateDto, User user) {
-        User user1 = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+    public Location updateUserLocation(UserUpdateDto updateDto, User user) {
+        User user1 = userRepository.findById(user.getId()).orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
         Location location = new Location(updateDto);
         user1.updateUserDisc(location);
         return user1.getLocation();

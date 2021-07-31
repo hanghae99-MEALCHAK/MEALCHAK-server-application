@@ -10,4 +10,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 //    @EntityGraph(attributePaths = {"User.username"}, type = EntityGraph.EntityGraphType.LOAD)
     List<Post> findAllByOrderByCreatedAtDesc();
+    List<Post> findAllByLocationAddressIgnoreCase(String address);
 }

@@ -1,20 +1,17 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @Embeddable
 public class Location {
 
-    private  String address;
+    private String address;
 
     private double latitude;
 
@@ -24,6 +21,12 @@ public class Location {
         this.latitude = updateDto.getLatitude();
         this.longitude = updateDto.getLongitude();
         this.address = updateDto.getAddress();
+    }
+
+    public Location(PostRequestDto requestDto) {
+        this.latitude = requestDto.getLatitude();
+        this.longitude = requestDto.getLongitude();
+        this.address = requestDto.getAddress();
     }
 
     public Location(String address, double latitude, double longitude) {

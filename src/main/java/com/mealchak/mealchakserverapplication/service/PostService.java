@@ -2,16 +2,20 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Menu;
+import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.TreeMap;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +23,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
 
     // 모집글 생성
     @Transactional
@@ -27,12 +32,14 @@ public class PostService {
         if (!menu.isPresent()) {
             Menu newMenu = new Menu(requestDto.getCategory(), 1);
             menuRepository.save(newMenu);
-            Post post = new Post(requestDto, user, newMenu);
+            Location location = new Location(requestDto);
+            Post post = new Post(requestDto, user, newMenu, location);
             postRepository.save(post);
             return;
         }
         menu.get().updateMenuCount(+1);
-        Post post = new Post(requestDto, user, menu.get());
+        Location location = new Location(requestDto);
+        Post post = new Post(requestDto, user, menu.get(), location);
         postRepository.save(post);
     }
 
@@ -49,6 +56,7 @@ public class PostService {
     // 모집글 수정
     @Transactional
     public Post updatePostDetail(Long postId, PostRequestDto requestDto) {
+        Location location = new Location(requestDto);
         Post post = getPost(postId);
         Menu menu = post.getMenu();
         if (requestDto.getCategory() != menu.getCategory()) {
@@ -56,7 +64,7 @@ public class PostService {
             menu = menuRepository.findByCategory(requestDto.getCategory()).orElseThrow(() -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
             menu.updateMenuCount(+1);
         }
-        post.update(requestDto, menu);
+        post.update(requestDto, menu, location);
         return post;
     }
 
@@ -77,42 +85,41 @@ public class PostService {
         return postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
     }
 
-//    public List<Post> getPostByUserDist(Long id){
-////        User user = userRepository.findById(id).orElseThrow(
-////                ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-//        List<Post> postList = postRepository.findAllByAddressIgnoreCase(user.getLocation().getAddress());
-//        List<Post> nearPost = new ArrayList<>();
-//        for (Post posts : postList) {
-//            double lat1 = user.getLocation().getLatitude();
-//            double lon1 = user.getLocation().getLongitude();
-//            double lat2 = posts.getLatitude();
-//            double lon2 = posts.getLongitude();
-//
-//            double theta = lon1 - lon2;
-//            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
-//                    * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-//
-//            dist = Math.acos(dist);
-//            dist = rad2deg(dist);
-//            dist = dist * 60 * 1.1515;
-//
-//            dist = dist * 1.609344;
-//            System.out.println(dist);
-//
-//            if (dist < 5) {
-//                posts.setDistance(dist);
-//                postRepository.save(posts);
-//                nearPost.add(posts);
-//            }
-//        }
-//        return nearPost;
-//    }
-//
-//    private static double deg2rad(double deg) {
-//        return (deg * Math.PI / 180.0);
-//    }
-//
-//    private static double rad2deg(double rad) {
-//        return (rad * 180 / Math.PI);
-//    }
+    // 모집글 유저 위치 기반 조회
+    public Map<Double, Post> getPostByUserDist(Long id){
+        User user = userRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+        List<Post> postList = postRepository.findAllByLocationAddressIgnoreCase(user.getLocation().getAddress());
+        Map<Double, Post> nearPost = new TreeMap<>();
+        for (Post posts : postList) {
+            double lat1 = user.getLocation().getLatitude();
+            double lon1 = user.getLocation().getLongitude();
+            double lat2 = posts.getLocation().getLatitude();
+            double lon2 = posts.getLocation().getLongitude();
+
+            double theta = lon1 - lon2;
+            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
+                    * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+
+            dist = Math.acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+
+            dist = dist * 1.609344;
+
+            if (dist < 3) {
+                posts.updateDistance(dist);
+                nearPost.put(dist, posts);
+            }
+        }
+        return nearPost;
+    }
+
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
 }

@@ -21,13 +21,6 @@ public class Post extends Timestamped {
     private int headCount;
 
     @Column(nullable = false)
-    private String address;
-
-    @Column(nullable = false)
-    private double latitude;
-
-    @Column(nullable = false)
-    private double longitude;
 
     @Column(nullable = false)
     private String restaurant;
@@ -46,26 +39,34 @@ public class Post extends Timestamped {
     @JoinColumn(name = "Menu_ID")
     private Menu menu;
 
-    public Post(PostRequestDto requestDto,User user, Menu menu) {
+    @Embedded
+    private Location location;
+
+    @Transient
+    private double distance;
+
+    public void updateDistance(double distance) {
+    this.distance = distance;
+    }
+
+    public Post(PostRequestDto requestDto, User user, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.address = requestDto.getAddress();
-        this.latitude = requestDto.getLatitude();
-        this.longitude = requestDto.getLongitude();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
         this.user = user;
         this.menu = menu;
+        this.location = location;
     }
 
-    public void update(PostRequestDto requestDto, Menu menu) {
+    public void update(PostRequestDto requestDto, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.address = requestDto.getAddress();
         this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
         this.menu = menu;
+        this.location = location;
     }
 }

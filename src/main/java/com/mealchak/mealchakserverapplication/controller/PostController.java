@@ -2,6 +2,7 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Post;
+import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.PostService;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = {"1. 모집글"}) // Swagger
 @RequiredArgsConstructor
@@ -64,10 +66,10 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-//    // 유저 근처에 작성된 게시글 조회
-//    @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
-//    @GetMapping("/posts/{userId}")
-//    public List<Post> getPostByUserDist(@PathVariable(name = "userId") Long id) {
-//        return postService.getPostByUserDist(id);
-//    }
+    // 유저 근처에 작성된 게시글 조회
+    @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
+    @GetMapping("/posts/around")
+    public Map<Double, Post> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.getPostByUserDist(userDetails.getUser().getId());
+    }
 }

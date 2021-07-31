@@ -53,7 +53,6 @@ public class User extends Timestamped {
         this.email = email;
         this.thumbnailImg = thumbnailImg;
         this.profileImg = profileImg;
-//        this.location = getLocation();
     }
 
     public User(String Username, String password) {
@@ -66,7 +65,8 @@ public class User extends Timestamped {
         this.location = new Location("강남구",37.49791,127.027678);
     }
 
-    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg, Location location) {
+    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg,
+                Location location) {
         this.kakaoId = kakaoId;
         this.username = Username;
         this.password = password;

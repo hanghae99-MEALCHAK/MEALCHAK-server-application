@@ -93,7 +93,7 @@ public class UserController {
     // 유저 위치 저장 (위도, 경도, 주소)
     @ApiOperation(value = "유저 위치 저장", notes = "유저의 위치를 저장합니다.")
     @PutMapping("/user/location")
-    public Location updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserUpdateDto updateDto) {
-        return userService.updateUser(updateDto, userDetails.getUser());
+    public Location updateUserLocation(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserUpdateDto updateDto) {
+        return userService.updateUserLocation(updateDto,userDetails.getUser());
     }
 }
