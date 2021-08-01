@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface UserRoomRepository extends JpaRepository<AllChatInfo,Long> {
      List<AllChatInfo> findAllByUserId(Long userId);
+     Long countAllByRoomId(Long roomId);
+
 }

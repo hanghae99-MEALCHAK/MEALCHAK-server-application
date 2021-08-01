@@ -13,4 +13,5 @@ public class UserRoomService {
     public void save(AllChatInfo allChatInfo){
         userRoomRepository.save(allChatInfo);
     }
+
 }

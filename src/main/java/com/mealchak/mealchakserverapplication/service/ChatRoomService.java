@@ -1,9 +1,12 @@
 package com.mealchak.mealchakserverapplication.service;
 
+import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
+import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
+import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -24,6 +28,7 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRoomRepository userRoomRepository;
+    private final PostRepository postRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
 
@@ -33,16 +38,23 @@ public class ChatRoomService {
         chatRoomRepository.save(chatRoom);
     }
 
-
-    public List<ChatRoom> getOnesChatRoom(User user) {
+    // 사용자별 채팅방 목록 조회
+    public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
+        List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
         List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getUserId());
-        List<ChatRoom> chatRoomList = new ArrayList<>();
-        for ( AllChatInfo allChatInfo : allChatInfoList) {
+        for (AllChatInfo allChatInfo : allChatInfoList) {
             Long roomId = allChatInfo.getRoomId();
-            chatRoomList.add(chatRoomRepository.findByRoomId(roomId));
+            ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+            Long id = chatRoom.getPostId();
+            Optional<Post> post = postRepository.findById(id);
+            String title = post.get().getTitle();
+            Long headCountChat = userRoomRepository.countAllByRoomId(roomId);
+            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, title, headCountChat);
+            responseDtos.add(responseDto);
         }
-        return chatRoomList;
+        return responseDtos;
     }
+
 
 
     public void setUserEnterInfo(String sessionId, String roomId) {

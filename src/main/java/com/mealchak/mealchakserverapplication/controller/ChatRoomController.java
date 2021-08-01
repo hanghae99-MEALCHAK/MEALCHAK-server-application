@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.controller;
 
+import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
@@ -25,7 +26,7 @@ public class ChatRoomController {
 
     // 사용자별 채팅방 목록 조회
     @GetMapping("/chat/rooms/mine")
-    public List<ChatRoom> getOnesChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public List<ChatRoomListResponseDto> getOnesChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return chatRoomService.getOnesChatRoom(userDetails.getUser());
     }
 
@@ -37,11 +38,11 @@ public class ChatRoomController {
 
     //채팅방에 입장
     @GetMapping("/chat/join/{id}")
-    public void joinChatRoom(@PathVariable String stringPostId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public void joinChatRoom(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         AllChatInfo allChatInfo = new AllChatInfo();
         allChatInfo.setUserId(userDetails.getUser().getUserId());
-        Long longPostId = Long.parseLong(stringPostId);
-        ChatRoom chatRoom = chatRoomService.findByPostId(longPostId);
+//        Long longPostId = Long.parseLong(stringPostId);
+        ChatRoom chatRoom = chatRoomService.findByPostId(id);
         allChatInfo.setRoomId(chatRoom.getRoomId());
         userRoomService.save(allChatInfo);
     }
