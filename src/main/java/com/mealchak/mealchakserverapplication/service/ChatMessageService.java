@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.service;
 
+import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ public class ChatMessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
-    private final UserService userService;
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -28,7 +28,7 @@ public class ChatMessageService {
         }
     }
 
-    public void sendChatMessage(ChatMessage chatMessageRequestDto){
+        public void sendChatMessage(ChatMessage chatMessageRequestDto){
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())){
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "가 입장했습니다.");
             chatMessageRequestDto.setSender("[알림]");
@@ -45,11 +45,11 @@ public class ChatMessageService {
         message.setRoomId(chatMessage.getRoomId());
         message.setSender(chatMessage.getSender());
         message.setMessage(chatMessage.getMessage());
-        chatMessageRepository.save(message);
+        chatMessageRepository.save(chatMessage);
     }
 
     public Page<ChatMessage> getChatMessageByRoomId(String roomId, Pageable pageable) {
-        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() -1);
+        int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
         pageable = PageRequest.of(page, 150);
         return chatMessageRepository.findByRoomId(roomId, pageable);
     }
