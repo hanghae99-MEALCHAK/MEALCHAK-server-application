@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -33,9 +34,11 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public void createChatRoom(Long postId, String uuid, User user) {
+    public Long createChatRoom(Long postId, User user) {
+        String uuid = UUID.randomUUID().toString();
         ChatRoom chatRoom = new ChatRoom(postId, uuid, user);
         chatRoomRepository.save(chatRoom);
+        return chatRoom.getRoomId();
     }
 
     // 사용자별 채팅방 목록 조회
@@ -54,7 +57,6 @@ public class ChatRoomService {
         }
         return responseDtos;
     }
-
 
 
     public void setUserEnterInfo(String sessionId, String roomId) {

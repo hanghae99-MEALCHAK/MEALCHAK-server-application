@@ -30,20 +30,10 @@ public class PostController {
     @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
-        if (userDetails != null) {
-            //글 저장후 해당글의 id 반환
-            Long postId = postService.createPost(userDetails.getUser(), requestDto);
-            //uuid생성
-            String uuid = UUID.randomUUID().toString();
-            //새로운 채팅방을 생성 -> uuid값과 postid값을 가짐
-            chatRoomService.createChatRoom(postId,uuid, userDetails.getUser());
-            //본인이 해당 채팅방에 입장했다는 정보를 생성
-            AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(),postId);
-            //입장 정보를 저장
-            userRoomService.save(allChatInfo);
-        } else {
-            throw new IllegalArgumentException("로그인 하지 않았습니다.");
-        }
+        Long id = postService.createPost(userDetails, requestDto);
+        Long roomId = chatRoomService.createChatRoom(id, userDetails.getUser());
+        AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(), roomId);
+        userRoomService.save(allChatInfo);
     }
 
     // 모집글 불러오기
