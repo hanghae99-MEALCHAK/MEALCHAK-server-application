@@ -18,7 +18,7 @@ public class PostExpiredScheduler {
 
     private final PostRepository postRepository;
 
-    @Scheduled(fixedDelay = 5 * 1000L)
+    @Scheduled(fixedDelay = 60 * 1000L)
     @Transactional
     public void postValidationCheckScheduler() {
         List<Post> notExpiredList = postRepository.findByCheckValid(true);
