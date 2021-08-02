@@ -1,6 +1,5 @@
 package com.mealchak.mealchakserverapplication.service;
 
-import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +27,15 @@ public class ChatMessageService {
         }
     }
 
-        public void sendChatMessage(ChatMessage chatMessageRequestDto){
-        if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())){
+    public void sendChatMessage(ChatMessage chatMessageRequestDto) {
+        if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "가 입장했습니다.");
             chatMessageRequestDto.setSender("[알림]");
-        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())){
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender()+"님이 퇴장했습니다.");
+        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
             chatMessageRequestDto.setSender("[알림]");
         }
-        redisTemplate.convertAndSend(channelTopic.getTopic(),chatMessageRequestDto);
+        redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }
 
     public void save(ChatMessage chatMessage) {
@@ -53,5 +52,4 @@ public class ChatMessageService {
         pageable = PageRequest.of(page, 150);
         return chatMessageRepository.findByRoomId(roomId, pageable);
     }
-
 }

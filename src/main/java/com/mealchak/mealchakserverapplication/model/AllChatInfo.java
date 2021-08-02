@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 import javax.persistence.*;
 
@@ -12,7 +11,6 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 public class AllChatInfo {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,9 +21,8 @@ public class AllChatInfo {
     @Column
     private Long roomId;
 
-    public AllChatInfo(Long userId, Long roomId){
+    public AllChatInfo(Long userId, Long roomId) {
         this.userId = userId;
         this.roomId = roomId;
-
     }
 }

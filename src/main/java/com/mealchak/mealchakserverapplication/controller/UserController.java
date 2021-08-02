@@ -1,6 +1,5 @@
 package com.mealchak.mealchakserverapplication.controller;
 
-
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
@@ -22,7 +21,6 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-
     @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     //카카오 로그인 api로 코드를 받아옴
     @GetMapping("/user/kakao/callback")
@@ -42,6 +40,7 @@ public class UserController {
     public String updateUsername(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody String newUsername) {
         return userService.updateUsername(userDetails.getUser(), newUsername, userDetails);
     }
+
     // 회원 가입 요청 처리
     @ApiOperation(value = "회원 가입 요청", notes = "회원 가입 요청합니다.")
     @PostMapping("/user/signup")

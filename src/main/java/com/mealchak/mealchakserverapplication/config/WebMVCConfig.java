@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMVCConfig implements WebMvcConfigurer {
     @Bean
-    public FilterRegistrationBean getFilterRegistrationBean(){
+    public FilterRegistrationBean getFilterRegistrationBean() {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean(new CORSFilter());
         registrationBean.addUrlPatterns("/**");
         return registrationBean;

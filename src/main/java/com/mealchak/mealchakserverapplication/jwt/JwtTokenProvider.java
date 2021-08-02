@@ -21,9 +21,6 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    //시크릿키값,배포시 해당키 application.properties에 넣고 수정할것
-//    private String secretKey = "Lu92sdgh8sfyw";
-
     @Value("${spring.datasource.secretKey}")
     private String secretKey;
 
@@ -39,7 +36,7 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성
-    public String createToken(String userPk,Long userId,String username) {
+    public String createToken(String userPk, Long userId, String username) {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         claims.put("userId", userId); // 정보는 key / value 쌍으로 저장된다.
         claims.put("username", username);

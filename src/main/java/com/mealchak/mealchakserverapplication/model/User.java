@@ -36,6 +36,7 @@ public class User extends Timestamped {
     private String profileImg;
 
     @Embedded
+    @JsonIgnore
     private Location location;
 
     public void updateUsername(String newUsername) {
@@ -44,15 +45,6 @@ public class User extends Timestamped {
 
     public void updateUserDisc(Location location) {
         this.location = location;
-    }
-
-    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg) {
-        this.kakaoId = kakaoId;
-        this.username = Username;
-        this.password = password;
-        this.email = email;
-        this.thumbnailImg = thumbnailImg;
-        this.profileImg = profileImg;
     }
 
     public User(String Username, String password) {

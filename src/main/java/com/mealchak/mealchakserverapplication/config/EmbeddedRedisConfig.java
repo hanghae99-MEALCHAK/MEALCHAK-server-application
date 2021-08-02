@@ -11,9 +11,7 @@ import javax.annotation.PreDestroy;
 @Profile("local")
 @Configuration
 public class EmbeddedRedisConfig {
-
     private RedisServer redisServer;
-
 
     @PostConstruct
     public void start() {
@@ -27,6 +25,4 @@ public class EmbeddedRedisConfig {
             redisServer.stop();
         }
     }
-
-
 }

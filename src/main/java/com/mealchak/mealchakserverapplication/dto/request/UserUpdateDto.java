@@ -5,13 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-
 public class UserUpdateDto {
-
     private double latitude;
     private double longitude;
     private String address;
-
 }

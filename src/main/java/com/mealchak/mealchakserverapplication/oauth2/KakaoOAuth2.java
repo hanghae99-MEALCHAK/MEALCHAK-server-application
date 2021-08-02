@@ -21,7 +21,6 @@ public class KakaoOAuth2 {
         return userInfo;
     }
 
-
     public String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -32,8 +31,8 @@ public class KakaoOAuth2 {
         params.add("grant_type", "authorization_code");
         params.add("client_id", "7bdd85c1e8d3b04bfc556d4b741605ec");
         //테스트를 위한 url설정
-        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
-//        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+//        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
 //        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
         params.add("code", authorizedCode);
 
@@ -85,8 +84,7 @@ public class KakaoOAuth2 {
         try {
             thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
             profileImg = body.getJSONObject("properties").getString("profile_image");
-            Exception e = new Exception("프로필 없음");
-            throw e;
+            throw new Exception("프로필 없음");
         } catch (Exception e) {
         }
         return new KakaoUserInfo(id, email, nickname, thumbnailImg, profileImg);

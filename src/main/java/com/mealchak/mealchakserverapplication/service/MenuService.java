@@ -10,9 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class MenuService {
-
     private final MenuRepository menuRepository;
-
     public List<Menu> getPopular() {
          return menuRepository.findAllByOrderByCountDesc().subList(0,3);
     }

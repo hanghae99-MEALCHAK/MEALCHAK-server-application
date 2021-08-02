@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessage extends Timestamped{
+public class ChatMessage extends Timestamped {
 
     public enum MessageType {
         ENTER, TALK, QUIT
@@ -34,7 +34,7 @@ public class ChatMessage extends Timestamped{
 
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String message){
+    public ChatMessage(MessageType type, String roomId, String sender, String message) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
@@ -42,7 +42,7 @@ public class ChatMessage extends Timestamped{
     }
 
     @Builder
-    public ChatMessage(ChatMessageRequestDto chatMessageRequestDto){
+    public ChatMessage(ChatMessageRequestDto chatMessageRequestDto) {
         this.type = chatMessageRequestDto.getType();
         this.roomId = chatMessageRequestDto.getRoomId();
         this.sender = chatMessageRequestDto.getSender();

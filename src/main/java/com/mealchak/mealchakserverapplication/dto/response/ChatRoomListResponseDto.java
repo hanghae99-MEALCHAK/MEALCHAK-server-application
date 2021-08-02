@@ -16,8 +16,7 @@ public class ChatRoomListResponseDto {
     private String uuid;
     private Long headCountChat;
 
-
-    public ChatRoomListResponseDto(ChatRoom chatRoom, String title, Long headCountChat){
+    public ChatRoomListResponseDto(ChatRoom chatRoom, String title, Long headCountChat) {
         this.createdAt = chatRoom.getCreatedAt();
         this.modifiedAt = chatRoom.getModifiedAt();
         this.title = title;
@@ -27,5 +26,4 @@ public class ChatRoomListResponseDto {
         this.uuid = chatRoom.getUuid();
         this.headCountChat = headCountChat;
     }
-
 }
