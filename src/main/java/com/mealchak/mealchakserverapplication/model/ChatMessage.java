@@ -21,6 +21,7 @@ public class ChatMessage extends Timestamped {
     private Long id;
 
     @Column
+    @Enumerated(value = EnumType.STRING)
     private MessageType type;
 
     @Column

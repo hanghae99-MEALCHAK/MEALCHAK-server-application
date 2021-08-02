@@ -1,8 +1,10 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
-import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
@@ -43,7 +45,7 @@ public class UserService {
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
         String profileImg = userInfo.getProfileImg();
-        String address = "강남구";
+        String address = "서울 강남구 항해리99";
         double latitude = 37.497910;
         double longitutde = 127.027678;
         Location location = new Location(address, latitude, longitutde);
@@ -87,13 +89,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 유저 닉네임 변경
+    // 유저 정보 변경
     @Transactional
-    public String updateUsername(User oldUser, String newUsername, UserDetailsImpl userDetails) {
+    public UserInfoResponseDto updateUsername(UserDetailsImpl userDetails, UserInfoUpdateDto updateDto) {
         if (userDetails != null) {
-            User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-            user.updateUsername(newUsername);
-            return user.getUsername();
+            User user = userRepository.findById(userDetails.getUser().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+            user.updateUserInfo(updateDto);
+            return new UserInfoResponseDto(user);
         } else {
             throw new IllegalArgumentException("로그인된 유저가 아닙니다.");
         }
@@ -101,7 +104,7 @@ public class UserService {
 
     // 유저 위치 저장
     @Transactional
-    public Location updateUserLocation(UserUpdateDto updateDto, User user) {
+    public Location updateUserLocation(UserLocationUpdateDto updateDto, User user) {
         User user1 = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
         Location location = new Location(updateDto);
         user1.updateUserDisc(location);
