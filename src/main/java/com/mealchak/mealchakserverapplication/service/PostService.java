@@ -26,7 +26,7 @@ public class PostService {
 
     // 모집글 생성
     @Transactional
-    public Long createPost(UserDetailsImpl userDetails,PostRequestDto requestDto) {
+    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
@@ -49,7 +49,6 @@ public class PostService {
         } else {
             throw new IllegalArgumentException("로그인하지 않았습니다.");
         }
-
     }
 
     // 모집글 전체 조회
@@ -86,7 +85,6 @@ public class PostService {
     }
 
     // 모집글 삭제
-
     public void deletePost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         post.getMenu().updateMenuCount(-1);
@@ -105,7 +103,7 @@ public class PostService {
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
         if (max == 1) {
-            guName= userGuName[0];
+            guName = userGuName[0];
         }
         List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);
         Map<Double, List<PostResponseDto>> nearPost = new TreeMap<>();

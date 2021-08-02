@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Getter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
 public class Menu {
-
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     @Id

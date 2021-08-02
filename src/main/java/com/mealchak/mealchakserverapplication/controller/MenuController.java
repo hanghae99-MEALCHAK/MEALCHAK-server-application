@@ -15,7 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuController {
     private final MenuService menuService;
-    // 모집글 불러오기
+
+    // 인기 메뉴 조회
     @ApiOperation(value = "인기 메뉴 조회", notes = "인기 메뉴 조회")
     @GetMapping("/menu")
     public List<Menu> getPopularMenu() {

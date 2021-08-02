@@ -9,11 +9,9 @@ import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
-import com.mealchak.mealchakserverapplication.repository.UserInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,28 +25,16 @@ import javax.transaction.Transactional;
 @Service
 public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserInfoRepository userInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
     private final AuthenticationManager authenticationManager;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
-    @Autowired
-    public UserService(JwtTokenProvider jwtTokenProvider,UserInfoRepository userInfoRepository,UserRepository userRepository, PasswordEncoder passwordEncoder, KakaoOAuth2 kakaoOAuth2, AuthenticationManager authenticationManager) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userInfoRepository = userInfoRepository;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.kakaoOAuth2 = kakaoOAuth2;
-        this.authenticationManager = authenticationManager;
-    }
-
     public User getUser(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmail(email, User.class)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
     }
-
 
     public HeaderDto kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
@@ -117,7 +103,7 @@ public class UserService {
     // 유저 위치 저장
     @Transactional
     public Location updateUserLocation(UserUpdateDto updateDto, User user) {
-        User user1 = userRepository.findById(user.getId()).orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        User user1 = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
         Location location = new Location(updateDto);
         user1.updateUserDisc(location);
         return user1.getLocation();
@@ -125,16 +111,16 @@ public class UserService {
 
     //유저정보
     @Transactional
-    public UserInfoMapping userInfo(UserDetailsImpl userDetails){
+    public UserInfoMapping userInfo(UserDetailsImpl userDetails) {
         if (userDetails != null) {
-            return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+            return userRepository.findByEmail(userDetails.getUser().getEmail(), UserInfoMapping.class).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
 
     @Transactional
-    public String login(SignupRequestDto requestDto){
+    public String login(SignupRequestDto requestDto) {
         User user = userRepository.findByUsername(requestDto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다."));
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {

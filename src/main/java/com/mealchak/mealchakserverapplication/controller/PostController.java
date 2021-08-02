@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Api(tags = {"1. 모집글"}) // Swagger
 @RequiredArgsConstructor

@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.dto.response;
 
 import com.mealchak.mealchakserverapplication.model.Post;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 @Getter

@@ -21,7 +21,6 @@ public class KakaoOAuth2 {
         return userInfo;
     }
 
-
     public String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -85,8 +84,7 @@ public class KakaoOAuth2 {
         try {
             thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
             profileImg = body.getJSONObject("properties").getString("profile_image");
-            Exception e = new Exception("프로필 없음");
-            throw e;
+            throw new Exception("프로필 없음");
         } catch (Exception e) {
         }
         return new KakaoUserInfo(id, email, nickname, thumbnailImg, profileImg);

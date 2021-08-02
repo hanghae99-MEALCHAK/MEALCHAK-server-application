@@ -15,7 +15,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     //이름은 loadByUsername이지만 현재 카카오방식에서는 username이 중복될수있는 상태이기에 로직을 email로 돌려두었음
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email, User.class)
                 .orElseThrow(() -> new UsernameNotFoundException("Can't find " + email));
 
         return new UserDetailsImpl(user);
