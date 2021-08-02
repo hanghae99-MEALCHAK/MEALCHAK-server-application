@@ -44,8 +44,8 @@ public class PostService {
     // 모집글 전체 조회
     public List<PostResponseDto> getAllPost() {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtAsc();
-        List<PostResponseDto> listPost = new ArrayList<>() ;
-        posts.forEach((post)->listPost.add(new PostResponseDto(post)));
+        List<PostResponseDto> listPost = new ArrayList<>();
+        posts.forEach((post) -> listPost.add(new PostResponseDto(post)));
         return listPost;
     }
 
@@ -55,15 +55,15 @@ public class PostService {
     }
 
     // fintById(postId)
-    public Post getPost(Long postId){
-        return postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("postId가 존재하지 않습니다."));
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
     }
 
     // 모집글 수정
     @Transactional
     public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto) {
         Location location = new Location(requestDto);
-        Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         Menu menu = post.getMenu();
         if (requestDto.getCategory() != menu.getCategory()) {
             post.getMenu().updateMenuCount(-1);
@@ -77,7 +77,7 @@ public class PostService {
     // 모집글 삭제
 
     public void deletePost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         post.getMenu().updateMenuCount(-1);
         postRepository.deleteById(postId);
     }
@@ -87,51 +87,55 @@ public class PostService {
         return postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
     }
 
-// 모집글 유저 위치 기반 조회
-public Collection<List<PostResponseDto>> getPostByUserDist(Long id) {
-    User user = userRepository.findById(id).orElseThrow(
-            () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-    String[] userGuName = user.getLocation().getAddress().split(" ");
-//        String cityAndGuName = userGuName[0] + " " + userGuName[1];
-    List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(userGuName[0]);
-    Map<Double, List<PostResponseDto>> nearPost = new TreeMap<>();
-    List<Double> distChecker = new ArrayList<>();
-    for (Post posts : postList) {
-        PostResponseDto responsDto = new PostResponseDto(posts);
-        double lat1 = user.getLocation().getLatitude();
-        double lon1 = user.getLocation().getLongitude();
-        double lat2 = posts.getLocation().getLatitude();
-        double lon2 = posts.getLocation().getLongitude();
+    // 모집글 유저 위치 기반 조회
+    public Collection<List<PostResponseDto>> getPostByUserDist(Long id, int range, int max) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+        String[] userGuName = user.getLocation().getAddress().split(" ");
+        String guName = userGuName[1];
+        if (max == 1) {
+            guName= userGuName[0];
+        }
+        List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);
+        Map<Double, List<PostResponseDto>> nearPost = new TreeMap<>();
+        List<Double> distChecker = new ArrayList<>();
+        for (Post posts : postList) {
+            PostResponseDto responsDto = new PostResponseDto(posts);
+            double lat1 = user.getLocation().getLatitude();
+            double lon1 = user.getLocation().getLongitude();
+            double lat2 = posts.getLocation().getLatitude();
+            double lon2 = posts.getLocation().getLongitude();
 
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+            double theta = lon1 - lon2;
+            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
+                    * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
 
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344;
-        dist = Math.round(dist * 1000) / 1000.0;
+            dist = Math.acos(dist);
+            dist = rad2deg(dist);
+            dist = dist * 60 * 1.1515;
+            dist = dist * 1.609344;
+            dist = Math.round(dist * 1000) / 1000.0;
 
-        if (dist < 3) {
-            posts.updateDistance(dist);
-            if (distChecker.contains(dist)) {
-                for (int i = 0; i < 100; i++) {
-                    dist += 0.001;
-                    if (!distChecker.contains(dist)) {
-                        distChecker.add(dist);
-                        nearPost.put(dist, Collections.singletonList(responsDto));
-                        break;
+            if (dist < range) {
+                posts.updateDistance(dist);
+                if (distChecker.contains(dist)) {
+                    for (int i = 0; i < 100; i++) {
+                        dist += 0.001;
+                        if (!distChecker.contains(dist)) {
+                            distChecker.add(dist);
+                            nearPost.put(dist, Collections.singletonList(responsDto));
+                            break;
+                        }
                     }
+                } else {
+                    distChecker.add(dist);
+                    nearPost.put(dist, Collections.singletonList(responsDto));
                 }
-            } else {
-                distChecker.add(dist);
-                nearPost.put(dist, Collections.singletonList(responsDto));
             }
         }
+        return nearPost.values();
     }
-    return nearPost.values();
-}
+
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
