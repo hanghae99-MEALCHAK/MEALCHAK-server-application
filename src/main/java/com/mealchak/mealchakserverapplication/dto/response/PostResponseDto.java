@@ -1,7 +1,9 @@
 package com.mealchak.mealchakserverapplication.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mealchak.mealchakserverapplication.model.Post;
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,6 +20,7 @@ public class PostResponseDto {
     private String username;
     private String profileImg;
     private double distance;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     public PostResponseDto(Post post) {

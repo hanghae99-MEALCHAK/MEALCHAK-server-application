@@ -79,14 +79,12 @@ public class KakaoOAuth2 {
         Long id = body.getLong("id");
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
-        String thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         String profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         try {
-            thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
             profileImg = body.getJSONObject("properties").getString("profile_image");
-            throw new Exception("프로필 없음");
+            throw new Exception("프로필 사진 없음 기본 이미지로 대체");
         } catch (Exception e) {
         }
-        return new KakaoUserInfo(id, email, nickname, thumbnailImg, profileImg);
+        return new KakaoUserInfo(id, email, nickname, profileImg);
     }
 }

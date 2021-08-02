@@ -21,8 +21,8 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-    @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     //카카오 로그인 api로 코드를 받아옴
+    @ApiOperation(value = "kakao소셜 로그인", notes = "kakao소셜 로그인.")
     @GetMapping("/user/kakao/callback")
     @ResponseBody
     public HeaderDto kakaoLogin(@RequestParam(value = "code") String code) {
