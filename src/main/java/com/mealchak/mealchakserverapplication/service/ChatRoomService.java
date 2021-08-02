@@ -41,7 +41,7 @@ public class ChatRoomService {
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getUserId());
+        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             Long roomId = allChatInfo.getRoomId();
             ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);

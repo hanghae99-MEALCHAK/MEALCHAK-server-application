@@ -1,10 +1,13 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
+import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +38,7 @@ public class PostController {
             //새로운 채팅방을 생성 -> uuid값과 postid값을 가짐
             chatRoomService.createChatRoom(postId,uuid, userDetails.getUser());
             //본인이 해당 채팅방에 입장했다는 정보를 생성
-            AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getUserId(),postId);
+            AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(),postId);
             //입장 정보를 저장
             userRoomService.save(allChatInfo);
         } else {

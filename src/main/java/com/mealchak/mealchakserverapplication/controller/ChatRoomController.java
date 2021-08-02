@@ -40,7 +40,7 @@ public class ChatRoomController {
     @GetMapping("/chat/join/{id}")
     public void joinChatRoom(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         AllChatInfo allChatInfo = new AllChatInfo();
-        allChatInfo.setUserId(userDetails.getUser().getUserId());
+        allChatInfo.setUserId(userDetails.getUser().getId());
 //        Long longPostId = Long.parseLong(stringPostId);
         ChatRoom chatRoom = chatRoomService.findByPostId(id);
         allChatInfo.setRoomId(chatRoom.getRoomId());

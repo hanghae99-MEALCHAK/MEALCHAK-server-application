@@ -30,6 +30,6 @@ public class ChatRoom extends Timestamped{
     public ChatRoom(Long postId, String uuid, User user){
         this.postId = postId;
         this.uuid = uuid;
-        this.ownUserId = user.getUserId();
+        this.ownUserId = user.getId();
     }
 }

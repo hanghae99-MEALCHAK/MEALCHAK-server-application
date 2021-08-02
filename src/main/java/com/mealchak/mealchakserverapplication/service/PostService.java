@@ -32,7 +32,7 @@ public class PostService {
             Location location = new Location(requestDto);
             Post post = new Post(requestDto, user, newMenu, location);
             postRepository.save(post);
-            return;
+            return post.getId();
         }
         menu.get().updateMenuCount(+1);
         Location location = new Location(requestDto);

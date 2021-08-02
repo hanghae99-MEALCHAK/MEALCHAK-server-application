@@ -69,6 +69,8 @@ public class UserController {
             return userService.updateUsername(userDetails.getUser(), newUsername);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
+        }
+    }
 
     // 회원 가입 요청 처리
     @ApiOperation(value = "회원 가입 요청", notes = "회원 가입 요청합니다.")
