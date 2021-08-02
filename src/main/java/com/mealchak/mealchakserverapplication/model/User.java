@@ -1,49 +1,78 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import sun.awt.OSInfo;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long userId;
+    private Long id;
 
     @Column(nullable = false)
+    @JsonIgnore
     private Long kakaoId;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String email;
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name="USER_ID",nullable = false)
-//    private List<Post> post = new ArrayList<>();
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String thumbnailImg;
 
-    public User(Long kakaoId, String Username, String password, String email) {
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String profileImg;
+
+    @Embedded
+    private Location location;
+
+    public void updateUsername(String newUsername) {
+        this.username = newUsername;
+    }
+
+    public void updateUserDisc(Location location) {
+        this.location = location;
+    }
+
+    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg) {
         this.kakaoId = kakaoId;
         this.username = Username;
         this.password = password;
         this.email = email;
+        this.thumbnailImg = thumbnailImg;
+        this.profileImg = profileImg;
     }
+
     public User(String Username, String password) {
         this.kakaoId = 123L;
         this.username = Username;
         this.password = password;
-        this.email = "test";
+        this.email = Username;
+        this.thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        this.profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        this.location = new Location("강남구", 37.49791, 127.027678);
+    }
+
+    public User(Long kakaoId, String Username, String password, String email, String thumbnailImg, String profileImg,
+                Location location) {
+        this.kakaoId = kakaoId;
+        this.username = Username;
+        this.password = password;
+        this.email = email;
+        this.thumbnailImg = thumbnailImg;
+        this.profileImg = profileImg;
+        this.location = location;
     }
 }

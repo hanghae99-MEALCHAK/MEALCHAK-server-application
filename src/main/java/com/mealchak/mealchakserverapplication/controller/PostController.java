@@ -2,11 +2,9 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.Post;
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
+import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
-import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +12,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-@Api(tags = {"1. 모집글"}) // Swagger # 1. 모집글
+@Api(tags = {"1. 모집글"}) // Swagger
 @RequiredArgsConstructor
 @RestController
 public class PostController {
@@ -25,7 +24,7 @@ public class PostController {
     private final UserRoomService userRoomService;
 
     // 모집글 생성
-    @ApiOperation(value = "모집글 작성", notes = "전체 모집글 조회합니다.")
+    @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
         if (userDetails != null) {
@@ -51,24 +50,38 @@ public class PostController {
         return postService.getAllPost();
     }
 
-    // 특정 모집글 불러오기
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    // 해당 모집글 불러오기
+    @ApiOperation(value = "해당 모집글 조회", notes = "해당 모집글 조회합니다.")
     @GetMapping("/posts/{postId}")
     public Post getPostDetail(@PathVariable Long postId) {
         return postService.getPostDetail(postId);
     }
 
-    // 특정 모집글 수정
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    // 검색하여 모집글 불러오기
+    @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
+    @PostMapping("/search")
+    public List<Post> getSearch(@RequestBody String text) {
+        return postService.getSearch(text);
+    }
+
+    // 해당 모집글 수정
+    @ApiOperation(value = "해당 모집글 수정", notes = "해당 모집글 수정합니다.")
     @PutMapping("/posts/{postId}")
     public Post updatePostDetail(@PathVariable Long postId, @RequestBody PostRequestDto requestDto) {
         return postService.updatePostDetail(postId, requestDto);
     }
 
     // 특정 모집글 삭제
-    @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
+    @ApiOperation(value = "해당 모집글 삭제", notes = "해당 모집글 삭제.")
     @DeleteMapping("/posts/{postId}")
     public void getPostDelete(@PathVariable Long postId) {
         postService.deletePost(postId);
+    }
+
+    // 유저 근처에 작성된 게시글 조회
+    @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
+    @GetMapping("/posts/around")
+    public Map<Double, Post> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.getPostByUserDist(userDetails.getUser().getId());
     }
 }

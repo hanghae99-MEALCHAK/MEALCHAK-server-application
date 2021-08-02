@@ -1,8 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,10 +21,7 @@ public class Post extends Timestamped {
     private int headCount;
 
     @Column(nullable = false)
-    private String category;
-
-    @Column(nullable = false)
-    private String address;
+    private String restaurant;
 
     @Column(nullable = false)
     private String orderTime;
@@ -34,36 +29,42 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @Column(nullable = false)
-    private String username;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "User_ID")
+    private User user;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "Menu_ID")
+    private Menu menu;
 
-    public Post(String title, int headCount, String category, String address, String orderTime, String contents, String username) {
-        this.title = title;
-        this.headCount = headCount;
-        this.category = category;
-        this.address = address;
-        this.orderTime = orderTime;
-        this.contents = contents;
-        this.username = username;
+    @Embedded
+    private Location location;
+
+    @Transient
+    private double distance;
+
+    public void updateDistance(double distance) {
+    this.distance = distance;
     }
 
-    public Post(String username, PostRequestDto requestDto) {
+    public Post(PostRequestDto requestDto, User user, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.category = requestDto.getCategory();
-        this.address = requestDto.getAddress();
+        this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
-        this.username = username;
+        this.user = user;
+        this.menu = menu;
+        this.location = location;
     }
 
-    public void update(PostRequestDto requestDto) {
+    public void update(PostRequestDto requestDto, Menu menu, Location location) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
-        this.category = requestDto.getCategory();
-        this.address = requestDto.getAddress();
+        this.restaurant = requestDto.getRestaurant();
         this.orderTime = requestDto.getOrderTime();
         this.contents = requestDto.getContents();
+        this.menu = menu;
+        this.location = location;
     }
 }

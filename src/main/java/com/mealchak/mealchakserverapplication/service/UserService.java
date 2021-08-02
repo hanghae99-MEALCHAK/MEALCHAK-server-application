@@ -1,6 +1,8 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
@@ -15,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +35,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User getUser(String email){
+    public User getUser(String email) {
         User member = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
         return member;
@@ -47,7 +48,12 @@ public class UserService {
         Long kakaoId = userInfo.getId();
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
-
+        String thumbnailImg = userInfo.getThumbnailImg();
+        String profileImg = userInfo.getProfileImg();
+        String address = "강남구";
+        double latitude = 37.497910;
+        double longitutde = 127.027678;
+        Location location = new Location(address, latitude, longitutde);
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
@@ -64,12 +70,11 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId,nickname,encodedPassword,email);
+            kakaoUser = new User(kakaoId, nickname, encodedPassword, email, thumbnailImg, profileImg, location);
             userRepository.save(kakaoUser);
         }
 
         // 로그인 처리
-
         Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -80,13 +85,24 @@ public class UserService {
     public void registerUser(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password;
-
-
-        Optional<User> found = userRepository.findByUsername(username);
-
         password = passwordEncoder.encode(requestDto.getPassword());
         User user = new User(username, password);
         userRepository.save(user);
     }
 
+    @Transactional
+    public String updateUsername(User oldUser, String newUsername) {
+        User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        user.updateUsername(newUsername);
+        return user.getUsername();
+    }
+
+    // 유저 위치 저장
+    @Transactional
+    public Location updateUserLocation(UserUpdateDto updateDto, User user) {
+        User user1 = userRepository.findById(user.getId()).orElseThrow(()->new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        Location location = new Location(updateDto);
+        user1.updateUserDisc(location);
+        return user1.getLocation();
+    }
 }

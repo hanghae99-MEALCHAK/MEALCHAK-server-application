@@ -19,9 +19,11 @@ public class WebMVCConfig implements WebMvcConfigurer {
     // CORS 추가
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*://*")
-                .allowedHeaders("*")
-                .allowedMethods("*");
+        registry.addMapping("/**").allowedOriginPatterns("*://*").allowedHeaders("*").allowedMethods("*");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/image/**").addResourceLocations("file:/root/img/");
     }
 }
