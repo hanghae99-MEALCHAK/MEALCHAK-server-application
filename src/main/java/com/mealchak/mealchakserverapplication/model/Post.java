@@ -73,4 +73,8 @@ public class Post extends Timestamped {
         this.menu = menu;
         this.location = location;
     }
+
+    public void expired(boolean isValid){
+        this.isValid = isValid;
+    }
 }
