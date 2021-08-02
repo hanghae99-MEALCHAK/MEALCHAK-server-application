@@ -3,6 +3,7 @@ package com.mealchak.mealchakserverapplication.model;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -28,6 +29,9 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     private String contents;
+
+    @Column(nullable = false)
+    private boolean checkValid;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID")
@@ -56,6 +60,8 @@ public class Post extends Timestamped {
         this.user = user;
         this.menu = menu;
         this.location = location;
+        this.checkValid = true;
+
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
@@ -66,5 +72,9 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.menu = menu;
         this.location = location;
+    }
+
+    public void expired(boolean checkValid){
+        this.checkValid = checkValid;
     }
 }
