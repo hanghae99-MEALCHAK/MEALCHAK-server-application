@@ -21,7 +21,6 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
-    private final UserRoomService userRoomService;
 
 
     // 사용자별 채팅방 목록 조회
@@ -39,12 +38,7 @@ public class ChatRoomController {
     //채팅방에 입장
     @GetMapping("/chat/join/{id}")
     public void joinChatRoom(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        AllChatInfo allChatInfo = new AllChatInfo();
-        allChatInfo.setUserId(userDetails.getUser().getId());
-//        Long longPostId = Long.parseLong(stringPostId);
-        ChatRoom chatRoom = chatRoomService.findByPostId(id);
-        allChatInfo.setRoomId(chatRoom.getRoomId());
-        userRoomService.save(allChatInfo);
+        chatRoomService.joinChatRoom(userDetails.getUser(), id);
     }
 
 

@@ -75,10 +75,13 @@ public class ChatRoomService {
         return chatRoomRepository.findAll();
     }
 
-    //postId로 찾기
-    public ChatRoom findByPostId(Long postId) {
-        return chatRoomRepository.findByPostId(postId);
+
+    //채팅방에 입장
+    public void joinChatRoom(User user, Long id) {
+        AllChatInfo allChatInfo = new AllChatInfo();
+        allChatInfo.setUserId(user.getId());
+        ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
+        allChatInfo.setRoomId(chatRoom.getRoomId());
+        userRoomRepository.save(allChatInfo);
     }
-
-
 }
