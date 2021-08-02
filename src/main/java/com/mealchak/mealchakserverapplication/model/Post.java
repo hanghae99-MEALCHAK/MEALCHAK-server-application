@@ -30,6 +30,9 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
+    @Column(nullable = false)
+    private boolean checkValid;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID")
     private User user;
@@ -44,9 +47,6 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
-    @Column(nullable = false)
-    private boolean isValid;
-
     public void updateDistance(double distance) {
     this.distance = distance;
     }
@@ -60,7 +60,7 @@ public class Post extends Timestamped {
         this.user = user;
         this.menu = menu;
         this.location = location;
-        this.isValid = true;
+        this.checkValid = true;
 
     }
 
@@ -74,7 +74,7 @@ public class Post extends Timestamped {
         this.location = location;
     }
 
-    public void expired(boolean isValid){
-        this.isValid = isValid;
+    public void expired(boolean checkValid){
+        this.checkValid = checkValid;
     }
 }
