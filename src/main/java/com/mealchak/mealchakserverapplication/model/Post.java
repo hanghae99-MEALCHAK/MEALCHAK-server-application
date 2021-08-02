@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
@@ -26,7 +25,7 @@ public class Post extends Timestamped {
     private String restaurant;
 
     @Column(nullable = false)
-    private Date orderTime;
+    private String orderTime;
 
     @Column(nullable = false)
     private String contents;
