@@ -5,6 +5,7 @@ import com.mealchak.mealchakserverapplication.model.Menu;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
@@ -24,20 +25,30 @@ public class PostService {
 
     // 모집글 생성
     @Transactional
-    public void createPost(User user, PostRequestDto requestDto) {
-        Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
-        if (!menu.isPresent()) {
-            Menu newMenu = new Menu(requestDto.getCategory(), 1);
-            menuRepository.save(newMenu);
-            Location location = new Location(requestDto);
-            Post post = new Post(requestDto, user, newMenu, location);
-            postRepository.save(post);
-            return;
+    public Long createPost(UserDetailsImpl userDetails,PostRequestDto requestDto) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
+            Long id;
+            if (!menu.isPresent()) {
+                Menu newMenu = new Menu(requestDto.getCategory(), 1);
+                menuRepository.save(newMenu);
+                Location location = new Location(requestDto);
+                Post post = new Post(requestDto, user, newMenu, location);
+                postRepository.save(post);
+                id = post.getId();
+            } else {
+                menu.get().updateMenuCount(+1);
+                Location location = new Location(requestDto);
+                Post post = new Post(requestDto, user, menu.get(), location);
+                postRepository.save(post);
+                id = post.getId();
+            }
+            return id;
+        } else {
+            throw new IllegalArgumentException("로그인하지 않았습니다.");
         }
-        menu.get().updateMenuCount(+1);
-        Location location = new Location(requestDto);
-        Post post = new Post(requestDto, user, menu.get(), location);
-        postRepository.save(post);
+
     }
 
     // 모집글 전체 조회

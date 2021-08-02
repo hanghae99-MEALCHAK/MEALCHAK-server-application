@@ -1,10 +1,13 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
+import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -13,22 +16,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Api(tags = {"1. 모집글"}) // Swagger
 @RequiredArgsConstructor
 @RestController
 public class PostController {
     private final PostService postService;
+    private final ChatRoomService chatRoomService;
+    private final UserRoomService userRoomService;
 
     // 모집글 생성
     @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
-        if (userDetails != null) {
-            postService.createPost(userDetails.getUser(), requestDto);
-        } else {
-            throw new IllegalArgumentException("로그인 하지 않았습니다.");
-        }
+        Long id = postService.createPost(userDetails, requestDto);
+        Long roomId = chatRoomService.createChatRoom(id, userDetails.getUser());
+        AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(), roomId);
+        userRoomService.save(allChatInfo);
     }
 
     // 모집글 불러오기

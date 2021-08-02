@@ -2,11 +2,16 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
+import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
+import com.mealchak.mealchakserverapplication.repository.UserInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +26,8 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserInfoRepository userInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
@@ -28,7 +35,9 @@ public class UserService {
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, KakaoOAuth2 kakaoOAuth2, AuthenticationManager authenticationManager) {
+    public UserService(JwtTokenProvider jwtTokenProvider,UserInfoRepository userInfoRepository,UserRepository userRepository, PasswordEncoder passwordEncoder, KakaoOAuth2 kakaoOAuth2, AuthenticationManager authenticationManager) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userInfoRepository = userInfoRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.kakaoOAuth2 = kakaoOAuth2;
@@ -42,7 +51,7 @@ public class UserService {
     }
 
 
-    public String kakaoLogin(String authorizedCode) {
+    public HeaderDto kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
         KakaoUserInfo userInfo = kakaoOAuth2.getUserInfo(authorizedCode);
         Long kakaoId = userInfo.getId();
@@ -78,7 +87,10 @@ public class UserService {
         Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return email;
+        HeaderDto headerDto = new HeaderDto();
+        User member = userRepository.findByKakaoId(kakaoId).orElse(null);
+        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), nickname));
+        return headerDto;
     }
 
     @Transactional
@@ -91,10 +103,14 @@ public class UserService {
     }
 
     @Transactional
-    public String updateUsername(User oldUser, String newUsername) {
-        User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        user.updateUsername(newUsername);
-        return user.getUsername();
+    public String updateUsername(User oldUser, String newUsername, UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            User user = userRepository.findById(oldUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+            user.updateUsername(newUsername);
+            return user.getUsername();
+        } else {
+            throw new IllegalArgumentException("로그인된 유저가 아닙니다.");
+        }
     }
 
     // 유저 위치 저장
@@ -104,5 +120,25 @@ public class UserService {
         Location location = new Location(updateDto);
         user1.updateUserDisc(location);
         return user1.getLocation();
+    }
+
+    //유저정보
+    @Transactional
+    public UserInfoMapping userInfo(UserDetailsImpl userDetails){
+        if (userDetails != null) {
+            return userInfoRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+        } else {
+            throw new IllegalArgumentException("로그인 하지 않았습니다.");
+        }
+    }
+
+    @Transactional
+    public String login(SignupRequestDto requestDto){
+        User user = userRepository.findByUsername(requestDto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 유저입니다."));
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
     }
 }
