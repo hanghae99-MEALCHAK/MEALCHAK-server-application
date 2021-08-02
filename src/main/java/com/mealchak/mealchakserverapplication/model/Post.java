@@ -3,6 +3,7 @@ package com.mealchak.mealchakserverapplication.model;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -43,6 +44,9 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
+    @Column(nullable = false)
+    private boolean isValid;
+
     public void updateDistance(double distance) {
     this.distance = distance;
     }
@@ -56,6 +60,8 @@ public class Post extends Timestamped {
         this.user = user;
         this.menu = menu;
         this.location = location;
+        this.isValid = true;
+
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
