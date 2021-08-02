@@ -23,6 +23,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
+    private final ChatRoomService chatRoomService;
+
 
     // 모집글 생성
     @Transactional
@@ -85,8 +87,10 @@ public class PostService {
     }
 
     // 모집글 삭제
+    @Transactional
     public void deletePost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        chatRoomService.deletePost(postId);
         post.getMenu().updateMenuCount(-1);
         postRepository.deleteById(postId);
     }

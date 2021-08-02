@@ -11,6 +11,7 @@ import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -81,5 +82,12 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
         allChatInfo.setRoomId(chatRoom.getRoomId());
         userRoomRepository.save(allChatInfo);
+    }
+
+    @Transactional
+    public void deletePost(Long postId) {
+        ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
+        userRoomRepository.deleteByRoomId(chatRoom.getRoomId());
+        chatRoomRepository.deleteByPostId(postId);
     }
 }
