@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.dto.response;
 
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
+import com.mealchak.mealchakserverapplication.model.Post;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -16,13 +17,13 @@ public class ChatRoomListResponseDto {
     private String uuid;
     private Long headCountChat;
 
-    public ChatRoomListResponseDto(ChatRoom chatRoom, String title, Long headCountChat) {
+    public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat) {
         this.createdAt = chatRoom.getCreatedAt();
         this.modifiedAt = chatRoom.getModifiedAt();
-        this.title = title;
+        this.title = post.getTitle();
         this.ownUserId = chatRoom.getOwnUserId();
         this.roomId = chatRoom.getRoomId();
-        this.postId = chatRoom.getPostId();
+        this.postId = post.getId();
         this.uuid = chatRoom.getUuid();
         this.headCountChat = headCountChat;
     }

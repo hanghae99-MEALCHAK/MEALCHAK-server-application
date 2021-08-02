@@ -34,9 +34,9 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public Long createChatRoom(Long postId, User user) {
+    public Long createChatRoom(Post post, User user) {
         String uuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = new ChatRoom(postId, uuid, user);
+        ChatRoom chatRoom = new ChatRoom(post, uuid, user);
         chatRoomRepository.save(chatRoom);
         return chatRoom.getRoomId();
     }
@@ -48,15 +48,15 @@ public class ChatRoomService {
         for (AllChatInfo allChatInfo : allChatInfoList) {
             Long roomId = allChatInfo.getRoomId();
             ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
-            Long id = chatRoom.getPostId();
-            Optional<Post> post = postRepository.findById(id);
-            String title = post.get().getTitle();
+            Post post = chatRoom.getPost();
             Long headCountChat = userRoomRepository.countAllByRoomId(roomId);
-            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, title, headCountChat);
+            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
             responseDtos.add(responseDto);
         }
         return responseDtos;
     }
+
+
 
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);    // redistemplate에 (입장type, ,) 누가 어떤방에 들어갔는지 정보를 리턴

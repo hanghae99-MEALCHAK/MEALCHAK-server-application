@@ -28,26 +28,30 @@ public class PostService {
 
     // 모집글 생성
     @Transactional
-    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
+    public Post createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
-            Long id;
+            Post postDto;
+//            Long id;
             if (!menu.isPresent()) {
                 Menu newMenu = new Menu(requestDto.getCategory(), 1);
                 menuRepository.save(newMenu);
                 Location location = new Location(requestDto);
                 Post post = new Post(requestDto, user, newMenu, location);
                 postRepository.save(post);
-                id = post.getId();
+//                id = post.getId();
+                postDto = post;
+
             } else {
                 menu.get().updateMenuCount(+1);
                 Location location = new Location(requestDto);
                 Post post = new Post(requestDto, user, menu.get(), location);
                 postRepository.save(post);
-                id = post.getId();
+//                id = post.getId();
+                postDto = post;
             }
-            return id;
+            return postDto;
         } else {
             throw new IllegalArgumentException("로그인하지 않았습니다.");
         }

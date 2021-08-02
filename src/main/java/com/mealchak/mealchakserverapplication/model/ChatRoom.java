@@ -21,11 +21,15 @@ public class ChatRoom extends Timestamped {
     @Column(nullable = false)
     private Long ownUserId;
 
-    @Column(nullable = false)
-    private Long postId;
+//    @Column(nullable = false)
+//    private Long postId;
 
-    public ChatRoom(Long postId, String uuid, User user) {
-        this.postId = postId;
+    @OneToOne
+    @JoinColumn(name="post_id")
+    private Post post;
+
+    public ChatRoom(Post post, String uuid, User user) {
+        this.post = post;
         this.uuid = uuid;
         this.ownUserId = user.getId();
     }

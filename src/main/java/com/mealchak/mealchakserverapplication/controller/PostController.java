@@ -29,8 +29,8 @@ public class PostController {
     @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
-        Long id = postService.createPost(userDetails, requestDto);
-        Long roomId = chatRoomService.createChatRoom(id, userDetails.getUser());
+        Post post = postService.createPost(userDetails, requestDto);
+        Long roomId = chatRoomService.createChatRoom(post, userDetails.getUser());
         AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(), roomId);
         userRoomService.save(allChatInfo);
     }
