@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 @Getter
 public class PostResponseDto {
-    private Long postId;
-    private String title;
-    private String contents;
-    private int headCount;
-    private String category;
-    private String restaurant;
-    private String orderTime;
-    private String address;
-    private Long userId;
-    private String username;
-    private String profileImg;
-    private double distance;
+    private final Long postId;
+    private final String title;
+    private final String contents;
+    private final int headCount;
+    private final String category;
+    private final String restaurant;
+    private final String orderTime;
+    private final String address;
+    private final Long userId;
+    private final String username;
+    private final String profileImg;
+    private final double distance;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-    private Long roomId;
-    private Long nowHeadCount;
+    private final LocalDateTime createdAt;
+    private final Long roomId;
+    private final Long nowHeadCount;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();

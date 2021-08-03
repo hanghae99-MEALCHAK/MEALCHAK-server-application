@@ -25,29 +25,24 @@ public class PostService {
     private final JoinRequestsRepository joinRequestsRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-
     // 모집글 생성
     @Transactional
-    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto, ChatRoom chatRoom) {
+    public void createPost(UserDetailsImpl userDetails, PostRequestDto requestDto, ChatRoom chatRoom) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
-            Long id;
             if (!menu.isPresent()) {
                 Menu newMenu = new Menu(requestDto.getCategory(), 1);
                 menuRepository.save(newMenu);
                 Location location = new Location(requestDto);
                 Post post = new Post(requestDto, user, newMenu, location, chatRoom);
                 postRepository.save(post);
-                id = post.getId();
             } else {
                 menu.get().updateMenuCount(+1);
                 Location location = new Location(requestDto);
                 Post post = new Post(requestDto, user, menu.get(), location, chatRoom);
                 postRepository.save(post);
-                id = post.getId();
             }
-            return id;
         } else {
             throw new IllegalArgumentException("로그인하지 않았습니다.");
         }
@@ -88,11 +83,12 @@ public class PostService {
         Location location = new Location(requestDto);
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         Menu menu = post.getMenu();
-        if (requestDto.getCategory() != menu.getCategory()) {
+        if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
             menu = menuRepository.findByCategory(requestDto.getCategory()).orElseThrow(() -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
             menu.updateMenuCount(+1);
         }
+        updateHeadCount(post);
         post.update(requestDto, menu, location);
         return new PostResponseDto(post);
     }
@@ -155,19 +151,19 @@ public class PostService {
             updateHeadCount(post);
             if (dist < range) {
                 post.updateDistance(dist);
-                PostResponseDto responsDto = new PostResponseDto(post);
+                PostResponseDto responseDto = new PostResponseDto(post);
                 if (distChecker.contains(dist)) {
                     for (int i = 0; i < 100; i++) {
                         dist += 0.001;
                         if (!distChecker.contains(dist)) {
                             distChecker.add(dist);
-                            nearPost.put(dist, responsDto);
+                            nearPost.put(dist, responseDto);
                             break;
                         }
                     }
                 } else {
                     distChecker.add(dist);
-                    nearPost.put(dist, responsDto);
+                    nearPost.put(dist, responseDto);
                 }
             }
         }

@@ -79,10 +79,7 @@ public class ChatRoomService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
-        if (postHeadCount > nowHeadCount) {
-            return true;
-        }
-        return false;
+        return postHeadCount > nowHeadCount;
     }
 
     // AllchatInfo 테이블 중복생성금지

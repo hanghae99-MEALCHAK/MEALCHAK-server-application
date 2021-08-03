@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Getter
