@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.model;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -30,6 +29,10 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
+    @OneToOne
+    @JoinColumn(name="room_id")
+    private ChatRoom chatRoom;
+
     @Column(nullable = false)
     private boolean checkValid;
 
@@ -47,11 +50,16 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
+    @Transient
+    private Long nowHeadCount;
+
     public void updateDistance(double distance) {
     this.distance = distance;
     }
 
-    public Post(PostRequestDto requestDto, User user, Menu menu, Location location) {
+    public void updateNowHeadCount(Long nowHeadCount) { this.nowHeadCount = nowHeadCount; }
+
+    public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.restaurant = requestDto.getRestaurant();
@@ -61,7 +69,7 @@ public class Post extends Timestamped {
         this.menu = menu;
         this.location = location;
         this.checkValid = true;
-
+        this.chatRoom = chatRoom;
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {

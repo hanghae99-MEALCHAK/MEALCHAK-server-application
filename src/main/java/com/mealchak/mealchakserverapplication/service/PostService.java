@@ -2,14 +2,12 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
-import com.mealchak.mealchakserverapplication.model.Location;
-import com.mealchak.mealchakserverapplication.model.Menu;
-import com.mealchak.mealchakserverapplication.model.Post;
-import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +21,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
+    private final ChatRoomService chatRoomService;
+    private final UserRoomRepository userRoomRepository;
+
 
     // 모집글 생성
     @Transactional
-    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
+    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto, ChatRoom chatRoom) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
@@ -35,13 +36,13 @@ public class PostService {
                 Menu newMenu = new Menu(requestDto.getCategory(), 1);
                 menuRepository.save(newMenu);
                 Location location = new Location(requestDto);
-                Post post = new Post(requestDto, user, newMenu, location);
+                Post post = new Post(requestDto, user, newMenu, location, chatRoom);
                 postRepository.save(post);
                 id = post.getId();
             } else {
                 menu.get().updateMenuCount(+1);
                 Location location = new Location(requestDto);
-                Post post = new Post(requestDto, user, menu.get(), location);
+                Post post = new Post(requestDto, user, menu.get(), location, chatRoom);
                 postRepository.save(post);
                 id = post.getId();
             }
@@ -55,7 +56,11 @@ public class PostService {
     public List<PostResponseDto> getAllPost() {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtAsc();
         List<PostResponseDto> listPost = new ArrayList<>();
-        posts.forEach((post) -> listPost.add(new PostResponseDto(post)));
+        for (Post post : posts) {
+            Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+            post.updateNowHeadCount(nowHeadCount);
+            listPost.add(new PostResponseDto(post));
+        }
         return listPost;
     }
 
@@ -63,6 +68,7 @@ public class PostService {
     public PostResponseDto getPostDetail(Long postId) {
         return new PostResponseDto(getPost(postId));
     }
+
 
     // fintById(postId)
     public Post getPost(Long postId) {
@@ -85,10 +91,16 @@ public class PostService {
     }
 
     // 모집글 삭제
-    public void deletePost(Long postId) {
+    @Transactional
+    public void deletePost(Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
-        post.getMenu().updateMenuCount(-1);
-        postRepository.deleteById(postId);
+        if (!post.getChatRoom().getOwnUserId().equals(user.getId())) {
+            throw new IllegalArgumentException(("삭제 권한이 없습니다."));
+        } else {
+            chatRoomService.deletePost(postId);
+            post.getMenu().updateMenuCount(-1);
+            postRepository.deleteById(postId);
+        }
     }
 
     // 모집글 검색
