@@ -11,6 +11,7 @@ import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -33,11 +34,12 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public Long createChatRoom(Long postId, User user) {
+    @Transactional
+    public ChatRoom createChatRoom(User user) {
         String uuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = new ChatRoom(postId, uuid, user);
+        ChatRoom chatRoom = new ChatRoom(uuid, user);
         chatRoomRepository.save(chatRoom);
-        return chatRoom.getRoomId();
+        return chatRoom;
     }
 
     // 사용자별 채팅방 목록 조회
@@ -45,17 +47,16 @@ public class ChatRoomService {
         List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
         List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
-            Long roomId = allChatInfo.getRoomId();
-            ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
-            Long id = chatRoom.getPostId();
-            Optional<Post> post = postRepository.findById(id);
-            String title = post.get().getTitle();
-            Long headCountChat = userRoomRepository.countAllByRoomId(roomId);
-            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, title, headCountChat);
+            ChatRoom chatRoom = allChatInfo.getChatRoom();
+            Post post = chatRoom.getPost();
+            Long headCountChat = userRoomRepository.countAllByChatRoom(chatRoom);
+            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
             responseDtos.add(responseDto);
         }
         return responseDtos;
     }
+
+
 
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);    // redistemplate에 (입장type, ,) 누가 어떤방에 들어갔는지 정보를 리턴
@@ -76,10 +77,44 @@ public class ChatRoomService {
 
     //채팅방에 입장
     public void joinChatRoom(User user, Long id) {
-        AllChatInfo allChatInfo = new AllChatInfo();
-        allChatInfo.setUserId(user.getId());
-        ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
-        allChatInfo.setRoomId(chatRoom.getRoomId());
-        userRoomRepository.save(allChatInfo);
+        if(!checkDuplicate(user, id)) {
+            if(checkHeadCount(id)){
+                ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
+                AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
+                userRoomRepository.save(allChatInfo);
+            } else {
+                throw new IllegalArgumentException("채팅방 인원이 초과되었습니다.");
+            }
+        }
+
+    }
+
+    // 채팅방 인원수 제한
+    public Boolean checkHeadCount(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        int postHeadCount = post.getHeadCount();
+        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        if (postHeadCount > nowHeadCount) {
+            return true;
+        }
+        return false;
+    }
+
+    // AllchatInfo 테이블 중복생성금지
+    public Boolean checkDuplicate(User user, Long postId){
+        List<AllChatInfo> allChatInfos = userRoomRepository.findAllByUserId(user.getId());
+        for (AllChatInfo allChatInfo : allChatInfos){
+            if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transactional
+    public void deletePost(Long postId) {
+        ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
+        userRoomRepository.deleteByChatRoom(chatRoom);
+        chatRoomRepository.deleteByPostId(postId);
     }
 }

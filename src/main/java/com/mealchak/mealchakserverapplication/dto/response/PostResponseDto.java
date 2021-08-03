@@ -22,6 +22,8 @@ public class PostResponseDto {
     private double distance;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    private Long roomId;
+    private Long nowHeadCount;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -37,5 +39,7 @@ public class PostResponseDto {
         this.username = post.getUser().getUsername();
         this.profileImg = post.getUser().getProfileImg();
         this.createdAt = post.getCreatedAt();
+        this.roomId = post.getChatRoom().getId();
+        this.nowHeadCount = post.getNowHeadCount();
     }
 }

@@ -3,6 +3,7 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.AllChatInfo;
+import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
@@ -29,10 +30,9 @@ public class PostController {
     @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
     public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
-        Long id = postService.createPost(userDetails, requestDto);
-        Long roomId = chatRoomService.createChatRoom(id, userDetails.getUser());
-        AllChatInfo allChatInfo = new AllChatInfo(userDetails.getUser().getId(), roomId);
-        userRoomService.save(allChatInfo);
+        ChatRoom chatRoom = chatRoomService.createChatRoom(userDetails.getUser());
+        postService.createPost(userDetails, requestDto, chatRoom);
+        userRoomService.save(userDetails.getUser(), chatRoom);
     }
 
     // 모집글 전체 불러오기
@@ -66,8 +66,8 @@ public class PostController {
     // 특정 모집글 삭제
     @ApiOperation(value = "해당 모집글 삭제", notes = "해당 모집글 삭제.")
     @DeleteMapping("/posts/{postId}")
-    public void getPostDelete(@PathVariable Long postId) {
-        postService.deletePost(postId);
+    public void getPostDelete(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postService.deletePost(postId, userDetails.getUser());
     }
 
     // 유저 근처에 작성된 게시글 조회

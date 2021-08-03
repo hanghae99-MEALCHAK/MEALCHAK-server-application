@@ -3,6 +3,8 @@ package com.mealchak.mealchakserverapplication.service;
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
@@ -13,6 +15,7 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
+import com.mealchak.mealchakserverapplication.util.MD5Generator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,8 +23,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -31,6 +36,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
     private final AuthenticationManager authenticationManager;
+    private final FileService fileService;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public User getUser(String email) {
@@ -129,5 +135,54 @@ public class UserService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
         return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
+    }
+
+    @Transactional
+    public FileResponseDto updateUserImg(MultipartFile files, UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            try {
+                String originFilename = files.getOriginalFilename();
+                String nameToMD5 = new MD5Generator(originFilename).toString();
+                // 랜덤 키 생성
+                String uuid = UUID.randomUUID().toString();
+                // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
+                String filename = nameToMD5 + "_" +uuid;
+                // 해당 위치에 이미지 저장
+                String savePath = System.getProperty("user.dir") + "/image"; //윈도우용
+//                String savePath = System.getProperty("user.dir") + "/image"; //리눅스용
+                // 파일이 저장되는 폴더가 없으면 폴더를 생성
+                if (!new java.io.File(savePath).exists()) {
+                    try{
+                        new java.io.File(savePath).mkdir();
+                    }
+                    catch(Exception e){
+                        System.out.println("디렉토리 생성 실패");
+                    }
+                }
+                String fileType = files.getContentType();
+                String filePath = savePath + "/" + filename;
+                files.transferTo(new java.io.File(filePath));
+
+                FileResponseDto responseDto = new FileResponseDto();
+                responseDto.setOriginFileName(originFilename);
+                responseDto.setFileName(filename);
+                responseDto.setFilePath(filePath);
+                responseDto.setFileType(fileType);
+
+                Long fileId = fileService.saveFile(responseDto);
+                responseDto.setFileId(fileId);
+                User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
+                        ()-> new IllegalArgumentException("해당 아이디를 찾을 수 없습니다."));
+                user.updateUserImg(responseDto.getId(), responseDto.getFilePath());
+                userRepository.save(user);
+                return responseDto;
+
+            } catch(Exception e) {
+                System.out.println("파일 업로드 실패");
+            }
+        } else {
+            throw new IllegalArgumentException("로그인 하지 않았습니다.");
+        }
+        return null;
     }
 }

@@ -1,11 +1,13 @@
 package com.mealchak.mealchakserverapplication.repository;
 
 import com.mealchak.mealchakserverapplication.model.AllChatInfo;
+import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UserRoomRepository extends JpaRepository<AllChatInfo,Long> {
+public interface UserRoomRepository extends JpaRepository<AllChatInfo, Long> {
      List<AllChatInfo> findAllByUserId(Long userId);
-     Long countAllByRoomId(Long roomId);
+     Long countAllByChatRoom(ChatRoom chatRoom);
+    void deleteByChatRoom(ChatRoom chatRoom);
 }

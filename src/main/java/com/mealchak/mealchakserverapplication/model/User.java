@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -13,6 +15,7 @@ import javax.persistence.*;
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @Column(name="user_id")
     private Long id;
 
     @Column(nullable = false)
@@ -40,9 +43,15 @@ public class User extends Timestamped {
     @JsonIgnore
     private Location location;
 
+    @Column
+    private Long fileId;
+
     public void updateUserInfo(UserInfoUpdateDto updateDto) {
         this.username = updateDto.getUsername();
         this.comment = updateDto.getComment();
+
+    public void updateUsername(String newUsername) {
+        this.username = newUsername;
     }
 
     public void updateUserDisc(Location location) {
@@ -51,6 +60,11 @@ public class User extends Timestamped {
 
     public User(Location location) {
         this.location = location;
+    }
+
+    public void updateUserImg(Long fileId, String filePath) {
+        this.fileId = fileId;
+        this.profileImg = filePath;
     }
 
     public User(String Username, String password) {

@@ -3,6 +3,8 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -61,5 +64,12 @@ public class UserController {
     @PutMapping("/user/location")
     public Location updateUserLocation(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserLocationUpdateDto updateDto) {
         return userService.updateUserLocation(updateDto, userDetails.getUser());
+    }
+
+    // 유저 프로필 사진 변경
+    @ApiOperation(value = "유저 프로필사진 변경", notes = "유저의 프로필사진을 변경합니다.")
+    @PutMapping("user/profileImg")
+    public FileResponseDto updateUserImg(@RequestParam("file")MultipartFile files, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.updateUserImg(files, userDetails);
     }
 }
