@@ -77,9 +77,38 @@ public class ChatRoomService {
 
     //채팅방에 입장
     public void joinChatRoom(User user, Long id) {
-        ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
-        AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
-        userRoomRepository.save(allChatInfo);
+        if(!checkDuplicate(user, id)) {
+            if(checkHeadCount(id)){
+                ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
+                AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
+                userRoomRepository.save(allChatInfo);
+            } else {
+                throw new IllegalArgumentException("채팅방 인원이 초과되었습니다.");
+            }
+        }
+
+    }
+
+    // 채팅방 인원수 제한
+    public Boolean checkHeadCount(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        int postHeadCount = post.getHeadCount();
+        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        if (postHeadCount > nowHeadCount) {
+            return true;
+        }
+        return false;
+    }
+
+    // AllchatInfo 테이블 중복생성금지
+    public Boolean checkDuplicate(User user, Long postId){
+        List<AllChatInfo> allChatInfos = userRoomRepository.findAllByUserId(user.getId());
+        for (AllChatInfo allChatInfo : allChatInfos){
+            if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional

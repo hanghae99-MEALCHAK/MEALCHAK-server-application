@@ -7,6 +7,7 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class PostService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
+    private final UserRoomRepository userRoomRepository;
 
 
     // 모집글 생성
@@ -54,7 +56,11 @@ public class PostService {
     public List<PostResponseDto> getAllPost() {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtAsc();
         List<PostResponseDto> listPost = new ArrayList<>();
-        posts.forEach((post) -> listPost.add(new PostResponseDto(post)));
+        for (Post post : posts) {
+            Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+            post.updateNowHeadCount(nowHeadCount);
+            listPost.add(new PostResponseDto(post));
+        }
         return listPost;
     }
 
@@ -62,6 +68,7 @@ public class PostService {
     public PostResponseDto getPostDetail(Long postId) {
         return new PostResponseDto(getPost(postId));
     }
+
 
     // fintById(postId)
     public Post getPost(Long postId) {

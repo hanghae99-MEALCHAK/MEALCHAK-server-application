@@ -48,9 +48,14 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
+    @Transient
+    private Long nowHeadCount;
+
     public void updateDistance(double distance) {
     this.distance = distance;
     }
+
+    public void updateNowHeadCount(Long nowHeadCount) { this.nowHeadCount = nowHeadCount; }
 
     public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();

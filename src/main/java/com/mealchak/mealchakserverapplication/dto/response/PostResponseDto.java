@@ -20,6 +20,7 @@ public class PostResponseDto {
     private double distance;
     private LocalDateTime createdAt;
     private Long roomId;
+    private Long nowHeadCount;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -36,5 +37,6 @@ public class PostResponseDto {
         this.profileImg = post.getUser().getProfileImg();
         this.createdAt = post.getCreatedAt();
         this.roomId = post.getChatRoom().getId();
+        this.nowHeadCount = post.getNowHeadCount();
     }
 }
