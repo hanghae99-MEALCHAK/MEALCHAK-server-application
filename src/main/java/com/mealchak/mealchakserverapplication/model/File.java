@@ -1,7 +1,5 @@
 package com.mealchak.mealchakserverapplication.model;
 
-import com.mealchak.mealchakserverapplication.dto.request.FileRequestDto;
-import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

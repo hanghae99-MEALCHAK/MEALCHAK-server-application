@@ -7,7 +7,6 @@ import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
-import com.sun.corba.se.spi.copyobject.CopyobjectDefaults;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
