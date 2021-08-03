@@ -30,4 +30,8 @@ public class Menu {
     public void updateMenuCount(int count) {
         this.count = this.count + count;
     }
+
+    public void resetMenuCount(){
+        this.count = 0;
+    }
 }

@@ -109,23 +109,24 @@ public class PostService {
     }
 
     // 모집글 유저 위치 기반 조회
-    public Collection<List<PostResponseDto>> getPostByUserDist(Long id, int range, int max) {
-        User user = userRepository.findById(id).orElseThrow(
+    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, int max) {
+        if (userDetails == null) {
+            return getAllPost();
+        }
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
-        if (max == 1) {
-            guName = userGuName[0];
-        }
+        if (max == 1) {guName = userGuName[0];}
         List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);
-        Map<Double, List<PostResponseDto>> nearPost = new TreeMap<>();
+        Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();
-        for (Post posts : postList) {
-            PostResponseDto responsDto = new PostResponseDto(posts);
+        for (Post post : postList) {
             double lat1 = user.getLocation().getLatitude();
             double lon1 = user.getLocation().getLongitude();
-            double lat2 = posts.getLocation().getLatitude();
-            double lon2 = posts.getLocation().getLongitude();
+            double lat2 = post.getLocation().getLatitude();
+            double lon2 = post.getLocation().getLongitude();
 
             double theta = lon1 - lon2;
             double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
@@ -138,19 +139,20 @@ public class PostService {
             dist = Math.round(dist * 1000) / 1000.0;
 
             if (dist < range) {
-                posts.updateDistance(dist);
+                post.updateDistance(dist);
+                PostResponseDto responsDto = new PostResponseDto(post);
                 if (distChecker.contains(dist)) {
                     for (int i = 0; i < 100; i++) {
                         dist += 0.001;
                         if (!distChecker.contains(dist)) {
                             distChecker.add(dist);
-                            nearPost.put(dist, Collections.singletonList(responsDto));
+                            nearPost.put(dist, responsDto);
                             break;
                         }
                     }
                 } else {
                     distChecker.add(dist);
-                    nearPost.put(dist, Collections.singletonList(responsDto));
+                    nearPost.put(dist, responsDto);
                 }
             }
         }

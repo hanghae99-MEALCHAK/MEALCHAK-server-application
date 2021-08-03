@@ -33,6 +33,8 @@ public class Post extends Timestamped {
     @JoinColumn(name="room_id")
     private ChatRoom chatRoom;
 
+    @Column(nullable = false)
+    private boolean checkValid;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID")
@@ -66,6 +68,7 @@ public class Post extends Timestamped {
         this.user = user;
         this.menu = menu;
         this.location = location;
+        this.checkValid = true;
         this.chatRoom = chatRoom;
     }
 
@@ -77,5 +80,9 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.menu = menu;
         this.location = location;
+    }
+
+    public void expired(boolean checkValid){
+        this.checkValid = checkValid;
     }
 }

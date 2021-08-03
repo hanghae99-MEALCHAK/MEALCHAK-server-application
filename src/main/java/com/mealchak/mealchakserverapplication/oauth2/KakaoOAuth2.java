@@ -31,8 +31,8 @@ public class KakaoOAuth2 {
         params.add("grant_type", "authorization_code");
         params.add("client_id", "7bdd85c1e8d3b04bfc556d4b741605ec");
         //테스트를 위한 url설정
-//        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
-        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+//        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
 //        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
         params.add("code", authorizedCode);
 
@@ -79,14 +79,12 @@ public class KakaoOAuth2 {
         Long id = body.getLong("id");
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
-        String thumbnailImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         String profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         try {
-            thumbnailImg = body.getJSONObject("properties").getString("thumbnail_image");
             profileImg = body.getJSONObject("properties").getString("profile_image");
-            throw new Exception("프로필 없음");
+            throw new Exception("프로필 사진 없음 기본 이미지로 대체");
         } catch (Exception e) {
         }
-        return new KakaoUserInfo(id, email, nickname, thumbnailImg, profileImg);
+        return new KakaoUserInfo(id, email, nickname, profileImg);
     }
 }
