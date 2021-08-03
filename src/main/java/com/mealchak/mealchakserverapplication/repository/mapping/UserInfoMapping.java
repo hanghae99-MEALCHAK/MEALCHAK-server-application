@@ -6,6 +6,7 @@ public interface UserInfoMapping {
     Long getId();
     String getUsername();
     String getProfileImg();
+    String getComment();
 
     default String getAddress() {
         return getLocationAddress();

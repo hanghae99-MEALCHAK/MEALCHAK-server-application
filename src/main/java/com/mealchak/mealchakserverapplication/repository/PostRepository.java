@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(String title, String contents);
-    List<Post> findAllByOrderByCreatedAtAsc();
+    List<Post> findAllByOrderByCreatedAtDesc();
     List<Post> findByLocationAddressContainingIgnoreCase(String address);
     List<Post> findByCheckValid(boolean TorF);
 }

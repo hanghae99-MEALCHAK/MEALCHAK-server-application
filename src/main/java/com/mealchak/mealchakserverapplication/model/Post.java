@@ -29,12 +29,12 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @OneToOne
-    @JoinColumn(name="room_id")
-    private ChatRoom chatRoom;
-
     @Column(nullable = false)
     private boolean checkValid;
+
+    @OneToOne
+    @JoinColumn(name="Room_id")
+    private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID")

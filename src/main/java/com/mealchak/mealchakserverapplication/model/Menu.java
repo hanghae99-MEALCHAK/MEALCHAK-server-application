@@ -19,6 +19,9 @@ public class Menu {
     private String category;
 
     @Column(nullable = false)
+    private String imgUrl;
+
+    @Column(nullable = false)
     @JsonIgnore
     private int count;
 
