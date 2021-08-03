@@ -97,14 +97,16 @@ public class PostService {
     }
 
     // 모집글 유저 위치 기반 조회
-    public Collection<PostResponseDto> getPostByUserDist(Long id, int range, int max) {
-        User user = userRepository.findById(id).orElseThrow(
+    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, int max) {
+        if (userDetails == null) {
+            return getAllPost();
+        }
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
-        if (max == 1) {
-            guName = userGuName[0];
-        }
+        if (max == 1) {guName = userGuName[0];}
         List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);
         Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();

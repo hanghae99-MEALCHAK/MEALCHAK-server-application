@@ -47,7 +47,6 @@ public class UserService {
         Long kakaoId = userInfo.getId();
         String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
-        String thumbnailImg = userInfo.getThumbnailImg();
         String profileImg = userInfo.getProfileImg();
         String address = "서울 강남구";
         double latitude = 37.497910;
@@ -69,7 +68,7 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId, nickname, encodedPassword, email, thumbnailImg, profileImg, location);
+            kakaoUser = new User(kakaoId, nickname, encodedPassword, email, profileImg, location);
             userRepository.save(kakaoUser);
         }
 
@@ -79,7 +78,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HeaderDto headerDto = new HeaderDto();
         User member = userRepository.findByKakaoId(kakaoId).orElse(null);
-        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), nickname));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername()));
         return headerDto;
     }
 

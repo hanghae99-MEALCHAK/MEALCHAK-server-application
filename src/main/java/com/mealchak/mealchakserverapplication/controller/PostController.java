@@ -76,6 +76,6 @@ public class PostController {
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @RequestParam(value = "range", required = false, defaultValue = "3") int range,
                                                                @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
-        return postService.getPostByUserDist(userDetails.getUser().getId(), range, max);
+        return postService.getPostByUserDist(userDetails, range, max);
     }
 }
