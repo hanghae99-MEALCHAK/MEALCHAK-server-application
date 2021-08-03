@@ -45,13 +45,17 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             chatRoomService.setUserEnterInfo(sessionId, roomId);
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
-            System.out.println(message.getHeaders());
             //토큰 가져옴
             String jwtToken = accessor.getFirstNativeHeader("token");
-            //토큰으로 userDetails 가져옴
-            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
-            //userDetails 에서 username 가져옴
-            String name = userDetails.getUsername();
+            String name;
+            if (jwtToken != null) {
+                //토큰으로 userDetails 가져옴
+                UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
+                //userDetails 에서 username 가져옴
+                name = userDetails.getUsername();
+            } else {
+                name = "UnknownUser";
+            }
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
             log.info("SUBSCRIBED {}, {}", name, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
@@ -60,12 +64,12 @@ public class StompHandler implements ChannelInterceptor {
             String roomId = chatRoomService.getUserEnterRoomId(sessionId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             //토큰 가져옴
-            String jwtToken = accessor.getFirstNativeHeader("token");
-            //토큰으로 userDetails 가져옴
-            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
-            //userDetails 에서 username 가져옴
-            String name = userDetails.getUsername();
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
+//            String jwtToken = accessor.getFirstNativeHeader("token");
+//            //토큰으로 userDetails 가져옴
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
+//            //userDetails 에서 username 가져옴
+//            String name = userDetails.getUsername();
+//            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomService.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", sessionId, roomId);

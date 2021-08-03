@@ -71,21 +71,23 @@
                 axios.get('api/chat/room/'+1).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:username, message:this.message}));
+                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:"test", message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
-                this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+                this.messages.unshift({"type":recv.type,"sender":recv.sender,"message":recv.message})
             }
         }
     });
 
     function connect() {
         // pub/sub event
-        ws.connect({}, function(frame) {
+        //각각 connect,subscribe 헤더
+        ws.connect({token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2Mjc5NTMxNTgsImV4cCI6MTYyNzk3NDc1OH0.YIXKcwdwNcrJjHHdc4WIEaTK8b10sdzk-7hsBG6xnL8"}, function(frame) {
             ws.subscribe("/sub/api/chat/rooms/"+1, function(message) {
-            },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2Mjc5MjI3NjAsImV4cCI6MTYyNzk0NDM2MH0.n-LF-YdsXfKAfFhnD01BqscgyIB74jprI_p5zuMxsoU"});
-            ws.send("/pub/message", {}, JSON.stringify({type:'ENTER', roomId:1, sender:username}));
+                var recv = JSON.parse(message.body);
+                vm.recvMessage(recv)
+            },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2Mjc5NTMxNTgsImV4cCI6MTYyNzk3NDc1OH0.YIXKcwdwNcrJjHHdc4WIEaTK8b10sdzk-7hsBG6xnL8"});
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {
