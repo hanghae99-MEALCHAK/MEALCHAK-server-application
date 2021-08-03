@@ -146,7 +146,6 @@ public class PostService {
         }
         return nearPost.values();
     }
-
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
