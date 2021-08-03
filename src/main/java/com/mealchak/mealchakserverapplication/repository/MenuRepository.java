@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
     Optional<Menu> findByCategory(String category);
     List<Menu> findAllByOrderByCountDesc();
+    List<Menu> findAll();
 }
