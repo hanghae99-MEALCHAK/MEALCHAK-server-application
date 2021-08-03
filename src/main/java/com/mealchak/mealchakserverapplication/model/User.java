@@ -1,7 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,12 +40,10 @@ public class User extends Timestamped {
     @JsonIgnore
     private Location location;
 
-    @Column
-    private Long fileId;
-
-    public void updateUserInfo(UserInfoUpdateDto updateDto) {
-        this.username = updateDto.getUsername();
-        this.comment = updateDto.getComment();
+    public void updateUserInfo(String username, String comment, String profileImg) {
+        this.username = username;
+        this.comment = comment;
+        this.profileImg = profileImg;
     }
 
     public void updateUsername(String newUsername) {
@@ -61,8 +58,7 @@ public class User extends Timestamped {
         this.location = location;
     }
 
-    public void updateUserImg(Long fileId, String filePath) {
-        this.fileId = fileId;
+    public void updateUserImg(String filePath) {
         this.profileImg = filePath;
     }
 

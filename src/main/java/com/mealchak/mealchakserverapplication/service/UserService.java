@@ -1,7 +1,6 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
-import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
@@ -37,11 +36,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final FileService fileService;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
-
-    public User getUser(String email) {
-        return userRepository.findByEmail(email, User.class)
-                .orElseThrow(() -> new IllegalArgumentException("가입되지않은 아이디입니다."));
-    }
 
     public HeaderDto kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
@@ -94,19 +88,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 유저 정보 변경
-    @Transactional
-    public UserInfoResponseDto updateUsername(UserDetailsImpl userDetails, UserInfoUpdateDto updateDto) {
-        if (userDetails != null) {
-            User user = userRepository.findById(userDetails.getUser().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-            user.updateUserInfo(updateDto);
-            return new UserInfoResponseDto(user);
-        } else {
-            throw new IllegalArgumentException("로그인된 유저가 아닙니다.");
-        }
-    }
-
     // 유저 위치 저장
     @Transactional
     public Location updateUserLocation(UserLocationUpdateDto updateDto, User user) {
@@ -116,7 +97,7 @@ public class UserService {
         return user1.getLocation();
     }
 
-    //유저정보
+    //유저 정보 조회
     @Transactional
     public UserInfoMapping userInfo(UserDetailsImpl userDetails) {
         if (userDetails != null) {
@@ -136,52 +117,57 @@ public class UserService {
         return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
     }
 
+    // 유저 정보 수정
     @Transactional
-    public FileResponseDto updateUserImg(MultipartFile files, UserDetailsImpl userDetails) {
+    public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails) {
+
         if (userDetails != null) {
-            try {
-                String originFilename = files.getOriginalFilename();
-                String nameToMD5 = new MD5Generator(originFilename).toString();
-                // 랜덤 키 생성
-                String uuid = UUID.randomUUID().toString();
-                // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
-                String filename = nameToMD5 + "_" +uuid;
-                // 해당 위치에 이미지 저장
-                String savePath = System.getProperty("user.dir") + "/image"; //윈도우용
-//                String savePath = System.getProperty("user.dir") + "/image"; //리눅스용
-                // 파일이 저장되는 폴더가 없으면 폴더를 생성
-                if (!new java.io.File(savePath).exists()) {
-                    try{
-                        new java.io.File(savePath).mkdir();
+            User user = userRepository.findById(userDetails.getUser().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+            String filePath = user.getProfileImg();
+            if (files != null) {
+                try {
+                    String originFilename = files.getOriginalFilename();
+                    String nameToMD5 = new MD5Generator(originFilename).toString();
+                    // 랜덤 키 생성
+                    String uuid = UUID.randomUUID().toString();
+                    // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
+                    String filename = nameToMD5 + "_" + uuid;
+                    // 해당 위치에 이미지 저장
+                    String savePath = System.getProperty("user.dir") + "/image";
+                    // 파일이 저장되는 폴더가 없으면 폴더를 생성
+                    if (!new java.io.File(savePath).exists()) {
+                        try {
+                            new java.io.File(savePath).mkdir();
+                        } catch (Exception e) {
+                            System.out.println("디렉토리 생성 실패");
+                        }
                     }
-                    catch(Exception e){
-                        System.out.println("디렉토리 생성 실패");
-                    }
+                    String fileType = files.getContentType();
+                    filePath = savePath + "/" + filename;
+                    files.transferTo(new java.io.File(filePath));
+
+                    FileResponseDto responseDto = new FileResponseDto();
+                    responseDto.setOriginFileName(originFilename);
+                    responseDto.setFileName(filename);
+                    responseDto.setFilePath(filePath);
+                    responseDto.setFileType(fileType);
+
+                    fileService.saveFile(responseDto);
+                } catch (Exception e) {
+                    System.out.println("파일 업로드 실패");
                 }
-                String fileType = files.getContentType();
-                String filePath = savePath + "/" + filename;
-                files.transferTo(new java.io.File(filePath));
-
-                FileResponseDto responseDto = new FileResponseDto();
-                responseDto.setOriginFileName(originFilename);
-                responseDto.setFileName(filename);
-                responseDto.setFilePath(filePath);
-                responseDto.setFileType(fileType);
-
-                Long fileId = fileService.saveFile(responseDto);
-                responseDto.setFileId(fileId);
-                User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
-                        ()-> new IllegalArgumentException("해당 아이디를 찾을 수 없습니다."));
-                user.updateUserImg(responseDto.getId(), responseDto.getFilePath());
-                userRepository.save(user);
-                return responseDto;
-
-            } catch(Exception e) {
-                System.out.println("파일 업로드 실패");
             }
+            if (username == null) {
+                username = user.getUsername();
+            }
+            if (comment == null) {
+                comment = user.getComment();
+            }
+            user.updateUserInfo(username, comment, filePath);
+            return new UserInfoResponseDto(user);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
-        return null;
     }
 }

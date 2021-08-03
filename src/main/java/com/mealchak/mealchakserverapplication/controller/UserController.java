@@ -1,9 +1,7 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
-import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
-import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -39,12 +37,6 @@ public class UserController {
         return userService.userInfo(userDetails);
     }
 
-    @ApiOperation(value = "유저 정보 수정", notes = "유저 정보 수정")
-    @PutMapping("/userInfo/update")
-    public UserInfoResponseDto updateUsername(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserInfoUpdateDto updateDto) {
-        return userService.updateUsername(userDetails, updateDto);
-    }
-
     // 회원 가입 요청 처리
     @ApiOperation(value = "회원 가입 요청", notes = "회원 가입 요청합니다.")
     @PostMapping("/user/signup")
@@ -67,8 +59,11 @@ public class UserController {
 
     // 유저 프로필 사진 변경
     @ApiOperation(value = "유저 프로필사진 변경", notes = "유저의 프로필사진을 변경합니다.")
-    @PutMapping("user/profileImg")
-    public FileResponseDto updateUserImg(@RequestParam("file")MultipartFile files, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.updateUserImg(files, userDetails);
+    @PutMapping("userInfo/update")
+    public UserInfoResponseDto updateUserInfo(@RequestParam(value = "file",required = false) MultipartFile files,
+                                              @RequestParam(value = "username",required = false) String username,
+                                              @RequestParam(value = "comment",required = false) String comment,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.updateUserInfo(files, username, comment, userDetails);
     }
 }
