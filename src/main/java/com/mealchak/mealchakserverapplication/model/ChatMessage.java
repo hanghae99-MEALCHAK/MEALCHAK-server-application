@@ -20,8 +20,8 @@ public class ChatMessage extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column
+    @Enumerated(value = EnumType.STRING)
     private MessageType type;
 
     @Column

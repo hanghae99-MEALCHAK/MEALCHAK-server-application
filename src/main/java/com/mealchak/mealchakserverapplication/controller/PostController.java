@@ -3,9 +3,7 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
-import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import com.mealchak.mealchakserverapplication.service.PostService;
@@ -53,7 +51,7 @@ public class PostController {
     // 검색하여 모집글 불러오기
     @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
     @PostMapping("/search")
-    public List<Post> getSearch(@RequestBody String text) {
+    public List<PostResponseDto> getSearch(@RequestBody String text) {
         return postService.getSearch(text);
     }
 

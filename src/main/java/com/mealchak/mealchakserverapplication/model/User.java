@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -14,7 +12,7 @@ import java.util.List;
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name="user_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(nullable = false)
@@ -35,12 +33,18 @@ public class User extends Timestamped {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String profileImg;
 
+    @Column(nullable = true)
+    private String comment;
+
     @Embedded
     @JsonIgnore
     private Location location;
 
-    @Column
-    private Long fileId;
+    public void updateUserInfo(String username, String comment, String profileImg) {
+        this.username = username;
+        this.comment = comment;
+        this.profileImg = profileImg;
+    }
 
     public void updateUsername(String newUsername) {
         this.username = newUsername;
@@ -54,21 +58,20 @@ public class User extends Timestamped {
         this.location = location;
     }
 
-    public void updateUserImg(Long fileId, String filePath) {
-        this.fileId = fileId;
+    public void updateUserImg(String filePath) {
         this.profileImg = filePath;
     }
 
-    public User(String Username, String password) {
+    public User(String username, String password) {
         this.kakaoId = 123L;
-        this.username = Username;
+        this.username = username;
         this.password = password;
-        this.email = Username;
+        this.email = username;
         this.profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
-        this.location = new Location("강남구", 37.49791, 127.027678);
+        this.location = new Location("강남구 항해리99", 37.49791, 127.027678);
     }
 
-    public User(Long kakaoId, String Username, String password, String email,  String profileImg,
+    public User(Long kakaoId, String Username, String password, String email, String profileImg,
                 Location location) {
         this.kakaoId = kakaoId;
         this.username = Username;

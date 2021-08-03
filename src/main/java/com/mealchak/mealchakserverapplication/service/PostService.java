@@ -56,11 +56,10 @@ public class PostService {
 
     // 모집글 전체 조회
     public List<PostResponseDto> getAllPost() {
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtAsc();
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
-            Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
-            post.updateNowHeadCount(nowHeadCount);
+            updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
@@ -68,9 +67,16 @@ public class PostService {
 
     // 모집글 상세 조회
     public PostResponseDto getPostDetail(Long postId) {
-        return new PostResponseDto(getPost(postId));
+        Post post = getPost(postId);
+        updateHeadCount(post);
+        return new PostResponseDto(post);
     }
 
+    // 모집글 HeadCount 추가
+    public void updateHeadCount(Post post) {
+        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        post.updateNowHeadCount(nowHeadCount);
+    }
 
     // fintById(postId)
     public Post getPost(Long postId) {
@@ -106,8 +112,14 @@ public class PostService {
     }
 
     // 모집글 검색
-    public List<Post> getSearch(String text) {
-        return postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
+    public List<PostResponseDto> getSearch(String text) {
+        List<Post> posts = postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
+        List<PostResponseDto> listPost = new ArrayList<>();
+        for (Post post : posts) {
+            updateHeadCount(post);
+            listPost.add(new PostResponseDto(post));
+        }
+        return listPost;
     }
 
     // 모집글 유저 위치 기반 조회
@@ -141,7 +153,7 @@ public class PostService {
             dist = dist * 60 * 1.1515;
             dist = dist * 1.609344;
             dist = Math.round(dist * 1000) / 1000.0;
-
+            updateHeadCount(post);
             if (dist < range) {
                 post.updateDistance(dist);
                 PostResponseDto responsDto = new PostResponseDto(post);
