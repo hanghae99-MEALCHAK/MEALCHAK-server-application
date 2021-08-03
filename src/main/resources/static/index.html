@@ -71,7 +71,7 @@
                 axios.get('api/chat/room/'+1).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/message", {}, JSON.stringify({type:'TALK','ENTER', roomId:1, sender:username, message:this.message}));
+                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:username, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -83,8 +83,8 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("/sub/api/chat/rooms/"+roomid, function(message) {
-            });
+            ws.subscribe("/sub/api/chat/rooms/"+1, function(message) {
+            },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2Mjc5MjI3NjAsImV4cCI6MTYyNzk0NDM2MH0.n-LF-YdsXfKAfFhnD01BqscgyIB74jprI_p5zuMxsoU"});
             ws.send("/pub/message", {}, JSON.stringify({type:'ENTER', roomId:1, sender:username}));
         }, function(error) {
             if(reconnect++ <= 5) {
