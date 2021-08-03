@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.dto.request;
 
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class ChatMessageCreateRequestDto {

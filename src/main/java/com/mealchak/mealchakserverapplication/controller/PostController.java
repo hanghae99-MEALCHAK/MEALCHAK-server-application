@@ -2,6 +2,7 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
@@ -75,5 +76,24 @@ public class PostController {
                                                                @RequestParam(value = "range", required = false, defaultValue = "3") int range,
                                                                @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
         return postService.getPostByUserDist(userDetails, range, max);
+    }
+
+    @ApiOperation(value = "게시글 입장 신청", notes = "게시글 입장 신청")
+    @GetMapping("/posts/join/request/{id}")
+    public String requestJoin(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id){
+        return postService.requestJoin(userDetails,id);
+    }
+
+
+    @ApiOperation(value = "게시글 입장 신청 목록", notes = "게시글 입장 신청 목록")
+    @GetMapping("/posts/join/request/list")
+    public List<UserInfoAndPostResponseDto> requestJoinList(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.requestJoinList(userDetails);
+    }
+
+    @ApiOperation(value = "게시글 입장 신청 승인/비승인", notes = "게시글 입장 신청 승인/비승인")
+    @GetMapping("/posts/join/request/{joinRequestId}/accept")
+    public String acceptJoinRequest(@PathVariable Long joinRequestId,@RequestParam(value = "accept") boolean tOrF){
+        return postService.acceptJoinRequest(joinRequestId,tOrF);
     }
 }

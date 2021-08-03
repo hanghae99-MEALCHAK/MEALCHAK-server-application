@@ -74,20 +74,6 @@ public class ChatRoomService {
         return chatRoomRepository.findAll();
     }
 
-    //채팅방에 입장
-    public void joinChatRoom(User user, Long id) {
-        if(!checkDuplicate(user, id)) {
-            if(checkHeadCount(id)){
-                ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
-                AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
-                userRoomRepository.save(allChatInfo);
-            } else {
-                throw new IllegalArgumentException("채팅방 인원이 초과되었습니다.");
-            }
-        }
-
-    }
-
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
