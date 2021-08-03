@@ -36,6 +36,9 @@ public class User extends Timestamped {
     @JsonIgnore
     private Location location;
 
+    @Column
+    private Long fileId;
+
     public void updateUsername(String newUsername) {
         this.username = newUsername;
     }
@@ -46,6 +49,11 @@ public class User extends Timestamped {
 
     public User(Location location) {
         this.location = location;
+    }
+
+    public void updateUserImg(Long fileId, String filePath) {
+        this.fileId = fileId;
+        this.profileImg = filePath;
     }
 
     public User(String Username, String password) {

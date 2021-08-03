@@ -38,15 +38,6 @@ public class ChatMessageService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }
 
-    public void save(ChatMessage chatMessage) {
-        ChatMessage message = new ChatMessage();
-        message.setType(chatMessage.getType());
-        message.setRoomId(chatMessage.getRoomId());
-        message.setSender(chatMessage.getSender());
-        message.setMessage(chatMessage.getMessage());
-        chatMessageRepository.save(chatMessage);
-    }
-
     public Page<ChatMessage> getChatMessageByRoomId(String roomId, Pageable pageable) {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
         pageable = PageRequest.of(page, 150);
