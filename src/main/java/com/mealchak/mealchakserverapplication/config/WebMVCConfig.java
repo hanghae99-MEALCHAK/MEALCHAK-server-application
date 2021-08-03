@@ -23,8 +23,9 @@ public class WebMVCConfig implements WebMvcConfigurer {
         registry.addMapping("/**").allowedOriginPatterns("*://*").allowedHeaders("*").allowedMethods("*");
     }
 
+    // 경로 수정 필요
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**").addResourceLocations("file:/root/img/");
+        registry.addResourceHandler("/image/**").addResourceLocations("file:/Users/kh1909/MEALCHAK-server-application/image");
     }
 }

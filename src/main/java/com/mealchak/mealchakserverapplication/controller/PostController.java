@@ -73,7 +73,7 @@ public class PostController {
     // 유저 근처에 작성된 게시글 조회
     @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
     @GetMapping("/posts/around")
-    public Collection<List<PostResponseDto>> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                @RequestParam(value = "range", required = false, defaultValue = "3") int range,
                                                                @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
         return postService.getPostByUserDist(userDetails.getUser().getId(), range, max);
