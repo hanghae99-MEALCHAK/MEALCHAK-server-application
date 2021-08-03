@@ -5,15 +5,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 public class ChatRoom extends Timestamped {
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomId;
+    @Id
+    @Column(name = "room_id")
+    private Long id;
 
     @Column(nullable = false)
     private String uuid;
@@ -21,16 +24,12 @@ public class ChatRoom extends Timestamped {
     @Column(nullable = false)
     private Long ownUserId;
 
-//    @Column(nullable = false)
-//    private Long postId;
-
-    @OneToOne
-    @JoinColumn(name="post_id")
+    @OneToOne(mappedBy = "chatRoom")
     private Post post;
 
-    public ChatRoom(Post post, String uuid, User user) {
-        this.post = post;
+    public ChatRoom(String uuid, User user) {
         this.uuid = uuid;
         this.ownUserId = user.getId();
     }
+
 }

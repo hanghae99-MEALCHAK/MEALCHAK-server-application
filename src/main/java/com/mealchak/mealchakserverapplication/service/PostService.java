@@ -2,10 +2,7 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
-import com.mealchak.mealchakserverapplication.model.Location;
-import com.mealchak.mealchakserverapplication.model.Menu;
-import com.mealchak.mealchakserverapplication.model.Post;
-import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
@@ -28,30 +25,26 @@ public class PostService {
 
     // 모집글 생성
     @Transactional
-    public Post createPost(UserDetailsImpl userDetails, PostRequestDto requestDto) {
+    public Long createPost(UserDetailsImpl userDetails, PostRequestDto requestDto, ChatRoom chatRoom) {
         if (userDetails != null) {
             User user = userDetails.getUser();
             Optional<Menu> menu = menuRepository.findByCategory(requestDto.getCategory());
-            Post postDto;
-//            Long id;
+            Long id;
             if (!menu.isPresent()) {
                 Menu newMenu = new Menu(requestDto.getCategory(), 1);
                 menuRepository.save(newMenu);
                 Location location = new Location(requestDto);
-                Post post = new Post(requestDto, user, newMenu, location);
+                Post post = new Post(requestDto, user, newMenu, location, chatRoom);
                 postRepository.save(post);
-//                id = post.getId();
-                postDto = post;
-
+                id = post.getId();
             } else {
                 menu.get().updateMenuCount(+1);
                 Location location = new Location(requestDto);
-                Post post = new Post(requestDto, user, menu.get(), location);
+                Post post = new Post(requestDto, user, menu.get(), location, chatRoom);
                 postRepository.save(post);
-//                id = post.getId();
-                postDto = post;
+                id = post.getId();
             }
-            return postDto;
+            return id;
         } else {
             throw new IllegalArgumentException("로그인하지 않았습니다.");
         }
@@ -92,11 +85,15 @@ public class PostService {
 
     // 모집글 삭제
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
-        chatRoomService.deletePost(postId);
-        post.getMenu().updateMenuCount(-1);
-        postRepository.deleteById(postId);
+        if (!post.getChatRoom().getOwnUserId().equals(user.getId())) {
+            throw new IllegalArgumentException(("삭제 권한이 없습니다."));
+        } else {
+            chatRoomService.deletePost(postId);
+            post.getMenu().updateMenuCount(-1);
+            postRepository.deleteById(postId);
+        }
     }
 
     // 모집글 검색

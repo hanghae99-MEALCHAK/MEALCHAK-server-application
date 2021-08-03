@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -12,6 +14,7 @@ import javax.persistence.*;
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @Column(name="user_id")
     private Long id;
 
     @Column(nullable = false)
@@ -38,6 +41,7 @@ public class User extends Timestamped {
     @Embedded
     @JsonIgnore
     private Location location;
+
 
     public void updateUsername(String newUsername) {
         this.username = newUsername;

@@ -22,7 +22,7 @@ public class ChatRoomListResponseDto {
         this.modifiedAt = chatRoom.getModifiedAt();
         this.title = post.getTitle();
         this.ownUserId = chatRoom.getOwnUserId();
-        this.roomId = chatRoom.getRoomId();
+        this.roomId = chatRoom.getId();
         this.postId = post.getId();
         this.uuid = chatRoom.getUuid();
         this.headCountChat = headCountChat;

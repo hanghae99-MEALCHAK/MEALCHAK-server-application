@@ -19,6 +19,7 @@ public class PostResponseDto {
     private String profileImg;
     private double distance;
     private LocalDateTime createdAt;
+    private Long roomId;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -34,5 +35,6 @@ public class PostResponseDto {
         this.username = post.getUser().getUsername();
         this.profileImg = post.getUser().getProfileImg();
         this.createdAt = post.getCreatedAt();
+        this.roomId = post.getChatRoom().getId();
     }
 }

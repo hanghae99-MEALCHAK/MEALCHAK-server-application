@@ -34,11 +34,12 @@ public class ChatRoomService {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     //채팅방생성
-    public Long createChatRoom(Post post, User user) {
+    @Transactional
+    public ChatRoom createChatRoom(User user) {
         String uuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = new ChatRoom(post, uuid, user);
+        ChatRoom chatRoom = new ChatRoom(uuid, user);
         chatRoomRepository.save(chatRoom);
-        return chatRoom.getRoomId();
+        return chatRoom;
     }
 
     // 사용자별 채팅방 목록 조회
@@ -46,10 +47,9 @@ public class ChatRoomService {
         List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
         List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
-            Long roomId = allChatInfo.getRoomId();
-            ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
+            ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
-            Long headCountChat = userRoomRepository.countAllByRoomId(roomId);
+            Long headCountChat = userRoomRepository.countAllByChatRoom(chatRoom);
             ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
             responseDtos.add(responseDto);
         }
@@ -77,17 +77,15 @@ public class ChatRoomService {
 
     //채팅방에 입장
     public void joinChatRoom(User user, Long id) {
-        AllChatInfo allChatInfo = new AllChatInfo();
-        allChatInfo.setUserId(user.getId());
         ChatRoom chatRoom = chatRoomRepository.findByPostId(id);
-        allChatInfo.setRoomId(chatRoom.getRoomId());
+        AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
         userRoomRepository.save(allChatInfo);
     }
 
     @Transactional
     public void deletePost(Long postId) {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
-        userRoomRepository.deleteByRoomId(chatRoom.getRoomId());
+        userRoomRepository.deleteByChatRoom(chatRoom);
         chatRoomRepository.deleteByPostId(postId);
     }
 }

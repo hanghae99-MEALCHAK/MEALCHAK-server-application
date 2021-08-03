@@ -29,6 +29,11 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
+    @OneToOne
+    @JoinColumn(name="room_id")
+    private ChatRoom chatRoom;
+
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "User_ID")
     private User user;
@@ -47,7 +52,7 @@ public class Post extends Timestamped {
     this.distance = distance;
     }
 
-    public Post(PostRequestDto requestDto, User user, Menu menu, Location location) {
+    public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
         this.restaurant = requestDto.getRestaurant();
@@ -56,6 +61,7 @@ public class Post extends Timestamped {
         this.user = user;
         this.menu = menu;
         this.location = location;
+        this.chatRoom = chatRoom;
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
