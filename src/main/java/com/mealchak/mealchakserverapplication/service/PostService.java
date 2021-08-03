@@ -2,12 +2,11 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.MenuRepository;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
+import com.mealchak.mealchakserverapplication.repository.*;
+import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +22,8 @@ public class PostService {
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
     private final UserRoomRepository userRoomRepository;
+    private final JoinRequestsRepository joinRequestsRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     // 모집글 생성
     @Transactional
@@ -175,5 +176,78 @@ public class PostService {
 
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
+    }
+
+
+    //유저 신청정보 저장
+    public String requestJoin(UserDetailsImpl userDetails, Long id) {
+        Long userId = userDetails.getUser().getId();
+        if (joinRequestsRepository.findByUserIdAndPostId(userId, id) == null) {
+            User user = postRepository.findById(id).get().getUser();
+            Long ownUserId = user.getId();
+            JoinRequests joinRequests = new JoinRequests(userId, id, ownUserId);
+            joinRequestsRepository.save(joinRequests);
+            return "신청완료";
+        } else {
+            return "이미 신청한 글입니다";
+        }
+    }
+
+    //유저 신청정보 불러오기
+    public List<UserInfoAndPostResponseDto> requestJoinList(UserDetailsImpl userDetails) {
+
+        Long userId = userDetails.getUser().getId();
+
+        List<JoinRequests> joinRequestsList = joinRequestsRepository.findByOwnUserId(userId);
+
+        List<UserInfoAndPostResponseDto> userInfoAndPostResponseDtoList = new ArrayList<>();
+
+        for (JoinRequests joinRequests : joinRequestsList) {
+
+            UserInfoMapping userInfoMapping = userRepository.findById(joinRequests.getUserId(), UserInfoMapping.class).orElseThrow(
+                    () -> new IllegalArgumentException("회원이 아닙니다.")
+            );
+
+            Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
+                    () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
+            );
+
+            UserInfoAndPostResponseDto userInfoAndPostResponseDto = new UserInfoAndPostResponseDto();
+
+            userInfoAndPostResponseDto.setUserId(userInfoMapping.getId());
+            userInfoAndPostResponseDto.setUsername(userInfoMapping.getUsername());
+            userInfoAndPostResponseDto.setProfileImg(userInfoMapping.getProfileImg());
+            userInfoAndPostResponseDto.setPostTitle(post.getTitle());
+
+            userInfoAndPostResponseDtoList.add(userInfoAndPostResponseDto);
+        }
+
+        return userInfoAndPostResponseDtoList;
+
+    }
+
+    public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
+        JoinRequests joinRequests = joinRequestsRepository.findById(joinRequestId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 신청입니다.")
+        );
+        if (!tOrF) {
+            joinRequestsRepository.delete(joinRequests);
+            return "거절되었습니다";
+        }
+        User user = userRepository.findById(joinRequests.getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
+        Long postId = joinRequests.getPostId();
+        if (!chatRoomService.checkDuplicate(user, postId)) {
+            if (chatRoomService.checkHeadCount(postId)) {
+                ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
+                AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
+                userRoomRepository.save(allChatInfo);
+                joinRequestsRepository.delete(joinRequests);
+            } else {
+                throw new IllegalArgumentException("채팅방 인원 초과");
+            }
+        }
+        return "승인되었습니다";
     }
 }

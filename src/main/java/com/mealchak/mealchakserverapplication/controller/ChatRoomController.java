@@ -38,11 +38,5 @@ public class ChatRoomController {
     public Page<ChatMessage> getRoomMessage(@PathVariable String roomId, @PageableDefault Pageable pageable) {
         return chatMessageService.getChatMessageByRoomId(roomId, pageable);
     }
-
-    // 채팅방에 입장
-    @ApiOperation(value = "채팅방에 입장", notes = "채팅방에 입장")
-    @GetMapping("/chat/join/{id}")
-    public void joinChatRoom(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        chatRoomService.joinChatRoom(userDetails.getUser(), id);
-    }
+    
 }
