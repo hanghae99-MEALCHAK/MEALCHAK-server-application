@@ -17,14 +17,13 @@ public class FileResponseDto {
     private String fileType;
 
     public File toEntity() {
-        File build = File.builder()
+        return File.builder()
                 .id(id)
                 .originFileName(originFileName)
                 .fileName(fileName)
                 .filePath(filePath)
                 .fileType(fileType)
                 .build();
-        return build;
     }
 
     @Builder

@@ -51,7 +51,6 @@ public class UserService {
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
-        String username = nickname;
         // 패스워드 = 카카오 Id + ADMIN TOKEN
         String password = kakaoId + Pass_Salt;
 
@@ -128,7 +127,10 @@ public class UserService {
             if (files != null) {
                 try {
                     String originFilename = files.getOriginalFilename();
-                    String nameToMD5 = new MD5Generator(originFilename).toString();
+                    String nameToMD5;
+                    if (originFilename != null) {
+                        nameToMD5 = new MD5Generator(originFilename).toString();
+                    }else{throw new IllegalArgumentException("");}
                     // 랜덤 키 생성
                     String uuid = UUID.randomUUID().toString();
                     // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함

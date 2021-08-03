@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 public class UserInfoResponseDto {
-    private String username;
-    private String comment;
-    private String profileImg;
+    private final String username;
+    private final String comment;
+    private final String profileImg;
 
     public UserInfoResponseDto(User user) {
         this.username = user.getUsername();

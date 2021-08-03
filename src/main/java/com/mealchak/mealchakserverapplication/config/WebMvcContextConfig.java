@@ -10,7 +10,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 public class WebMvcContextConfig {
 
-    private final int FILE_MAX_UPLOAD_SIZE = 10_485_760; // 1024 * 1024 * 10
+    private static final int FILE_MAX_UPLOAD_SIZE = 10_485_760; // 1024 * 1024 * 10
     // 필요에 따라 변경
 
     @Bean

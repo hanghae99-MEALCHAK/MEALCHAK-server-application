@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ChatRoomListResponseDto {
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private String title;
-    private Long ownUserId;
-    private Long roomId;
-    private Long postId;
-    private Long headCountChat;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
+    private final String title;
+    private final Long ownUserId;
+    private final Long roomId;
+    private final Long postId;
+    private final Long headCountChat;
 
     public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat) {
         this.createdAt = chatRoom.getCreatedAt();

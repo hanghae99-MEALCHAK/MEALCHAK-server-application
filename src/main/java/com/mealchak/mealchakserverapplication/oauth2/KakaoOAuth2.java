@@ -17,8 +17,7 @@ public class KakaoOAuth2 {
         // 1. 인가코드 -> 액세스 토큰
         String accessToken = getAccessToken(authorizedCode);
         // 2. 액세스 토큰 -> 카카오 사용자 정보
-        KakaoUserInfo userInfo = getUserInfoByToken(accessToken);
-        return userInfo;
+        return getUserInfoByToken(accessToken);
     }
 
     public String getAccessToken(String authorizedCode) {
@@ -83,7 +82,7 @@ public class KakaoOAuth2 {
         try {
             profileImg = body.getJSONObject("properties").getString("profile_image");
             throw new Exception("프로필 사진 없음 기본 이미지로 대체");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return new KakaoUserInfo(id, email, nickname, profileImg);
     }
