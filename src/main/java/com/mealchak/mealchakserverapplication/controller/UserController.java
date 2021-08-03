@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserInfoUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
-import com.mealchak.mealchakserverapplication.dto.request.UserUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;

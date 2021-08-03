@@ -1,10 +1,10 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -45,7 +44,7 @@ public class ChatRoomService {
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllById(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
@@ -102,7 +101,7 @@ public class ChatRoomService {
 
     // AllchatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId){
-        List<AllChatInfo> allChatInfos = userRoomRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfos = userRoomRepository.findAllById(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos){
             if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
                 return true;

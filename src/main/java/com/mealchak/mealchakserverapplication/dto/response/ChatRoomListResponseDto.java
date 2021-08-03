@@ -14,7 +14,6 @@ public class ChatRoomListResponseDto {
     private Long ownUserId;
     private Long roomId;
     private Long postId;
-    private String uuid;
     private Long headCountChat;
 
     public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat) {
@@ -24,7 +23,6 @@ public class ChatRoomListResponseDto {
         this.ownUserId = chatRoom.getOwnUserId();
         this.roomId = chatRoom.getId();
         this.postId = post.getId();
-        this.uuid = chatRoom.getUuid();
         this.headCountChat = headCountChat;
     }
 }
