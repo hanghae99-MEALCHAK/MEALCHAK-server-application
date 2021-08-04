@@ -7,7 +7,7 @@ import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
+import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class ChatRoomService {
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
     private final ChatRoomRepository chatRoomRepository;
-    private final UserRoomRepository userRoomRepository;
+    private final AllChatInfoRepository allChatInfoRepository;
     private final PostRepository postRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -44,11 +44,11 @@ public class ChatRoomService {
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtoList = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfoList = allChatInfoRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
-            Long headCountChat = userRoomRepository.countAllByChatRoom(chatRoom);
+            Long headCountChat = allChatInfoRepository.countAllByChatRoom(chatRoom);
             ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
             responseDtoList.add(responseDto);
         }
@@ -78,13 +78,13 @@ public class ChatRoomService {
     public Boolean checkHeadCount(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         int postHeadCount = post.getHeadCount();
-        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
     }
 
     // AllchatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId){
-        List<AllChatInfo> allChatInfos = userRoomRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos){
             if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
                 return true;
@@ -96,7 +96,7 @@ public class ChatRoomService {
     @Transactional
     public void deletePost(Long postId) {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
-        userRoomRepository.deleteByChatRoom(chatRoom);
+        allChatInfoRepository.deleteByChatRoom(chatRoom);
         chatRoomRepository.deleteByPostId(postId);
     }
 }

@@ -21,7 +21,7 @@ public class PostService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
-    private final UserRoomRepository userRoomRepository;
+    private final AllChatInfoRepository allChatInfoRepository;
     private final JoinRequestsRepository joinRequestsRepository;
     private final ChatRoomRepository chatRoomRepository;
 
@@ -68,7 +68,7 @@ public class PostService {
 
     // 모집글 HeadCount 추가
     public void updateHeadCount(Post post) {
-        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
         post.updateNowHeadCount(nowHeadCount);
     }
 
@@ -237,7 +237,7 @@ public class PostService {
             if (chatRoomService.checkHeadCount(postId)) {
                 ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
                 AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
-                userRoomRepository.save(allChatInfo);
+                allChatInfoRepository.save(allChatInfo);
                 joinRequestsRepository.delete(joinRequests);
             } else {
                 throw new IllegalArgumentException("채팅방 인원 초과");

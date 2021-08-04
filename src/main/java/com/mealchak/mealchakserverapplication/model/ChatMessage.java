@@ -41,11 +41,12 @@ public class ChatMessage extends Timestamped {
 
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String senderId, String message) {
+    public ChatMessage(MessageType type, String roomId, String sender, String senderId, String senderImg, String message) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
         this.senderId = senderId;
+        this.senderImg = senderImg;
         this.message = message;
     }
 
