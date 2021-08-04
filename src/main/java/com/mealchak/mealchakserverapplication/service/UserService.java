@@ -78,7 +78,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HeaderDto headerDto = new HeaderDto();
         User member = userRepository.findByKakaoId(kakaoId).orElse(null);
-        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername(), member.getProfileImg()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername()));
         return headerDto;
     }
 
@@ -120,7 +120,7 @@ public class UserService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername(), user.getProfileImg());
+        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
     }
 
     // 유저 정보 수정
