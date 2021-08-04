@@ -106,7 +106,7 @@ public class ChatRoomService {
                 () -> new IllegalArgumentException("존재하지않는게시글")
         );
         Long roomId = post.getChatRoom().getId();
-        AllChatInfo allChatInfo = allChatInfoRepository.findbyRoomIdAndUserId(roomId, userDetails.getUser().getId());
+        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
         allChatInfoRepository.delete(allChatInfo);
     }
 }
