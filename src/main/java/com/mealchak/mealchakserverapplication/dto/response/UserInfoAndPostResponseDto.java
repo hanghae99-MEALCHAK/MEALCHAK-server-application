@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,13 @@ public class UserInfoAndPostResponseDto {
     private String profileImg;
     private String postTitle;
 
+    @Builder
+    public UserInfoAndPostResponseDto(Long joinRequestId,Long userId,String username,String profileImg, String postTitle){
+        this.joinRequestId = joinRequestId;
+        this.userId = userId;
+        this.username = username;
+        this.profileImg = profileImg;
+        this.postTitle = postTitle;
+    }
 
 }

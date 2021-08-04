@@ -84,7 +84,7 @@
     function connect() {
         // pub/sub event
         //각각 connect,subscribe 헤더
-        ws.connect({token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2Mjc5NTMxNTgsImV4cCI6MTYyNzk3NDc1OH0.YIXKcwdwNcrJjHHdc4WIEaTK8b10sdzk-7hsBG6xnL8"}, function(frame) {
+        ws.connect({}, function(frame) {
             ws.subscribe("/sub/api/chat/rooms/"+1, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv)
