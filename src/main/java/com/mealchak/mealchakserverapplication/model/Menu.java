@@ -28,6 +28,7 @@ public class Menu {
     public Menu(String category, int count) {
         this.category = category;
         this.count = count;
+        this.imgUrl = "http://115.85.182.57:8080/image/menu_japanese.jpg";
     }
 
     public void updateMenuCount(int count) {

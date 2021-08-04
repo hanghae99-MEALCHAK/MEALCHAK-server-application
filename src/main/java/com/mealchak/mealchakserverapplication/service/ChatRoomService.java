@@ -5,6 +5,7 @@ import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
@@ -55,7 +56,6 @@ public class ChatRoomService {
     }
 
 
-
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);    // redistemplate에 (입장type, ,) 누가 어떤방에 들어갔는지 정보를 리턴
     }
@@ -73,11 +73,20 @@ public class ChatRoomService {
         return chatRoomRepository.findAll();
     }
 
-
     @Transactional
     public void deletePost(Long postId) {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
         allChatInfoRepository.deleteByChatRoom(chatRoom);
         chatRoomRepository.deleteByPostId(postId);
+    }
+
+    @Transactional
+    public void quitChat(Long postId, UserDetailsImpl userDetails) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지않는게시글")
+        );
+        Long roomId = post.getChatRoom().getId();
+        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+        allChatInfoRepository.delete(allChatInfo);
     }
 }
