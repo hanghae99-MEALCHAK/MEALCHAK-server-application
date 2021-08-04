@@ -195,11 +195,8 @@ public class PostService {
 
     //유저 신청정보 불러오기
     public List<UserInfoAndPostResponseDto> requestJoinList(UserDetailsImpl userDetails) {
-
         Long userId = userDetails.getUser().getId();
-
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByOwnUserId(userId);
-
         List<UserInfoAndPostResponseDto> userInfoAndPostResponseDtoList = new ArrayList<>();
 
         for (JoinRequests joinRequests : joinRequestsList) {
@@ -213,17 +210,15 @@ public class PostService {
             );
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = new UserInfoAndPostResponseDto();
-
             userInfoAndPostResponseDto.setUserId(userInfoMapping.getId());
             userInfoAndPostResponseDto.setUsername(userInfoMapping.getUsername());
             userInfoAndPostResponseDto.setProfileImg(userInfoMapping.getProfileImg());
             userInfoAndPostResponseDto.setPostTitle(post.getTitle());
-
+            userInfoAndPostResponseDto.setJoinRequestId(joinRequests.getId());
             userInfoAndPostResponseDtoList.add(userInfoAndPostResponseDto);
         }
 
         return userInfoAndPostResponseDtoList;
-
     }
 
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {

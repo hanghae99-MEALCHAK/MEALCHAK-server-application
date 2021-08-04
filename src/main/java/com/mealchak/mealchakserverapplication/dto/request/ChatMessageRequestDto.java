@@ -7,6 +7,8 @@ import lombok.Getter;
 public class ChatMessageRequestDto {
     private ChatMessage.MessageType type;
     private String roomId;
+    private String senderId;
     private String sender;
+    private String senderImg;
     private String message;
 }

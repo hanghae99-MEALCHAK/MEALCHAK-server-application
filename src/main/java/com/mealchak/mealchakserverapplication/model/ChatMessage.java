@@ -17,7 +17,7 @@ public class ChatMessage extends Timestamped {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column
@@ -31,14 +31,21 @@ public class ChatMessage extends Timestamped {
     private String sender;
 
     @Column
+    private String senderId;
+
+    @Column
+    private String senderImg;
+
+    @Column
     private String message;
 
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String message) {
+    public ChatMessage(MessageType type, String roomId, String sender, String senderId, String message) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
+        this.senderId = senderId;
         this.message = message;
     }
 
@@ -47,6 +54,8 @@ public class ChatMessage extends Timestamped {
         this.type = chatMessageRequestDto.getType();
         this.roomId = chatMessageRequestDto.getRoomId();
         this.sender = chatMessageRequestDto.getSender();
+        this.senderImg = chatMessageRequestDto.getSenderImg();
+        this.senderId = chatMessageRequestDto.getSenderId();
         this.message = chatMessageRequestDto.getMessage();
     }
 }

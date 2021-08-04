@@ -43,16 +43,16 @@ public class ChatRoomService {
 
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
-        List<ChatRoomListResponseDto> responseDtos = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllById(user.getId());
+        List<ChatRoomListResponseDto> responseDtoList = new ArrayList<>();
+        List<AllChatInfo> allChatInfoList = userRoomRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
             Long headCountChat = userRoomRepository.countAllByChatRoom(chatRoom);
             ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
-            responseDtos.add(responseDto);
+            responseDtoList.add(responseDto);
         }
-        return responseDtos;
+        return responseDtoList;
     }
 
 
@@ -84,7 +84,7 @@ public class ChatRoomService {
 
     // AllchatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId){
-        List<AllChatInfo> allChatInfos = userRoomRepository.findAllById(user.getId());
+        List<AllChatInfo> allChatInfos = userRoomRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos){
             if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
                 return true;

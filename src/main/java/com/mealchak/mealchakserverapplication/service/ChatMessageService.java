@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class ChatMessageService {
 
     public void sendChatMessage(ChatMessage chatMessageRequestDto) {
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "가 입장했습니다.");
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 입장했습니다.");
             chatMessageRequestDto.setSender("[알림]");
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
@@ -40,8 +41,8 @@ public class ChatMessageService {
 
     public Page<ChatMessage> getChatMessageByRoomId(String roomId, Pageable pageable) {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
-        pageable = PageRequest.of(page, 150);
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt" );
+        pageable = PageRequest.of(page, 150, sort);
         return chatMessageRepository.findByRoomId(roomId, pageable);
     }
-
 }

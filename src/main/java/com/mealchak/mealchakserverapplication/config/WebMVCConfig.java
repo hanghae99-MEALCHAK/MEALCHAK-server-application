@@ -26,6 +26,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
     // 경로 수정 필요
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**").addResourceLocations("file:/Users/kh1909/MEALCHAK-server-application/image");
+        registry.addResourceHandler("/image/**")
+                .addResourceLocations("file:/home/ubuntu/image/");
     }
 }
