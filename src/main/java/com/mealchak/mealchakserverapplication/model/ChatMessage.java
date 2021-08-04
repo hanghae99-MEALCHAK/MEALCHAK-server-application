@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.model;
 
 import com.mealchak.mealchakserverapplication.dto.request.ChatMessageRequestDto;
+import com.mealchak.mealchakserverapplication.service.UserService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,35 +29,24 @@ public class ChatMessage extends Timestamped {
     private String roomId;
 
     @Column
-    private String sender;
-
-    @Column
-    private String senderId;
-
-    @Column
-    private String senderImg;
-
-    @Column
     private String message;
 
+    @ManyToOne
+    private User sender;
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String senderId, String senderImg, String message) {
+    public ChatMessage(MessageType type, String roomId, String message, User sender) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
-        this.senderId = senderId;
-        this.senderImg = senderImg;
         this.message = message;
     }
 
     @Builder
-    public ChatMessage(ChatMessageRequestDto chatMessageRequestDto) {
+    public ChatMessage(ChatMessageRequestDto chatMessageRequestDto, UserService userService) {
         this.type = chatMessageRequestDto.getType();
         this.roomId = chatMessageRequestDto.getRoomId();
-        this.sender = chatMessageRequestDto.getSender();
-        this.senderImg = chatMessageRequestDto.getSenderImg();
-        this.senderId = chatMessageRequestDto.getSenderId();
+        this.sender =  userService.getUser(chatMessageRequestDto.getSenderId());
         this.message = chatMessageRequestDto.getMessage();
     }
 }

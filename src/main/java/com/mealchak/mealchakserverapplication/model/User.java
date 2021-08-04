@@ -33,21 +33,22 @@ public class User extends Timestamped {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String profileImg;
 
-    @Column(nullable = true)
+    @Column
+    @JsonIgnore
     private String comment;
 
     @Embedded
     @JsonIgnore
     private Location location;
 
+    public User(String username) {
+        this.username = username;
+    }
+
     public void updateUserInfo(String username, String comment, String profileImg) {
         this.username = username;
         this.comment = comment;
         this.profileImg = profileImg;
-    }
-
-    public void updateUsername(String newUsername) {
-        this.username = newUsername;
     }
 
     public void updateUserDisc(Location location) {
@@ -56,10 +57,6 @@ public class User extends Timestamped {
 
     public User(Location location) {
         this.location = location;
-    }
-
-    public void updateUserImg(String filePath) {
-        this.profileImg = filePath;
     }
 
     public User(String username, String password) {
