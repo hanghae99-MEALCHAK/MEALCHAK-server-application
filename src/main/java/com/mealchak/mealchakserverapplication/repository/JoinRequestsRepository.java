@@ -8,4 +8,5 @@ import java.util.List;
 public interface JoinRequestsRepository extends JpaRepository<JoinRequests,Long> {
     JoinRequests findByUserIdAndPostId(Long userid,Long postId);
     List<JoinRequests> findByOwnUserId(Long ownUserId);
+    List<JoinRequests> findByUserId(Long userId);
 }

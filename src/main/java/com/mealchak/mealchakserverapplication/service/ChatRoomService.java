@@ -29,7 +29,6 @@ public class ChatRoomService {
     private HashOperations<String, String, String> hashOpsEnterInfo;
     private final ChatRoomRepository chatRoomRepository;
     private final AllChatInfoRepository allChatInfoRepository;
-    private final PostRepository postRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
 
@@ -72,25 +71,6 @@ public class ChatRoomService {
     //채팅방전부찾기
     public List<ChatRoom> getAll() {
         return chatRoomRepository.findAll();
-    }
-
-    // 채팅방 인원수 제한
-    public Boolean checkHeadCount(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
-        int postHeadCount = post.getHeadCount();
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
-        return postHeadCount > nowHeadCount;
-    }
-
-    // AllchatInfo 테이블 중복생성금지
-    public Boolean checkDuplicate(User user, Long postId) {
-        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
-        for (AllChatInfo allChatInfo : allChatInfos) {
-            if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Transactional

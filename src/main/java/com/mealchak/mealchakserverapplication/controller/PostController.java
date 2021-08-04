@@ -78,22 +78,4 @@ public class PostController {
         return postService.getPostByUserDist(userDetails, range, max);
     }
 
-    @ApiOperation(value = "게시글 입장 신청", notes = "게시글 입장 신청")
-    @GetMapping("/posts/join/request/{id}")
-    public String requestJoin(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id){
-        return postService.requestJoin(userDetails,id);
-    }
-
-
-    @ApiOperation(value = "게시글 입장 신청 목록", notes = "게시글 입장 신청 목록")
-    @GetMapping("/posts/join/request/list")
-    public List<UserInfoAndPostResponseDto> requestJoinList(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return postService.requestJoinList(userDetails);
-    }
-
-    @ApiOperation(value = "게시글 입장 신청 승인/비승인", notes = "게시글 입장 신청 승인/비승인")
-    @GetMapping("/posts/join/request/accept/{joinRequestId}")
-    public String acceptJoinRequest(@PathVariable Long joinRequestId,@RequestParam(value = "accept") boolean tOrF){
-        return postService.acceptJoinRequest(joinRequestId,tOrF);
-    }
 }
