@@ -73,7 +73,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HeaderDto headerDto = new HeaderDto();
         User member = userRepository.findByKakaoId(kakaoId).orElse(null);
-        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername()));
+        headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername(), member.getProfileImg()));
         return headerDto;
     }
 
@@ -113,13 +113,13 @@ public class UserService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername());
+        return jwtTokenProvider.createToken(user.getEmail(), user.getId(), user.getUsername(), user.getProfileImg());
     }
 
     // 유저 정보 수정
     @Transactional
     public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails) {
-
+        String filename ="";
         if (userDetails != null) {
             User user = userRepository.findById(userDetails.getUser().getId())
                     .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -134,7 +134,7 @@ public class UserService {
                     // 랜덤 키 생성
                     String uuid = UUID.randomUUID().toString();
                     // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
-                    String filename = nameToMD5 + "_" + uuid;
+                    filename = nameToMD5 + "_" + uuid+ originFilename;
                     // 해당 위치에 이미지 저장
                     String savePath = System.getProperty("user.dir") + "/image";
                     // 파일이 저장되는 폴더가 없으면 폴더를 생성
@@ -166,7 +166,7 @@ public class UserService {
             if (comment == null) {
                 comment = user.getComment();
             }
-            user.updateUserInfo(username, comment, filePath);
+            user.updateUserInfo(username, comment, "http://52.78.204.238/image/"+filename);
             return new UserInfoResponseDto(user);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");

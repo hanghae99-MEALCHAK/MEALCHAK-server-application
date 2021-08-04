@@ -92,7 +92,7 @@ public class PostController {
     }
 
     @ApiOperation(value = "게시글 입장 신청 승인/비승인", notes = "게시글 입장 신청 승인/비승인")
-    @GetMapping("/posts/join/request/{joinRequestId}/accept")
+    @GetMapping("/posts/join/request/accept/{joinRequestId}")
     public String acceptJoinRequest(@PathVariable Long joinRequestId,@RequestParam(value = "accept") boolean tOrF){
         return postService.acceptJoinRequest(joinRequestId,tOrF);
     }

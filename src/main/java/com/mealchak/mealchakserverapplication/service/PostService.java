@@ -21,7 +21,7 @@ public class PostService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
-    private final UserRoomRepository userRoomRepository;
+    private final AllChatInfoRepository allChatInfoRepository;
     private final JoinRequestsRepository joinRequestsRepository;
     private final ChatRoomRepository chatRoomRepository;
 
@@ -68,7 +68,7 @@ public class PostService {
 
     // 모집글 HeadCount 추가
     public void updateHeadCount(Post post) {
-        Long nowHeadCount = userRoomRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
         post.updateNowHeadCount(nowHeadCount);
     }
 
@@ -195,11 +195,8 @@ public class PostService {
 
     //유저 신청정보 불러오기
     public List<UserInfoAndPostResponseDto> requestJoinList(UserDetailsImpl userDetails) {
-
         Long userId = userDetails.getUser().getId();
-
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByOwnUserId(userId);
-
         List<UserInfoAndPostResponseDto> userInfoAndPostResponseDtoList = new ArrayList<>();
 
         for (JoinRequests joinRequests : joinRequestsList) {
@@ -213,17 +210,15 @@ public class PostService {
             );
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = new UserInfoAndPostResponseDto();
-
             userInfoAndPostResponseDto.setUserId(userInfoMapping.getId());
             userInfoAndPostResponseDto.setUsername(userInfoMapping.getUsername());
             userInfoAndPostResponseDto.setProfileImg(userInfoMapping.getProfileImg());
             userInfoAndPostResponseDto.setPostTitle(post.getTitle());
-
+            userInfoAndPostResponseDto.setJoinRequestId(joinRequests.getId());
             userInfoAndPostResponseDtoList.add(userInfoAndPostResponseDto);
         }
 
         return userInfoAndPostResponseDtoList;
-
     }
 
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
@@ -242,7 +237,7 @@ public class PostService {
             if (chatRoomService.checkHeadCount(postId)) {
                 ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
                 AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
-                userRoomRepository.save(allChatInfo);
+                allChatInfoRepository.save(allChatInfo);
                 joinRequestsRepository.delete(joinRequests);
             } else {
                 throw new IllegalArgumentException("채팅방 인원 초과");

@@ -15,6 +15,6 @@ public class FileService {
 
     @Transactional
     public void saveFile(FileResponseDto responseDto) {
-        fileRepository.save(responseDto.toEntity()).getId();
+        fileRepository.save(responseDto.toEntity());
     }
 }
