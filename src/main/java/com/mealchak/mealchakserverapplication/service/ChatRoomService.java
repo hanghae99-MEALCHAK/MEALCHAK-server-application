@@ -57,7 +57,6 @@ public class ChatRoomService {
     }
 
 
-
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);    // redistemplate에 (입장type, ,) 누가 어떤방에 들어갔는지 정보를 리턴
     }
@@ -76,7 +75,7 @@ public class ChatRoomService {
     }
 
     // 채팅방 인원수 제한
-    public Boolean checkHeadCount(Long postId){
+    public Boolean checkHeadCount(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
@@ -84,10 +83,10 @@ public class ChatRoomService {
     }
 
     // AllchatInfo 테이블 중복생성금지
-    public Boolean checkDuplicate(User user, Long postId){
+    public Boolean checkDuplicate(User user, Long postId) {
         List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
-        for (AllChatInfo allChatInfo : allChatInfos){
-            if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
+        for (AllChatInfo allChatInfo : allChatInfos) {
+            if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
                 return true;
             }
         }
@@ -102,12 +101,12 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void quitChat(Long postId, UserDetailsImpl userDetails){
+    public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지않는게시글")
         );
         Long roomId = post.getChatRoom().getId();
-        AllChatInfo allChatInfo = userRoomRepository.findbyRoomIdAndUserId(roomId,userDetails.getUser().getId());
-        userRoomRepository.delete(allChatInfo);
+        AllChatInfo allChatInfo = allChatInfoRepository.findbyRoomIdAndUserId(roomId, userDetails.getUser().getId());
+        allChatInfoRepository.delete(allChatInfo);
     }
 }
