@@ -53,12 +53,13 @@ public class UserController {
     // 유저 위치 저장 (위도, 경도, 주소)
     @ApiOperation(value = "유저 위치 저장", notes = "유저의 위치를 저장합니다.")
     @PutMapping("/user/location")
-    public Location updateUserLocation(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserLocationUpdateDto updateDto) {
+    public Location updateUserLocation(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                       @RequestBody UserLocationUpdateDto updateDto) {
         return userService.updateUserLocation(updateDto, userDetails.getUser());
     }
 
-    // 유저 프로필 사진 변경
-    @ApiOperation(value = "유저 프로필사진 변경", notes = "유저의 프로필사진을 변경합니다.")
+    // 유저 정보 수정
+    @ApiOperation(value = "유저 정보 수정", notes = "유저의 프로필사진, 닉네임, 한 줄 소개를 수정합니다.")
     @PutMapping("userInfo/update")
     public UserInfoResponseDto updateUserInfo(@RequestParam(value = "file",required = false) MultipartFile files,
                                               @RequestParam(value = "username",required = false) String username,

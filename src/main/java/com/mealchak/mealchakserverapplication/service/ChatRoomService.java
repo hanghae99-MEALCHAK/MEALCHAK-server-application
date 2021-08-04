@@ -28,6 +28,7 @@ public class ChatRoomService {
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
     private final ChatRoomRepository chatRoomRepository;
+    private final PostRepository postRepository;
     private final AllChatInfoRepository allChatInfoRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";

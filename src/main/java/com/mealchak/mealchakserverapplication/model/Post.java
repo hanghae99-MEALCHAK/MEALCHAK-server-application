@@ -1,11 +1,13 @@
 package com.mealchak.mealchakserverapplication.model;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
@@ -53,12 +55,6 @@ public class Post extends Timestamped {
     @Transient
     private Long nowHeadCount;
 
-    public void updateDistance(double distance) {
-    this.distance = distance;
-    }
-
-    public void updateNowHeadCount(Long nowHeadCount) { this.nowHeadCount = nowHeadCount; }
-
     public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
@@ -80,6 +76,14 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.menu = menu;
         this.location = location;
+    }
+
+    public void updateDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void updateNowHeadCount(Long nowHeadCount) {
+        this.nowHeadCount = nowHeadCount;
     }
 
     public void expired(boolean checkValid){

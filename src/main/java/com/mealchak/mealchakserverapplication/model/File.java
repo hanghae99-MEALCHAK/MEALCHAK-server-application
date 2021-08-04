@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class File {
 
     @Id
@@ -27,8 +29,7 @@ public class File {
     private String fileType;
 
     @Builder
-    public File(Long id, String originFileName, String fileName, String filePath, String fileType) {
-        this.id = id;
+    public File(String originFileName, String fileName, String filePath, String fileType) {
         this.originFileName = originFileName;
         this.fileName = fileName;
         this.filePath = filePath;

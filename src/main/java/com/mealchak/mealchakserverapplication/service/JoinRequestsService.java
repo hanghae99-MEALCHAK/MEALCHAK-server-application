@@ -6,7 +6,6 @@ import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
-import javassist.expr.NewArray;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

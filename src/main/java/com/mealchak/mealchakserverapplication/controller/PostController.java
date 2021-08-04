@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
-import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
@@ -28,7 +27,8 @@ public class PostController {
     // 모집글 생성
     @ApiOperation(value = "모집글 작성", notes = "모집글 작성합니다.")
     @PostMapping("/posts")
-    public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto requestDto) {
+    public void createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                           @RequestBody PostRequestDto requestDto) {
         ChatRoom chatRoom = chatRoomService.createChatRoom(userDetails.getUser());
         postService.createPost(userDetails, requestDto, chatRoom);
         userRoomService.save(userDetails.getUser(), chatRoom);
@@ -73,8 +73,8 @@ public class PostController {
     @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
     @GetMapping("/posts/around")
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                               @RequestParam(value = "range", required = false, defaultValue = "3") int range,
-                                                               @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
+                                                         @RequestParam(value = "range", required = false, defaultValue = "3") int range,
+                                                         @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
         return postService.getPostByUserDist(userDetails, range, max);
     }
 

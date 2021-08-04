@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -41,24 +43,6 @@ public class User extends Timestamped {
     @JsonIgnore
     private Location location;
 
-    public User(String username) {
-        this.username = username;
-    }
-
-    public void updateUserInfo(String username, String comment, String profileImg) {
-        this.username = username;
-        this.comment = comment;
-        this.profileImg = profileImg;
-    }
-
-    public void updateUserDisc(Location location) {
-        this.location = location;
-    }
-
-    public User(Location location) {
-        this.location = location;
-    }
-
     public User(String username, String password) {
         this.kakaoId = 123L;
         this.username = username;
@@ -75,6 +59,16 @@ public class User extends Timestamped {
         this.password = password;
         this.email = email;
         this.profileImg = profileImg;
+        this.location = location;
+    }
+
+    public void updateUserInfo(String username, String comment, String profileImg) {
+        this.username = username;
+        this.comment = comment;
+        this.profileImg = profileImg;
+    }
+
+    public void updateUserDisc(Location location) {
         this.location = location;
     }
 }

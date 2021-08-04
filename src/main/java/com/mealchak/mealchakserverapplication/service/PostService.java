@@ -68,7 +68,7 @@ public class PostService {
         post.updateNowHeadCount(nowHeadCount);
     }
 
-    // fintById(postId)
+    // findById(postId)
     public Post getPost(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
     }
@@ -77,11 +77,13 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto) {
         Location location = new Location(requestDto);
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         Menu menu = post.getMenu();
         if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
-            menu = menuRepository.findByCategory(requestDto.getCategory()).orElseThrow(() -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
+            menu = menuRepository.findByCategory(requestDto.getCategory()).orElseThrow(
+                    () -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
             menu.updateMenuCount(+1);
         }
         updateHeadCount(post);
@@ -92,7 +94,8 @@ public class PostService {
     // 모집글 삭제
     @Transactional
     public void deletePost(Long postId, User user) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         if (!post.getChatRoom().getOwnUserId().equals(user.getId())) {
             throw new IllegalArgumentException(("삭제 권한이 없습니다."));
         } else {
