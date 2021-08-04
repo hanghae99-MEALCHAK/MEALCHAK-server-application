@@ -38,5 +38,4 @@ public class ChatRoomController {
     public Page<ChatMessage> getRoomMessage(@PathVariable String roomId, @PageableDefault Pageable pageable) {
         return chatMessageService.getChatMessageByRoomId(roomId, pageable);
     }
-    
 }
