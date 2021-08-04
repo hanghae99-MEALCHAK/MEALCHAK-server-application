@@ -24,17 +24,17 @@ public class ChatMessageService {
         if (lastIndex != -1) {
             return destination.substring(lastIndex + 1);
         } else {
-            return "";
+            throw new IllegalArgumentException("lastIndex 오류입니다.");
         }
     }
 
     public void sendChatMessage(ChatMessage chatMessageRequestDto) {
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 참여중입니다.");
-            chatMessageRequestDto.setSender("[알림]");
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 참여중입니다.");
+            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
-            chatMessageRequestDto.setSender("[알림]");
+            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
         }
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }

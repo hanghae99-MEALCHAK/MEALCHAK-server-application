@@ -1,10 +1,12 @@
 package com.mealchak.mealchakserverapplication.handler;
 
-import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
+import com.mealchak.mealchakserverapplication.model.ChatMessage;
+import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsServiceImpl;
-import com.mealchak.mealchakserverapplication.service.ChatRoomService;
+import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
+import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -12,7 +14,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class StompHandler implements ChannelInterceptor {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository userRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -35,28 +37,33 @@ public class StompHandler implements ChannelInterceptor {
             String jwtToken = accessor.getFirstNativeHeader("token");
             log.info("CONNECT {}", jwtToken);
             jwtTokenProvider.validateToken(jwtToken);
-        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {// 채팅룸 구독요청
-            // header정보에서 구독 destination정보를 얻고, roomId를 추출한다.
+        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) { // 채팅룸 구독요청
+            // header 정보에서 구독 destination 정보를 얻고, roomId를 추출한다.
             String roomId = chatService.getRoomId(Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId"));
+
             // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             chatRoomService.setUserEnterInfo(sessionId, roomId);
+
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
             //토큰 가져옴
             String jwtToken = accessor.getFirstNativeHeader("token");
-            String name;
+            User user;
             if (jwtToken != null) {
-                //토큰으로 userDetails 가져옴
-                UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
-                //userDetails 에서 username 가져옴
-                name = userDetails.getUsername();
-            } else {
-                name = "UnknownUser";
+                //토큰으로 user 가져옴
+                user = userRepository.findByEmail(jwtTokenProvider.getUserPk(jwtToken), User.class)
+                        .orElseThrow(()->new IllegalArgumentException("user 가 존재하지 않습니다."));
+            }else {
+                throw new IllegalArgumentException("유효하지 않은 token 입니다.");
             }
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
-            log.info("SUBSCRIBED {}, {}", name, roomId);
+            chatService.sendChatMessage(ChatMessage.builder()
+                    .type(ChatMessage.MessageType.ENTER)
+                    .roomId(roomId)
+                    .sender(user)
+                    .build());
+            log.info("SUBSCRIBED {}, {}", user.getUsername(), roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
-            // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
+            // 연결이 종료된 클라이언트 sesssion Id 로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = chatRoomService.getUserEnterRoomId(sessionId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)

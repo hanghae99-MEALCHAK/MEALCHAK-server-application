@@ -172,4 +172,8 @@ public class UserService {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
+
+    public User getUser(Long senderId) {
+        return userRepository.findById(senderId).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+    }
 }
