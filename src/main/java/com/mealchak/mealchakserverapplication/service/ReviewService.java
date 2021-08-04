@@ -6,6 +6,7 @@ import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.ReviewRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.mapping.ReviewListMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +23,23 @@ public class ReviewService {
     public User getUser(UserDetailsImpl userDetails) {
         if (userDetails != null) {
             User user = userRepository.findById(userDetails.getUser().getId()).
-                    orElseThrow(()->new IllegalArgumentException("userId가 존재하지 않습니다."));
+                    orElseThrow(() -> new IllegalArgumentException("userId가 존재하지 않습니다."));
             return user;
-        }else{
+        } else {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
     }
 
-    public List<Review> getReview(UserDetailsImpl userDetails) {
+    public List<ReviewListMapping> getReview(UserDetailsImpl userDetails) {
         User user = getUser(userDetails);
         return reviewRepository.findAllByUserId(user.getId());
     }
 
     // 리뷰 작성
     public void createReview(UserDetailsImpl userDetails, ReviewRequestDto requestDto, Long userId) {
-        User user = getUser(userDetails);
-        User writer = userRepository.findById(userId).
-                orElseThrow(()->new IllegalArgumentException("작성자가 존재하지 않습니다."));
+        User writer = getUser(userDetails);
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new IllegalArgumentException("작성자가 존재하지 않습니다."));
         Review review = new Review(requestDto, user, writer);
         reviewRepository.save(review);
     }
@@ -48,10 +49,10 @@ public class ReviewService {
     public void updateReview(UserDetailsImpl userDetails, ReviewRequestDto requestDto, Long reviewId) {
         User user = getUser(userDetails);
         Review review = reviewRepository.findById(reviewId).
-                orElseThrow(()->new IllegalArgumentException("리뷰가 존재하지 않습니다."));
+                orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
         if (user.equals(review.getUser())) {
             review.updateReview(requestDto);
-        }else {
+        } else {
             throw new IllegalArgumentException("리뷰 작성자가 다릅니다.");
         }
     }

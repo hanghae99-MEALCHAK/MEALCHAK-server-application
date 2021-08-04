@@ -39,6 +39,9 @@ public class User extends Timestamped {
     @JsonIgnore
     private String comment;
 
+//    @Column
+//    private float manner;
+
     @Embedded
     @JsonIgnore
     private Location location;

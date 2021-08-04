@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -26,7 +25,6 @@ public abstract class Timestamped {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
 
-    @JsonIgnore
     @LastModifiedDate // 마지막 변경 시점
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)

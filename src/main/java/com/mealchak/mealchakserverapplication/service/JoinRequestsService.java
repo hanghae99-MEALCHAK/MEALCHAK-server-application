@@ -73,12 +73,9 @@ public class JoinRequestsService {
             Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
             );
-            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
-                    .postTitle(post.getTitle())
-                    .build();
+            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = new MyAwaitRequestJoinResponseDto(post.getTitle());
             myAwaitRequestJoinResponseDtoList.add(myAwaitRequestJoinResponseDto);
         }
-
         return myAwaitRequestJoinResponseDtoList;
     }
 
@@ -108,7 +105,7 @@ public class JoinRequestsService {
     }
 
     // 채팅방 인원수 제한
-    public Boolean checkHeadCount(Long postId){
+    public Boolean checkHeadCount(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
@@ -116,14 +113,13 @@ public class JoinRequestsService {
     }
 
     // AllchatInfo 테이블 중복생성금지
-    public Boolean checkDuplicate(User user, Long postId){
+    public Boolean checkDuplicate(User user, Long postId) {
         List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
-        for (AllChatInfo allChatInfo : allChatInfos){
-            if(allChatInfo.getChatRoom().getPost().getId().equals(postId)){
+        for (AllChatInfo allChatInfo : allChatInfos) {
+            if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
                 return true;
             }
         }
         return false;
     }
-
 }

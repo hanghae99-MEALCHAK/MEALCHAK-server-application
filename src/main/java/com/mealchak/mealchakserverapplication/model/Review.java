@@ -23,7 +23,6 @@ public class Review  extends Timestamped{
     private User user;
 
     @ManyToOne
-    @JsonIgnore
     private User writer;
 
     public Review(ReviewRequestDto requestDto, User user, User writer) {

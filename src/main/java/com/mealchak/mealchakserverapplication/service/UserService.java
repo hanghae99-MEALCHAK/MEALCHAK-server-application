@@ -4,6 +4,7 @@ import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -11,7 +12,9 @@ import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
+import com.mealchak.mealchakserverapplication.repository.ReviewRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.mapping.ReviewListMapping;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import com.mealchak.mealchakserverapplication.util.MD5Generator;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
+    private final ReviewRepository reviewRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -46,8 +51,8 @@ public class UserService {
         String profileImg = userInfo.getProfileImg();
         String address = "서울 강남구 항해리99";
         double latitude = 37.497910;
-        double longitutde = 127.027678;
-        Location location = new Location(address, latitude, longitutde);
+        double longitude = 127.027678;
+        Location location = new Location(address, latitude, longitude);
 
         // 우리 DB 에서 회원 Id 와 패스워드
         // 회원 Id = 카카오 nickname
@@ -177,8 +182,13 @@ public class UserService {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+    }
 
-    public User getUser(Long senderId) {
-        return userRepository.findById(senderId).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
+    public OtherUserInfoResponseDto getOtherUserInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("userId 가 존재하지 않습니다."));
+        List<ReviewListMapping> reviews = reviewRepository.findAllByUserId(userId);
+        return new OtherUserInfoResponseDto(user, reviews);
     }
 }
