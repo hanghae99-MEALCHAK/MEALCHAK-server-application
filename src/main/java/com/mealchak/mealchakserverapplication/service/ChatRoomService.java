@@ -5,6 +5,7 @@ import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRoomRepository;
@@ -98,5 +99,15 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
         userRoomRepository.deleteByChatRoom(chatRoom);
         chatRoomRepository.deleteByPostId(postId);
+    }
+
+    @Transactional
+    public void quitChat(Long postId, UserDetailsImpl userDetails){
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지않는게시글")
+        );
+        Long roomId = post.getChatRoom().getId();
+        AllChatInfo allChatInfo = userRoomRepository.findbyRoomIdAndUserId(roomId,userDetails.getUser().getId());
+        userRoomRepository.delete(allChatInfo);
     }
 }
