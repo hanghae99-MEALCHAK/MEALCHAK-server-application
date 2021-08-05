@@ -12,6 +12,7 @@ public class OtherUserInfoResponseDto {
     private final String username;
     private final String comment;
     private final String profileImg;
+    private final float mannerScore;
     private final List<ReviewListMapping> reviews;
 
     public OtherUserInfoResponseDto(User user, List<ReviewListMapping> reviews) {
@@ -19,6 +20,7 @@ public class OtherUserInfoResponseDto {
         this.username = user.getUsername();
         this.comment = user.getComment();
         this.profileImg = user.getProfileImg();
+        this.mannerScore = user.getMannerScore();
         this.reviews = reviews;
     }
 }

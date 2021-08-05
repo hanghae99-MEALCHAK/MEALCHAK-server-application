@@ -188,7 +188,7 @@ public class UserService {
 
     public OtherUserInfoResponseDto getOtherUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("userId 가 존재하지 않습니다."));
-        List<ReviewListMapping> reviews = reviewRepository.findAllByUserId(userId);
+        List<ReviewListMapping> reviews = reviewRepository.findAllByUserIdOrderByCreatedAtDesc(userId, ReviewListMapping.class);
         return new OtherUserInfoResponseDto(user, reviews);
     }
 }
