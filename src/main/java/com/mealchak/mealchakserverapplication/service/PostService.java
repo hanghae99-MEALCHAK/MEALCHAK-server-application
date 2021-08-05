@@ -46,7 +46,7 @@ public class PostService {
 
     // 모집글 전체 조회
     public List<PostResponseDto> getAllPost() {
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+        List<Post> posts = postRepository.findAllByCheckValidTrueOrderByCreatedAtDesc();
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -107,7 +107,7 @@ public class PostService {
 
     // 모집글 검색
     public List<PostResponseDto> getSearch(String text) {
-        List<Post> posts = postRepository.findByTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
+        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -129,7 +129,7 @@ public class PostService {
         if (max) {
             guName = userGuName[0];
         }
-        List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);
+        List<Post> postList = postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
         Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
