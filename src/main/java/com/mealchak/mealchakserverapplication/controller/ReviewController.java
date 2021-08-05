@@ -1,8 +1,8 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.ReviewRequestDto;
-import com.mealchak.mealchakserverapplication.model.Review;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.repository.mapping.ReviewListMapping;
 import com.mealchak.mealchakserverapplication.service.ReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +21,7 @@ public class ReviewController {
     // 리뷰 조회
     @ApiOperation(value = "리뷰 조회", notes = "리뷰를 조회합니다.")
     @GetMapping("/review")
-    public List<Review> getReview(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public List<ReviewListMapping> getReview(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return reviewService.getReview(userDetails);
     }
 

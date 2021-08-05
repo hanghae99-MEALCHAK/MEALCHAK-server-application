@@ -7,6 +7,7 @@ public interface UserInfoMapping {
     String getUsername();
     String getProfileImg();
     String getComment();
+    float getMannerScore();
 
     default String getAddress() {
         return getLocationAddress();

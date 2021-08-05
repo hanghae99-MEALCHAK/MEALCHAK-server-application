@@ -74,7 +74,7 @@ public class PostController {
     @GetMapping("/posts/around")
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                          @RequestParam(value = "range", required = false, defaultValue = "3") int range,
-                                                         @RequestParam(value = "max", required = false, defaultValue = "0") int max) {
+                                                         @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max) {
         return postService.getPostByUserDist(userDetails, range, max);
     }
 

@@ -51,9 +51,8 @@ public class KakaoOAuth2 {
         // JSON -> 액세스 토큰 파싱
         String tokenJson = response.getBody();
         JSONObject rjson = new JSONObject(tokenJson);
-        String accessToken = rjson.getString("access_token");
 
-        return accessToken;
+        return rjson.getString("access_token");
     }
 
     private KakaoUserInfo getUserInfoByToken(String accessToken) {

@@ -3,6 +3,7 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
+import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -66,5 +67,12 @@ public class UserController {
                                               @RequestParam(value = "comment",required = false) String comment,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.updateUserInfo(files, username, comment, userDetails);
+    }
+
+    // 타 유저 정보 조회
+    @ApiOperation(value = "타 유저 정보 조회", notes = "타 유저 정보 조회.")
+    @GetMapping("userInfo/{userId}")
+    public OtherUserInfoResponseDto getOtherUserInfo(@PathVariable Long userId) {
+        return userService.getOtherUserInfo(userId);
     }
 }
