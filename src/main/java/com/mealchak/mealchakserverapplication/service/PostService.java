@@ -177,5 +177,19 @@ public class PostService {
         return (rad * 180 / Math.PI);
     }
 
-
+    // 내가 쓴 글 조회
+    public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            List<Post> posts = postRepository.findByUser_IdOrderByCreatedAtDesc(user.getId());
+            List<PostResponseDto> listPost = new ArrayList<>();
+            for (Post post : posts) {
+                updateHeadCount(post);
+                listPost.add(new PostResponseDto(post));
+            }
+            return listPost;
+        }else {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+    }
 }

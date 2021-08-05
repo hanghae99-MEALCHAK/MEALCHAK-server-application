@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +32,7 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
+    @JsonIgnore
     @Column(nullable = false)
     private boolean checkValid;
 

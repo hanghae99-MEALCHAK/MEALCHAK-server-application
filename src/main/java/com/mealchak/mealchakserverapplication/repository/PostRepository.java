@@ -10,4 +10,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByCheckValidTrueOrderByCreatedAtDesc();
     List<Post> findAllByCheckValidTrue();
     List<Post> findByCheckValidTrueAndLocation_AddressContaining(String address);
+    List<Post> findByUser_IdOrderByCreatedAtDesc(Long userId);
 }
