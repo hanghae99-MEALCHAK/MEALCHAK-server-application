@@ -1,7 +1,9 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 
+import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.repository.mapping.ChatRoomUserMapping;
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
 import com.mealchak.mealchakserverapplication.service.AllChatInfoService;
 import io.swagger.annotations.Api;
@@ -25,8 +27,8 @@ public class AllChatInfoController {
 
     @ApiOperation(value = "채팅방 유저목록", notes = "채팅방 유저목록")
     @GetMapping("/chat/user/{roomId}")
-    public List<UserInfoMapping> getUser(@PathVariable Long roomId,UserDetailsImpl userDetails){
-        return allChatInfoService.getUser(roomId,userDetails);
+    public List<User> getUser(@PathVariable Long roomId){
+        return allChatInfoService.getUser(roomId);
     }
 
 }
