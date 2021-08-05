@@ -69,11 +69,6 @@ public class ChatRoomService {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
     }
 
-    //채팅방전부찾기
-    public List<ChatRoom> getAll() {
-        return chatRoomRepository.findAll();
-    }
-
     @Transactional
     public void deletePost(Long postId) {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);

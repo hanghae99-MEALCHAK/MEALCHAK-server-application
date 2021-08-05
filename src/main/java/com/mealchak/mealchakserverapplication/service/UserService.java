@@ -72,7 +72,8 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(kakaoUsernamePassword);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HeaderDto headerDto = new HeaderDto();
-        User member = userRepository.findByKakaoId(kakaoId).orElse(null);
+        User member = userRepository.findByKakaoId(kakaoId).orElseThrow(()
+                -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername(), member.getProfileImg()));
         return headerDto;
     }

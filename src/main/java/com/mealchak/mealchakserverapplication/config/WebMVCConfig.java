@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMVCConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean getFilterRegistrationBean() {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean(new CORSFilter());
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean<>(new CORSFilter());
         registrationBean.addUrlPatterns("/**");
         return registrationBean;
     }

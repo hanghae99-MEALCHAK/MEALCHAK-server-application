@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class MyAwaitRequestJoinResponseDto {
-    private String postTitle;
+    private final String postTitle;
 
     @Builder
     public MyAwaitRequestJoinResponseDto(String postTitle){
