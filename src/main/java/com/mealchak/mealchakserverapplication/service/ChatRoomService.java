@@ -24,11 +24,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    private final PostRepository postRepository;
+
     // HashPerations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
     private final ChatRoomRepository chatRoomRepository;
-    private final PostRepository postRepository;
     private final AllChatInfoRepository allChatInfoRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -56,9 +57,9 @@ public class ChatRoomService {
         return responseDtoList;
     }
 
-
+    // redistemplate에 (입장type) 누가 어떤방에 들어갔는지 정보를 리턴
     public void setUserEnterInfo(String sessionId, String roomId) {
-        hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);    // redistemplate에 (입장type, ,) 누가 어떤방에 들어갔는지 정보를 리턴
+        hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
     }
 
     public String getUserEnterRoomId(String sessionId) {
@@ -67,11 +68,6 @@ public class ChatRoomService {
 
     public void removeUserEnterInfo(String sessionId) {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
-    }
-
-    //채팅방전부찾기
-    public List<ChatRoom> getAll() {
-        return chatRoomRepository.findAll();
     }
 
     @Transactional

@@ -28,7 +28,6 @@ public class JoinRequestController {
         return joinRequestsService.requestJoin(userDetails,id);
     }
 
-
     @ApiOperation(value = "게시글 입장 신청 목록", notes = "게시글 입장 신청 목록")
     @GetMapping("/posts/join/request/list")
     public List<UserInfoAndPostResponseDto> requestJoinList(@AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -42,7 +41,7 @@ public class JoinRequestController {
     }
 
     @ApiOperation(value = "나의 게시글 입장 신청 대기 목록", notes = "나의 게시글 입장 신청 대기 목록")
-    @GetMapping("/posts/join/request/await}")
+    @GetMapping("/posts/join/request/await")
     public List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinList(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return joinRequestsService.myAwaitRequestJoinList(userDetails);
     }

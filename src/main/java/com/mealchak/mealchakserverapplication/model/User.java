@@ -39,6 +39,10 @@ public class User extends Timestamped {
     @JsonIgnore
     private String comment;
 
+    @Column
+    @JsonIgnore
+    private float mannerScore;
+
     @Embedded
     @JsonIgnore
     private Location location;
@@ -50,6 +54,7 @@ public class User extends Timestamped {
         this.email = username;
         this.profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
         this.location = new Location("강남구 항해리99", 37.49791, 127.027678);
+        this.mannerScore = 5.0f;
     }
 
     public User(Long kakaoId, String Username, String password, String email, String profileImg,
@@ -60,6 +65,7 @@ public class User extends Timestamped {
         this.email = email;
         this.profileImg = profileImg;
         this.location = location;
+        this.mannerScore = 5.0f;
     }
 
     public void updateUserInfo(String username, String comment, String profileImg) {
@@ -70,5 +76,8 @@ public class User extends Timestamped {
 
     public void updateUserDisc(Location location) {
         this.location = location;
+    }
+    public void updateMannerScore(float mannerScore) {
+        this.mannerScore += mannerScore;
     }
 }

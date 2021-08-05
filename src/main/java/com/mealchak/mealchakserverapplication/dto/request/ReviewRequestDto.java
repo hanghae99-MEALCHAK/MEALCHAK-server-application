@@ -1,8 +1,10 @@
 package com.mealchak.mealchakserverapplication.dto.request;
 
+import com.mealchak.mealchakserverapplication.model.Review;
 import lombok.Getter;
 
 @Getter
 public class ReviewRequestDto {
-    String review;
+    private String review;
+    private Review.MannerType mannerType;
 }

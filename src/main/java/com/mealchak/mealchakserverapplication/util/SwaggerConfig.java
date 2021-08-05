@@ -29,13 +29,4 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
-
-    private ApiInfo apiInfo() {
-        String description = "Welcome RidiBooks";
-        return new ApiInfoBuilder()
-                .title("RidiBooks Api Test")
-                .description(description)
-                .version("1.0")
-                .build();
-    }
 }
