@@ -48,6 +48,13 @@ public class PostController {
         return postService.getPostDetail(postId);
     }
 
+    // 내가 쓴 모집글 불러오기
+    @ApiOperation(value = "내가 쓴 모집글 불러오기", notes = "내가 쓴 모집글 조회합니다.")
+    @GetMapping("/posts/myPosts")
+    public List<PostResponseDto> getMyPost(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.getMyPost(userDetails);
+    }
+
     // 검색하여 모집글 불러오기
     @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
     @PostMapping("/search")
