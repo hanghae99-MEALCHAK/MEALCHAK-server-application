@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 public interface ReviewListMapping {
+    Long getId();
     String getReview();
+    String mannerType();
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime getCreatedAt();
     default String getUsername() {

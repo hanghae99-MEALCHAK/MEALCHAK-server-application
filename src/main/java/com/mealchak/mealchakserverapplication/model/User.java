@@ -39,8 +39,8 @@ public class User extends Timestamped {
     @JsonIgnore
     private String comment;
 
-//    @Column
-//    private float manner;
+    @Column
+    private float mannerScore;
 
     @Embedded
     @JsonIgnore
@@ -73,5 +73,8 @@ public class User extends Timestamped {
 
     public void updateUserDisc(Location location) {
         this.location = location;
+    }
+    public void updateMannerScore(float mannerScore) {
+        this.mannerScore += mannerScore;
     }
 }
