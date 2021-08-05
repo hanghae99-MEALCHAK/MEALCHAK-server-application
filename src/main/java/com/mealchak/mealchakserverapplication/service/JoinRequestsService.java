@@ -26,7 +26,9 @@ public class JoinRequestsService {
     public String requestJoin(UserDetailsImpl userDetails, Long id) {
         Long userId = userDetails.getUser().getId();
         if (joinRequestsRepository.findByUserIdAndPostId(userId, id) == null) {
-            User user = postRepository.findById(id).get().getUser();
+            Post post = postRepository.findById(id).orElseThrow(()
+                    -> new IllegalArgumentException("해당 아이디를 찾을 수 없습니다."));
+            User user = post.getUser();
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, id, ownUserId);
             joinRequestsRepository.save(joinRequests);
