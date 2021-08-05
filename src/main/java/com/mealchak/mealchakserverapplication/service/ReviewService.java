@@ -21,9 +21,8 @@ public class ReviewService {
     // find User
     public User getUser(UserDetailsImpl userDetails) {
         if (userDetails != null) {
-            User user = userRepository.findById(userDetails.getUser().getId()).
+            return userRepository.findById(userDetails.getUser().getId()).
                     orElseThrow(()->new IllegalArgumentException("userId가 존재하지 않습니다."));
-            return user;
         }else{
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
