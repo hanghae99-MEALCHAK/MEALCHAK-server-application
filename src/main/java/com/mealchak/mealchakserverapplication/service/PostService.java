@@ -117,7 +117,7 @@ public class PostService {
     }
 
     // 모집글 유저 위치 기반 조회
-    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, int max) {
+    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max) {
         if (userDetails == null) {
             return getAllPost();
         }
@@ -126,7 +126,7 @@ public class PostService {
 
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
-        if (max == 1) {
+        if (max) {
             guName = userGuName[0];
         }
         List<Post> postList = postRepository.findByLocationAddressContainingIgnoreCase(guName);

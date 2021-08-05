@@ -11,6 +11,9 @@ import javax.persistence.*;
 @Getter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
 public class Review  extends Timestamped{
+    public enum MannerType {
+        BEST, GOOD, BAD
+    }
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
@@ -23,11 +26,15 @@ public class Review  extends Timestamped{
     private User user;
 
     @ManyToOne
-    @JsonIgnore
     private User writer;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Review.MannerType mannerType;
 
     public Review(ReviewRequestDto requestDto, User user, User writer) {
         this.review = requestDto.getReview();
+        this.mannerType = requestDto.getMannerType();
         this.user = user;
         this.writer = writer;
     }

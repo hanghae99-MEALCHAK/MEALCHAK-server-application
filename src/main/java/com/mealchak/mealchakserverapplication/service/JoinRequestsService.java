@@ -75,12 +75,9 @@ public class JoinRequestsService {
             Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
             );
-            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
-                    .postTitle(post.getTitle())
-                    .build();
+            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = new MyAwaitRequestJoinResponseDto(post.getTitle());
             myAwaitRequestJoinResponseDtoList.add(myAwaitRequestJoinResponseDto);
         }
-
         return myAwaitRequestJoinResponseDtoList;
     }
 
@@ -127,5 +124,4 @@ public class JoinRequestsService {
         }
         return false;
     }
-
 }
