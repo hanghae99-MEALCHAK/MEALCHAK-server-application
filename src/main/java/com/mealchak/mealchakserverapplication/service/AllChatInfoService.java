@@ -23,17 +23,18 @@ public class AllChatInfoService {
         UserInfoMapping ownUserInfoMapping = userRepository.findById(userDetails.getUser().getId(), UserInfoMapping.class).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 유저")
         );
+
         List<UserInfoMapping> userInfoMappingList = new ArrayList<>();
 
         for (AllChatInfo allChatInfo : allChatInfoList) {
             Long userId = allChatInfo.getUser().getId();
             UserInfoMapping userInfoMapping = userRepository.findById(userId, UserInfoMapping.class).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않는 유저"));
-            if (userDetails.getUser().getId() != userId) {
+            if (!userDetails.getUser().getId().equals(userId)) {
                 userInfoMappingList.add(userInfoMapping);
             }
-            userInfoMappingList.add(ownUserInfoMapping);
         }
+        userInfoMappingList.add(ownUserInfoMapping);
         return userInfoMappingList;
     }
 }
