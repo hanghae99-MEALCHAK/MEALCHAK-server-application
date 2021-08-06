@@ -43,8 +43,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                //테스트를 위해 임시로 전부개방 배포시 반드시 주석처리후 antMatchers 추가
-                .antMatchers("/**").permitAll()
+                //컨트롤러 접근
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/userInfo/{userId}").permitAll()
+                .antMatchers("/search").permitAll()
+                .antMatchers(HttpMethod.GET,"/posts").permitAll()
+                .antMatchers(HttpMethod.GET,"/posts/{postId}").permitAll()
+                .antMatchers("/menu").permitAll()
+                //이미지파일 접근
+                .antMatchers("/image/**").permitAll()
+                //웹소켓 접근
+                .antMatchers("/chatting").permitAll()
+                .antMatchers("/sub/**").permitAll()
+                .antMatchers("/pub/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }

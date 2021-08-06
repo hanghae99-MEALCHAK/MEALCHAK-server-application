@@ -31,8 +31,13 @@ public class JoinRequestsService {
             User user = post.getUser();
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, id, ownUserId);
-            joinRequestsRepository.save(joinRequests);
-            return "신청완료";
+            Long roomId = post.getChatRoom().getId();
+            if (allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
+                joinRequestsRepository.save(joinRequests);
+                return "신청완료";
+            } else {
+                return "이미 속해있는 채팅방입니다";
+            }
         } else {
             return "이미 신청한 글입니다";
         }
