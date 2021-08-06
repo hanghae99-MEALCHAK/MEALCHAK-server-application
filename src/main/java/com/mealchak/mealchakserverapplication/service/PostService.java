@@ -118,6 +118,7 @@ public class PostService {
 
     // 모집글 유저 위치 기반 조회
     public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max) {
+        // 게스트 유저일 경우 모든 결과 조회
         if (userDetails == null) {
             return getAllPost();
         }
