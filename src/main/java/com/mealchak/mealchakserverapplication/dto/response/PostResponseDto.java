@@ -24,6 +24,7 @@ public class PostResponseDto {
     private final LocalDateTime createdAt;
     private final Long roomId;
     private final Long nowHeadCount;
+    private final Boolean valid;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -41,5 +42,6 @@ public class PostResponseDto {
         this.createdAt = post.getCreatedAt();
         this.roomId = post.getChatRoom().getId();
         this.nowHeadCount = post.getNowHeadCount();
+        this.valid = post.getCheckValid();
     }
 }

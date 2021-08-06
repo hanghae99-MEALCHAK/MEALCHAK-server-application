@@ -1,6 +1,5 @@
 package com.mealchak.mealchakserverapplication.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +31,6 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @JsonIgnore
     @Column(nullable = false)
     private boolean checkValid;
 
@@ -90,5 +88,9 @@ public class Post extends Timestamped {
 
     public void expired(boolean checkValid){
         this.checkValid = checkValid;
+    }
+
+    public Boolean getCheckValid() {
+        return this.checkValid;
     }
 }
