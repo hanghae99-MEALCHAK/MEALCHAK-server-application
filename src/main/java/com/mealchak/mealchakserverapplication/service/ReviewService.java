@@ -85,4 +85,11 @@ public class ReviewService {
             user.updateMannerScore(+0.05f);
         }
     }
+
+    // 리뷰 삭제
+    @Transactional
+    public void deleteReview(UserDetailsImpl userDetails, Long reviewId) {
+        User writer = getUser(userDetails);
+        reviewRepository.deleteByIdAndWriter_Id(reviewId, writer.getId());
+    }
 }

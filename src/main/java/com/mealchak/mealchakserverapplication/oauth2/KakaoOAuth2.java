@@ -31,8 +31,8 @@ public class KakaoOAuth2 {
         params.add("client_id", "7bdd85c1e8d3b04bfc556d4b741605ec");
         //테스트를 위한 url설정
 //        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
-//        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
-        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
+        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+//        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
         params.add("code", authorizedCode);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
