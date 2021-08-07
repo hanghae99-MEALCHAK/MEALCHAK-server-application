@@ -27,6 +27,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/image/**")
-                .addResourceLocations("file:/root/image/");
+                .addResourceLocations("file:/home/ubuntu/image/");  // AWS EC2
+//                  .addResourceLocations("file:/root/image/");   // NAVER EC2
     }
 }

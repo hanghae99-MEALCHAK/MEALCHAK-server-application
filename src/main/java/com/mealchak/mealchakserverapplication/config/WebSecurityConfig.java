@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
-//@EnableGlobalAuthentication()   // <-- usercheck
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -54,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //이미지파일 접근
                 .antMatchers("/image/**").permitAll()
                 //웹소켓 접근
-                .antMatchers("/chatting").permitAll()
+                .antMatchers("/chatting/**").permitAll()   // /** 을 추가함 수정 필요
                 .antMatchers("/sub/**").permitAll()
                 .antMatchers("/pub/**").permitAll()
                 .anyRequest().authenticated()

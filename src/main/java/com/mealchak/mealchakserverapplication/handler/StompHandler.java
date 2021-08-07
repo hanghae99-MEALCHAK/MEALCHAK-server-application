@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.handler;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.User;
-import com.mealchak.mealchakserverapplication.oauth2.UserDetailsServiceImpl;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
@@ -26,7 +25,6 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatService;
-    private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
     @Override

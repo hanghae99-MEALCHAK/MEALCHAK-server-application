@@ -119,23 +119,16 @@ public class PostService {
     // 모집글 유저 위치 기반 조회
     public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max, String category, String sortBy) {
         // 게스트 유저일 경우 모든 결과 조회
-        if (userDetails == null) {
-            return getAllPost();
-        }
+        if (userDetails == null) {return getAllPost();}
+
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
 
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
-        List<Post> postList;
-        if (max) {
-            guName = userGuName[0];
-        }
-        if (category == null) {
-            postList = postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
-        } else {
-            postList = postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContains(guName, category);
-        }
+        if (max) {guName = userGuName[0];}
+        List<Post> postList = getPostByCategory(guName, category);
+
         return getNearByResult(postList, user, range);
     }
 
@@ -182,6 +175,7 @@ public class PostService {
     private static double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
+
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }
@@ -200,5 +194,12 @@ public class PostService {
         } else {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
+    }
+
+    public List<Post> getPostByCategory(String guName, String category) {
+        if (category == null) {
+            return postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
+        } else
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContains(guName, category);
     }
 }

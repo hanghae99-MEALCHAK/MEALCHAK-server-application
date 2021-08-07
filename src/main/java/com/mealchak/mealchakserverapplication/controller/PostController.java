@@ -83,7 +83,7 @@ public class PostController {
                                                          @RequestParam(value = "range", required = false, defaultValue = "3") int range,
                                                          @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max,
                                                          @RequestParam(value = "category", required = false) String category,
-                                                         @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sortBy) {
+                                                         @RequestParam(value = "sort", required = false) String sortBy) {
         return postService.getPostByUserDist(userDetails, range, max, category, sortBy);
     }
 
