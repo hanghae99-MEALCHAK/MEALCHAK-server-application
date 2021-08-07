@@ -115,6 +115,7 @@ public class UserService {
         }
     }
 
+    // 테스트 로그인
     @Transactional
     public String login(SignupRequestDto requestDto) {
         User user = userRepository.findByUsername(requestDto.getUsername())
@@ -131,8 +132,7 @@ public class UserService {
         if (userDetails != null) {
             User user = userRepository.findById(userDetails.getUser().getId())
                     .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-            String[] userImgName = user.getProfileImg().split("/");
-            String filename = userImgName[4];
+            String filename;
             if (files != null) {
                 try {
                     String originFilename = files.getOriginalFilename();
@@ -168,9 +168,13 @@ public class UserService {
                             .build();
 
                     fileService.saveFile(responseDto);
+//                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
+                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
+            }else{
+                filename = user.getProfileImg();
             }
             if (username == null) {
                 username = user.getUsername();
@@ -178,16 +182,18 @@ public class UserService {
             if (comment == null) {
                 comment = user.getComment();
             }
-            user.updateUserInfo(username, comment, "http://52.78.204.238/image/" + filename);
+            user.updateUserInfo(username, comment, filename);
             return new UserInfoResponseDto(user);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
     }
+
     public User getUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
     }
 
+    // 타 유저 정보 조회
     public OtherUserInfoResponseDto getOtherUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("userId 가 존재하지 않습니다."));
         List<ReviewListMapping> reviews = reviewRepository.findAllByUserIdOrderByCreatedAtDesc(userId, ReviewListMapping.class);
