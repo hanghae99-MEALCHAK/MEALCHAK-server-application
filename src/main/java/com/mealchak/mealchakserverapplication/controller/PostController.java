@@ -33,7 +33,7 @@ public class PostController {
         postService.createPost(userDetails, requestDto, chatRoom);
         userRoomService.save(userDetails.getUser(), chatRoom);
     }
-
+//enable grobal 머시기
     // 모집글 전체 불러오기
     @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
     @GetMapping("/posts")
@@ -81,8 +81,10 @@ public class PostController {
     @GetMapping("/posts/around")
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                          @RequestParam(value = "range", required = false, defaultValue = "3") int range,
-                                                         @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max) {
-        return postService.getPostByUserDist(userDetails, range, max);
+                                                         @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max,
+                                                         @RequestParam(value = "category", required = false) String category,
+                                                         @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sortBy) {
+        return postService.getPostByUserDist(userDetails, range, max, category, sortBy);
     }
 
 }
