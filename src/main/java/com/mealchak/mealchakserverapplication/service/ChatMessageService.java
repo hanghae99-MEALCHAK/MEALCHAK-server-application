@@ -1,7 +1,12 @@
 package com.mealchak.mealchakserverapplication.service;
 
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
+import com.mealchak.mealchakserverapplication.model.BanUserList;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
+import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
+import com.mealchak.mealchakserverapplication.repository.BanUserListRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +23,8 @@ public class ChatMessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
+    private final BanUserListService banUserListService;
+    private final UserRepository userRepository;
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -35,7 +42,12 @@ public class ChatMessageService {
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
+        } else if (ChatMessage.MessageType.BAN.equals(chatMessageRequestDto.getType())){
+            Long userId = Long.parseLong(chatMessageRequestDto.getMessage());
+            Long roomId = Long.parseLong(chatMessageRequestDto.getRoomId());
+            banUserListService.banUser(userId,roomId);
         }
+
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }
 
