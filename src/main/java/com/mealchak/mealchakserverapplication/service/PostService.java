@@ -184,10 +184,10 @@ public class PostService {
 
     // 카테고리별 리스트 조회
     public List<Post> getPostByCategory(String guName, String category) {
-        if (category == null) {
-            return postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
+        if (category.equals("전체")) {
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(guName);
         } else
-            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContains(guName, category);
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContainingOrderByOrderTimeAsc(guName, category);
     }
 
     private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
