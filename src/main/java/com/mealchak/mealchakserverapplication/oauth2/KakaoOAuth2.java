@@ -77,7 +77,8 @@ public class KakaoOAuth2 {
         Long id = body.getLong("id");
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
-        String profileImg = "http://115.85.182.57:8080/image/profileDefaultImg.jpg";
+        String profileImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
+//        String profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg";  // NAVER EC2
         try {
             profileImg = body.getJSONObject("properties").getString("profile_image");
             throw new Exception("프로필 사진 없음 기본 이미지로 대체");

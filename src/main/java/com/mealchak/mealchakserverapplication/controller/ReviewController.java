@@ -42,4 +42,12 @@ public class ReviewController {
                              @PathVariable Long reviewId) {
         reviewService.updateReview(userDetails, requestDto, reviewId);
     }
+
+    // 리뷰 삭제
+    @ApiOperation(value = "리뷰 삭제", notes = "리뷰를 삭제제합니다")
+    @DeleteMapping("/review/{reviewId}")
+    public void deleteReview(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                             @PathVariable Long reviewId) {
+        reviewService.deleteReview(userDetails, reviewId);
+    }
 }

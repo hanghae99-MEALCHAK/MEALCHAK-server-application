@@ -117,19 +117,22 @@ public class PostService {
     }
 
     // 모집글 유저 위치 기반 조회
-    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max) {
-        if (userDetails == null) {
-            return getAllPost();
-        }
+    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max, String category, String sortBy) {
+        // 게스트 유저일 경우 모든 결과 조회
+        if (userDetails == null) {return getAllPost();}
+
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
 
         String[] userGuName = user.getLocation().getAddress().split(" ");
         String guName = userGuName[1];
-        if (max) {
-            guName = userGuName[0];
-        }
-        List<Post> postList = postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
+        if (max) {guName = userGuName[0];}
+        List<Post> postList = getPostByCategory(guName, category);
+
+        return getNearByResult(postList, user, range);
+    }
+
+    public Collection<PostResponseDto> getNearByResult(List<Post> postList, User user, int range) {
         Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
@@ -188,8 +191,15 @@ public class PostService {
                 listPost.add(new PostResponseDto(post));
             }
             return listPost;
-        }else {
+        } else {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
+    }
+
+    public List<Post> getPostByCategory(String guName, String category) {
+        if (category == null) {
+            return postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
+        } else
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContains(guName, category);
     }
 }
