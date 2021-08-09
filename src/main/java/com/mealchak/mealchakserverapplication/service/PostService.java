@@ -1,10 +1,14 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.*;
+import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
+import com.mealchak.mealchakserverapplication.repository.MenuRepository;
+import com.mealchak.mealchakserverapplication.repository.PostRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,8 @@ public class PostService {
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
     private final AllChatInfoRepository allChatInfoRepository;
+    private final AllChatInfoService allChatInfoService;
+    private static final int RANGE = 3;
 
     // 모집글 생성
     @Transactional
@@ -56,10 +62,11 @@ public class PostService {
     }
 
     // 모집글 상세 조회
-    public PostResponseDto getPostDetail(Long postId) {
+    public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
+        List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
         updateHeadCount(post);
-        return new PostResponseDto(post);
+        return new PostDetailResponseDto(post, userList);
     }
 
     // 모집글 HeadCount 추가
@@ -117,41 +124,35 @@ public class PostService {
     }
 
     // 모집글 유저 위치 기반 조회
-    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, int range, Boolean max, String category, String sortBy) {
+    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, String category, String sort) {
         // 게스트 유저일 경우 모든 결과 조회
-        if (userDetails == null) {return getAllPost();}
-
+        if (userDetails == null) {
+            return getAllPost();
+        }
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
 
         String[] userGuName = user.getLocation().getAddress().split(" ");
-        String guName = userGuName[1];
-        if (max) {guName = userGuName[0];}
-        List<Post> postList = getPostByCategory(guName, category);
-
-        return getNearByResult(postList, user, range);
+        String guName = userGuName[1]; // 서울시 '강남구' 구 이름을 의미
+        List<Post> postList;
+        if (sort.equals("recent")) {
+            return getAllPostSortByRecent(user, guName, category);
+        } else if (sort.equals("nearBy")) {
+            postList = getPostByCategory(guName, category);
+        } else {
+            throw new IllegalArgumentException("잘못된 sort 요청입니다.");
+        }
+        return getNearByResult(postList, user);
     }
 
-    public Collection<PostResponseDto> getNearByResult(List<Post> postList, User user, int range) {
+    // 거리순 모집글 결과 리스트
+    public Collection<PostResponseDto> getNearByResult(List<Post> postList, User user) {
         Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
-            double lat1 = user.getLocation().getLatitude();
-            double lon1 = user.getLocation().getLongitude();
-            double lat2 = post.getLocation().getLatitude();
-            double lon2 = post.getLocation().getLongitude();
-
-            double theta = lon1 - lon2;
-            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
-                    * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-
-            dist = Math.acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515;
-            dist = dist * 1.609344;
-            dist = Math.round(dist * 1000) / 1000.0;
+            double dist = getDist(user, post);
             updateHeadCount(post);
-            if (dist < range) {
+            if (dist < RANGE) {
                 post.updateDistance(dist);
                 PostResponseDto responseDto = new PostResponseDto(post);
                 if (distChecker.contains(dist)) {
@@ -172,12 +173,49 @@ public class PostService {
         return nearPost.values();
     }
 
-    private static double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
+    // 모집글 전체 최신순 조회(거리표시)
+    public List<PostResponseDto> getAllPostSortByRecent(User user, String guName, String category) {
+        List<Post> posts = getPostByCategory(guName, category);
+        List<PostResponseDto> listPost = new ArrayList<>();
+        for (Post post : posts) {
+            updateHeadCount(post);
+            double dist = getDist(user, post);
+            if (dist < RANGE) {
+                post.updateDistance(dist);
+                listPost.add(new PostResponseDto(post));
+            }
+        }
+        return listPost;
     }
 
-    private static double rad2deg(double rad) {
-        return (rad * 180 / Math.PI);
+    // 카테고리별 리스트 조회
+    public List<Post> getPostByCategory(String guName, String category) {
+        if (category.equals("전체")) {
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(guName);
+        } else
+            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContainingOrderByOrderTimeAsc(guName, category);
+    }
+
+    private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
+    private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
+
+    // 유저와 게시글의 거리계산 로직
+    private static double getDist(User user, Post post) {
+        double lat1 = user.getLocation().getLatitude();
+        double lon1 = user.getLocation().getLongitude();
+        double lat2 = post.getLocation().getLatitude();
+        double lon2 = post.getLocation().getLongitude();
+
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+        dist = Math.round(dist * 1000) / 1000.0;
+        return dist;
     }
 
     // 내가 쓴 글 조회
@@ -196,10 +234,4 @@ public class PostService {
         }
     }
 
-    public List<Post> getPostByCategory(String guName, String category) {
-        if (category == null) {
-            return postRepository.findByCheckValidTrueAndLocation_AddressContaining(guName);
-        } else
-            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContains(guName, category);
-    }
 }

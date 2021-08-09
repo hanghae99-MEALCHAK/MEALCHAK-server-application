@@ -1,10 +1,6 @@
 package com.mealchak.mealchakserverapplication.service;
 
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
-import com.mealchak.mealchakserverapplication.model.BanUserList;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
-import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
-import com.mealchak.mealchakserverapplication.repository.BanUserListRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

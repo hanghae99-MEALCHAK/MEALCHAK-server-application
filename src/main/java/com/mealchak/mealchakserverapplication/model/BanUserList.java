@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class BanUserList {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

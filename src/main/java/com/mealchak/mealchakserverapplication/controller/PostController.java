@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.controller;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -33,7 +34,7 @@ public class PostController {
         postService.createPost(userDetails, requestDto, chatRoom);
         userRoomService.save(userDetails.getUser(), chatRoom);
     }
-//enable grobal 머시기
+
     // 모집글 전체 불러오기
     @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
     @GetMapping("/posts")
@@ -44,7 +45,7 @@ public class PostController {
     // 해당 모집글 불러오기
     @ApiOperation(value = "해당 모집글 조회", notes = "해당 모집글 조회합니다.")
     @GetMapping("/posts/{postId}")
-    public PostResponseDto getPostDetail(@PathVariable Long postId) {
+    public PostDetailResponseDto getPostDetail(@PathVariable Long postId) {
         return postService.getPostDetail(postId);
     }
 
@@ -80,11 +81,9 @@ public class PostController {
     @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
     @GetMapping("/posts/around")
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                         @RequestParam(value = "range", required = false, defaultValue = "3") int range,
-                                                         @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max,
-                                                         @RequestParam(value = "category", required = false) String category,
-                                                         @RequestParam(value = "sort", required = false) String sortBy) {
-        return postService.getPostByUserDist(userDetails, range, max, category, sortBy);
+                                                         @RequestParam(value = "category", required = false, defaultValue = "전체") String category,
+                                                         @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
+        return postService.getPostByUserDist(userDetails, category, sort);
     }
 
 }
