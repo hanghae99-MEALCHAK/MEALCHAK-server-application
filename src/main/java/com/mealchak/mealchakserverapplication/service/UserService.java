@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
-import com.mealchak.mealchakserverapplication.dto.response.FileResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +39,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
     private final AuthenticationManager authenticationManager;
-    private final FileService fileService;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public HeaderDto kakaoLogin(String authorizedCode) {
@@ -149,6 +148,8 @@ public class UserService {
                     // 해당 위치에 이미지 저장
                     String savePath = System.getProperty("user.dir") + "/image";
                     // 파일이 저장되는 폴더가 없으면 폴더를 생성
+                    String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
+                    File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
                     if (!new java.io.File(savePath).exists()) {
                         try {
                             new java.io.File(savePath).mkdir();
@@ -156,24 +157,23 @@ public class UserService {
                             throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
                         }
                     }
+                    if (deleteFile.exists()) {
+                        try {
+                            deleteFile.delete();
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("기존 파일 삭제를 실패하였습니다.");
+                        }
+                    }
                     String fileType = files.getContentType();
                     String filePath = savePath + "/" + filename;
                     files.transferTo(new java.io.File(filePath));
 
-                    FileResponseDto responseDto = FileResponseDto.builder()
-                            .originFileName(originFilename)
-                            .fileName(filename)
-                            .filePath(filePath)
-                            .fileType(fileType)
-                            .build();
-
-                    fileService.saveFile(responseDto);
                     filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
 //                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
-            }else{
+            } else {
                 filename = user.getProfileImg();
             }
             if (username == null) {
@@ -195,7 +195,7 @@ public class UserService {
 
     // 타 유저 정보 조회
     public OtherUserInfoResponseDto getOtherUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("userId 가 존재하지 않습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("userId 가 존재하지 않습니다."));
         List<ReviewListMapping> reviews = reviewRepository.findAllByUserIdOrderByCreatedAtDesc(userId, ReviewListMapping.class);
         return new OtherUserInfoResponseDto(user, reviews);
     }
