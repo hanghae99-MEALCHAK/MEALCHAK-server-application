@@ -1,10 +1,14 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
+import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.*;
+import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
+import com.mealchak.mealchakserverapplication.repository.MenuRepository;
+import com.mealchak.mealchakserverapplication.repository.PostRepository;
+import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
     private final AllChatInfoRepository allChatInfoRepository;
+    private final AllChatInfoService allChatInfoService;
     private static final int RANGE = 3;
 
     // 모집글 생성
@@ -57,10 +62,11 @@ public class PostService {
     }
 
     // 모집글 상세 조회
-    public PostResponseDto getPostDetail(Long postId) {
+    public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
+        List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
         updateHeadCount(post);
-        return new PostResponseDto(post);
+        return new PostDetailResponseDto(post, userList);
     }
 
     // 모집글 HeadCount 추가
