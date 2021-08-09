@@ -114,7 +114,7 @@ public class PostService {
 
     // 모집글 검색
     public List<PostResponseDto> getSearch(String text) {
-        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByCreatedAtDesc(text, text);
+        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByOrderTimeAsc(text, text);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
