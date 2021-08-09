@@ -80,11 +80,9 @@ public class PostController {
     @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
     @GetMapping("/posts/around")
     public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                         @RequestParam(value = "range", required = false, defaultValue = "3") int range,
-                                                         @RequestParam(value = "max", required = false, defaultValue = "false") Boolean max,
                                                          @RequestParam(value = "category", required = false) String category,
-                                                         @RequestParam(value = "sort", required = false) String sortBy) {
-        return postService.getPostByUserDist(userDetails, range, max, category, sortBy);
+                                                         @RequestParam(value = "sort", required = false, defaultValue = "nearBy") String sort) {
+        return postService.getPostByUserDist(userDetails, category, sort);
     }
 
 }

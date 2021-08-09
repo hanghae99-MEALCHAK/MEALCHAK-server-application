@@ -57,7 +57,7 @@ public class ChatRoomService {
         return responseDtoList;
     }
 
-    // redistemplate에 (입장type) 누가 어떤방에 들어갔는지 정보를 리턴
+    // redistemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
     }
