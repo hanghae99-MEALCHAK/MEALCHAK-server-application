@@ -9,6 +9,7 @@ import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,12 +81,16 @@ public class JoinRequestsService {
             Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
             );
-            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = new MyAwaitRequestJoinResponseDto(post.getTitle());
+            MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
+                    .joinRequestId(joinRequests.getId())
+                    .postTitle(post.getTitle())
+                    .build();
             myAwaitRequestJoinResponseDtoList.add(myAwaitRequestJoinResponseDto);
         }
         return myAwaitRequestJoinResponseDtoList;
     }
 
+    // 채팅방 참가 신청 승인/거절
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
         JoinRequests joinRequests = joinRequestsRepository.findById(joinRequestId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 신청입니다.")
@@ -119,7 +124,7 @@ public class JoinRequestsService {
         return postHeadCount > nowHeadCount;
     }
 
-    // AllchatInfo 테이블 중복생성금지
+    // allChatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId) {
         List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos) {
@@ -128,5 +133,14 @@ public class JoinRequestsService {
             }
         }
         return false;
+    }
+
+    // 채팅방 입장 신청 취소
+    @Transactional
+    public void requestJoinCancel(UserDetailsImpl userDetails, Long joinId) {
+        Long userId = userDetails.getUser().getId();
+        JoinRequests joinRequests = joinRequestsRepository.findByIdAndUserId(joinId, userId)
+                .orElseThrow(()->new IllegalArgumentException("해당 신청이 존재하지 않습니다."));
+        joinRequestsRepository.delete(joinRequests);
     }
 }

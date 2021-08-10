@@ -106,7 +106,7 @@ public class PostService {
         if (!post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
             throw new IllegalArgumentException(("삭제 권한이 없습니다."));
         } else {
-            chatRoomService.deleteChatRoom(postId);
+            chatRoomService.deleteChatRoom(post.getChatRoom().getId());
             post.getMenu().updateMenuCount(-1);
             postRepository.deleteById(postId);
         }

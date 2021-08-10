@@ -25,7 +25,6 @@ import java.util.UUID;
 public class ChatRoomService {
 
     private final PostRepository postRepository;
-    private final PostService postService;
 
     // HashPerations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
@@ -58,7 +57,7 @@ public class ChatRoomService {
         return responseDtoList;
     }
 
-    // redistemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
+    // redisTemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
     }
@@ -73,10 +72,11 @@ public class ChatRoomService {
 
     // 게시글 삭제시 채팅방도 삭제
     @Transactional
-    public void deleteChatRoom(Long postId) {
-        ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
+    public void deleteChatRoom(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()->new IllegalArgumentException("roomId가 존재하지 않습니다."));
         allChatInfoRepository.deleteAllByChatRoom(chatRoom);
-        chatRoomRepository.deleteByPostId(postId);
+        chatRoomRepository.deleteById(roomId);
     }
 
     // 채팅방 나가기
@@ -87,12 +87,15 @@ public class ChatRoomService {
         );
         Long roomId = post.getChatRoom().getId();
         AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
-        allChatInfoRepository.delete(allChatInfo);
         // 활성화 게시글이고 글쓴이면 게시글 삭제
         if (post.getCheckValid() && isChatRoomOwner(post, userDetails)) {
-           postService.deletePost(postId, userDetails);
+            post.getMenu().updateMenuCount(-1);
+            postRepository.deleteById(postId);
+            deleteChatRoom(roomId);
         } else if (isChatRoomOwner(post, userDetails)) {
-            deleteChatRoom(postId);
+            deleteChatRoom(roomId);
+        } else {
+            allChatInfoRepository.delete(allChatInfo);
         }
     }
 
