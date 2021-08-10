@@ -30,8 +30,8 @@ public class KakaoOAuth2 {
         params.add("grant_type", "authorization_code");
         params.add("client_id", "7bdd85c1e8d3b04bfc556d4b741605ec");
         //테스트를 위한 url설정
-//        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
-        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+//        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
 //        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
         params.add("code", authorizedCode);
 
@@ -78,12 +78,23 @@ public class KakaoOAuth2 {
         String email = body.getJSONObject("kakao_account").getString("email");
         String nickname = body.getJSONObject("properties").getString("nickname");
         String profileImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
+        String age = null;
+        String gender = null;
 //        String profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg";  // NAVER EC2
+
         try {
             profileImg = body.getJSONObject("properties").getString("profile_image");
             throw new Exception("프로필 사진 없음 기본 이미지로 대체");
-        } catch (Exception ignored) {
-        }
-        return new KakaoUserInfo(id, email, nickname, profileImg);
+        } catch (Exception ignored) {}
+        try {
+            age = body.getJSONObject("kakao_account").getString("age_range");
+            throw new Exception("프로필 나이대 제공 동의 없음");
+        } catch (Exception ignored) {}
+        try {
+            gender = body.getJSONObject("kakao_account").getString("gender");
+            throw new Exception("프로필 성별 제공 동의 없음");
+        } catch (Exception ignored) {}
+
+        return new KakaoUserInfo(id, email, nickname, profileImg, age, gender);
     }
 }

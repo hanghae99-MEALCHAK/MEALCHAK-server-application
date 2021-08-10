@@ -2,6 +2,7 @@ package com.mealchak.mealchakserverapplication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +38,14 @@ public class User extends Timestamped {
 
     @Column
     @JsonIgnore
+    private String age;
+
+    @Column
+    @JsonIgnore
+    private String gender;
+
+    @Column
+    @JsonIgnore
     private String comment;
 
     @Column
@@ -57,15 +66,18 @@ public class User extends Timestamped {
         this.mannerScore = 5.0f;
     }
 
-    public User(Long kakaoId, String Username, String password, String email, String profileImg,
-                Location location) {
+    @Builder
+    public User(Long kakaoId, String username, String password, String email, String profileImg, String age, String gender, String comment, float mannerScore, Location location) {
         this.kakaoId = kakaoId;
-        this.username = Username;
+        this.username = username;
         this.password = password;
         this.email = email;
         this.profileImg = profileImg;
+        this.age = age;
+        this.gender = gender;
+        this.comment = comment;
+        this.mannerScore = mannerScore;
         this.location = location;
-        this.mannerScore = 5.0f;
     }
 
     public void updateUserInfo(String username, String comment, String profileImg) {
@@ -74,9 +86,16 @@ public class User extends Timestamped {
         this.profileImg = profileImg;
     }
 
+    public void updateAge(String age) {this.age = age; }
+
+    public void updateGender(String gender) {
+        this.gender = gender;
+    }
+
     public void updateUserDisc(Location location) {
         this.location = location;
     }
+
     public void updateMannerScore(float mannerScore) {
         this.mannerScore += mannerScore;
     }

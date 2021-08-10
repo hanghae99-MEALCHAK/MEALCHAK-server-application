@@ -10,4 +10,6 @@ public class KakaoUserInfo {
     String email;
     String nickname;
     String profileImg;
+    String age;
+    String gender;
 }
