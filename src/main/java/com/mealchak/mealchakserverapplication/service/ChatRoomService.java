@@ -25,6 +25,7 @@ import java.util.UUID;
 public class ChatRoomService {
 
     private final PostRepository postRepository;
+    private final PostService postService;
 
     // HashPerations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
@@ -70,13 +71,15 @@ public class ChatRoomService {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
     }
 
+    // 게시글 삭제시 채팅방도 삭제
     @Transactional
-    public void deletePost(Long postId) {
+    public void deleteChatRoom(Long postId) {
         ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
-        allChatInfoRepository.deleteByChatRoom(chatRoom);
+        allChatInfoRepository.deleteAllByChatRoom(chatRoom);
         chatRoomRepository.deleteByPostId(postId);
     }
 
+    // 채팅방 나가기
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postRepository.findById(postId).orElseThrow(
@@ -85,5 +88,18 @@ public class ChatRoomService {
         Long roomId = post.getChatRoom().getId();
         AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
         allChatInfoRepository.delete(allChatInfo);
+        // 활성화 게시글이고 글쓴이면 게시글 삭제
+        if (post.getCheckValid() && isChatRoomOwner(post, userDetails)) {
+           postService.deletePost(postId, userDetails);
+        } else if (isChatRoomOwner(post, userDetails)) {
+            deleteChatRoom(postId);
+        }
+    }
+
+    // 채팅방 주인 확인
+    static boolean isChatRoomOwner(Post post, UserDetailsImpl userDetails) {
+        Long roomOwnerId = post.getChatRoom().getOwnUserId();
+        Long userId = userDetails.getUser().getId();
+        return roomOwnerId.equals(userId);
     }
 }

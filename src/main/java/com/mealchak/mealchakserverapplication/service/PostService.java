@@ -100,13 +100,13 @@ public class PostService {
 
     // 모집글 삭제
     @Transactional
-    public void deletePost(Long postId, User user) {
+    public void deletePost(Long postId, UserDetailsImpl userDetails) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
-        if (!post.getChatRoom().getOwnUserId().equals(user.getId())) {
+        if (!post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
             throw new IllegalArgumentException(("삭제 권한이 없습니다."));
         } else {
-            chatRoomService.deletePost(postId);
+            chatRoomService.deleteChatRoom(postId);
             post.getMenu().updateMenuCount(-1);
             postRepository.deleteById(postId);
         }
