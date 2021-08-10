@@ -135,7 +135,7 @@ public class UserService {
 
     // 유저 정보 수정
     @Transactional
-    public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails) {
+    public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails, String age, String gender) {
         if (userDetails != null) {
             User user = userRepository.findById(userDetails.getUser().getId())
                     .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -180,15 +180,13 @@ public class UserService {
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
-            } else {
-                filename = user.getProfileImg();
-            }
-            if (username == null) {
-                username = user.getUsername();
-            }
-            if (comment == null) {
-                comment = user.getComment();
-            }
+            } else { filename = user.getProfileImg(); }
+
+            if (username == null) { username = user.getUsername(); }
+            if (comment == null) { comment = user.getComment(); }
+            if (user.getAge() == null) { user.updateAge(age); }
+            if (user.getGender() == null) { user.updateGender(gender); }
+
             user.updateUserInfo(username, comment, filename);
             return new UserInfoResponseDto(user);
         } else {
