@@ -34,6 +34,9 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private boolean checkValid;
 
+    @Column(nullable = false)
+    private boolean checkDeleted;
+
     @OneToOne
     @JoinColumn(name="Room_id")
     private ChatRoom chatRoom;
@@ -65,6 +68,7 @@ public class Post extends Timestamped {
         this.menu = menu;
         this.location = location;
         this.checkValid = true;
+        this.checkDeleted = false;
         this.chatRoom = chatRoom;
     }
 
@@ -86,11 +90,11 @@ public class Post extends Timestamped {
         this.nowHeadCount = nowHeadCount;
     }
 
-    public void expired(boolean checkValid){
-        this.checkValid = checkValid;
-    }
+    public void expired(boolean checkValid){ this.checkValid = checkValid; }
+    public void deleted(boolean checkDeleted){ this.checkDeleted = checkDeleted; }
 
-    public Boolean getCheckValid() {
-        return this.checkValid;
-    }
+//    public Boolean getCheckValid() {
+//        return this.checkValid;
+//    }
+
 }

@@ -74,7 +74,7 @@ public class PostController {
     @ApiOperation(value = "해당 모집글 삭제", notes = "해당 모집글 삭제.")
     @DeleteMapping("/posts/{postId}")
     public void getPostDelete(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.deletePost(postId, userDetails.getUser());
+        postService.deletePost(postId, userDetails);
     }
 
     // 유저 근처에 작성된 게시글 조회

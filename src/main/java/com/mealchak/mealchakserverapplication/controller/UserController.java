@@ -65,8 +65,10 @@ public class UserController {
     public UserInfoResponseDto updateUserInfo(@RequestParam(value = "file",required = false) MultipartFile files,
                                               @RequestParam(value = "username",required = false) String username,
                                               @RequestParam(value = "comment",required = false) String comment,
+                                              @RequestParam(value = "age",required = false) String age,
+                                              @RequestParam(value = "gender",required = false) String gender,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.updateUserInfo(files, username, comment, userDetails);
+        return userService.updateUserInfo(files, username, comment, userDetails, age, gender);
     }
 
     // 타 유저 정보 조회

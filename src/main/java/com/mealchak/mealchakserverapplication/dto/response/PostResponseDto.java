@@ -42,6 +42,6 @@ public class PostResponseDto {
         this.createdAt = post.getCreatedAt();
         this.roomId = post.getChatRoom().getId();
         this.nowHeadCount = post.getNowHeadCount();
-        this.valid = post.getCheckValid();
+        this.valid = post.isCheckValid();
     }
 }

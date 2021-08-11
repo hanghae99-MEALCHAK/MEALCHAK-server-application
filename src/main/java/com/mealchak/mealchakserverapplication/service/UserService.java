@@ -45,9 +45,7 @@ public class UserService {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
         KakaoUserInfo userInfo = kakaoOAuth2.getUserInfo(authorizedCode);
         Long kakaoId = userInfo.getId();
-        String nickname = userInfo.getNickname();
         String email = userInfo.getEmail();
-        String profileImg = userInfo.getProfileImg();
         String address = "서울 강남구 항해리99";
         double latitude = 37.497910;
         double longitude = 127.027678;
@@ -67,7 +65,17 @@ public class UserService {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
-            kakaoUser = new User(kakaoId, nickname, encodedPassword, email, profileImg, location);
+            kakaoUser = User.builder()
+                    .kakaoId(kakaoId)
+                    .email(email)
+                    .password(encodedPassword)
+                    .username(userInfo.getNickname())
+                    .profileImg(userInfo.getProfileImg())
+                    .age(userInfo.getAge())
+                    .gender(userInfo.getGender())
+                    .location(location)
+                    .mannerScore(5.0f)
+                    .build();
             userRepository.save(kakaoUser);
         }
 
@@ -127,7 +135,7 @@ public class UserService {
 
     // 유저 정보 수정
     @Transactional
-    public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails) {
+    public UserInfoResponseDto updateUserInfo(MultipartFile files, String username, String comment, UserDetailsImpl userDetails, String age, String gender) {
         if (userDetails != null) {
             User user = userRepository.findById(userDetails.getUser().getId())
                     .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -172,15 +180,13 @@ public class UserService {
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
-            }else{
-                filename = user.getProfileImg();
-            }
-            if (username == null) {
-                username = user.getUsername();
-            }
-            if (comment == null) {
-                comment = user.getComment();
-            }
+            } else { filename = user.getProfileImg(); }
+
+            if (username == null) { username = user.getUsername(); }
+            if (comment == null) { comment = user.getComment(); }
+            if (user.getAge() == null) { user.updateAge(age); }
+            if (user.getGender() == null) { user.updateGender(gender); }
+
             user.updateUserInfo(username, comment, filename);
             return new UserInfoResponseDto(user);
         } else {
@@ -194,7 +200,7 @@ public class UserService {
 
     // 타 유저 정보 조회
     public OtherUserInfoResponseDto getOtherUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("userId 가 존재하지 않습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("userId 가 존재하지 않습니다."));
         List<ReviewListMapping> reviews = reviewRepository.findAllByUserIdOrderByCreatedAtDesc(userId, ReviewListMapping.class);
         return new OtherUserInfoResponseDto(user, reviews);
     }

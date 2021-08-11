@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,7 @@ public class ChatMessageService {
     private final RedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final BanUserListService banUserListService;
-    private final UserRepository userRepository;
+    private final ChatRoomService chatRoomService;
 
     public String getRoomId(String destination) {
         int lastIndex = destination.lastIndexOf('/');
@@ -42,8 +41,10 @@ public class ChatMessageService {
             Long userId = Long.parseLong(chatMessageRequestDto.getMessage());
             Long roomId = Long.parseLong(chatMessageRequestDto.getRoomId());
             banUserListService.banUser(userId,roomId);
+        }else if (ChatMessage.MessageType.BREAK.equals(chatMessageRequestDto.getType())) {
+            Long roomId = Long.parseLong(chatMessageRequestDto.getRoomId());
+            chatRoomService.updateChatValid(roomId);
         }
-
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }
 

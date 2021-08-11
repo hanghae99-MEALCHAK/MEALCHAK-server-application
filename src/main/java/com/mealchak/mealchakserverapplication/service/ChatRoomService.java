@@ -46,7 +46,7 @@ public class ChatRoomService {
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtoList = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = allChatInfoRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfoList = allChatInfoRepository.findAllByUserIdOrderByIdDesc(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
@@ -57,7 +57,7 @@ public class ChatRoomService {
         return responseDtoList;
     }
 
-    // redistemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
+    // redisTemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
     }
@@ -70,20 +70,47 @@ public class ChatRoomService {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
     }
 
+    // 게시글 삭제시 채팅방도 삭제
     @Transactional
-    public void deletePost(Long postId) {
-        ChatRoom chatRoom = chatRoomRepository.findByPostId(postId);
-        allChatInfoRepository.deleteByChatRoom(chatRoom);
-        chatRoomRepository.deleteByPostId(postId);
+    public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {
+        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+        allChatInfoRepository.delete(allChatInfo);
     }
 
+    // 채팅방 나가기
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지않는게시글")
         );
         Long roomId = post.getChatRoom().getId();
-        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
-        allChatInfoRepository.delete(allChatInfo);
+        // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
+        if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {
+            post.getMenu().updateMenuCount(-1);
+            post.expired(false);
+            post.deleted(true);
+            deleteAllChatInfo(roomId, userDetails);
+        // 비활성화 게시글이고 글쓴이면 채팅방 비활성화
+        } else if (isChatRoomOwner(post, userDetails)) {
+            deleteAllChatInfo(roomId, userDetails);
+        // 일반 유저일 때 채팅방 나가기
+        } else {
+            AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+            allChatInfoRepository.delete(allChatInfo);
+        }
+    }
+
+    // 채팅방 주인 확인
+    static boolean isChatRoomOwner(Post post, UserDetailsImpl userDetails) {
+        Long roomOwnerId = post.getChatRoom().getOwnUserId();
+        Long userId = userDetails.getUser().getId();
+        return roomOwnerId.equals(userId);
+    }
+
+    // 채팅방 chatValid -> false
+    @Transactional
+    public void updateChatValid(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()->new IllegalArgumentException(""));
+        chatRoom.updatechatValid(false);
     }
 }

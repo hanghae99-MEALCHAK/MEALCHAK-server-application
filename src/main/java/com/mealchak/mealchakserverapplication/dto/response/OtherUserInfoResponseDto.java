@@ -12,6 +12,8 @@ public class OtherUserInfoResponseDto {
     private final String username;
     private final String comment;
     private final String profileImg;
+    private final String age;
+    private final String gender;
     private final float mannerScore;
     private final List<ReviewListMapping> reviews;
 
@@ -19,6 +21,8 @@ public class OtherUserInfoResponseDto {
         this.userId = user.getId();
         this.username = user.getUsername();
         this.comment = user.getComment();
+        this.age = user.getAge();
+        this.gender = user.getGender();
         this.profileImg = user.getProfileImg();
         this.mannerScore = user.getMannerScore();
         this.reviews = reviews;
