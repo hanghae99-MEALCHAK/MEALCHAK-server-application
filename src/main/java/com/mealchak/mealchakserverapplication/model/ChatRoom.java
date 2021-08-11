@@ -22,11 +22,19 @@ public class ChatRoom extends Timestamped {
     @Column(nullable = false)
     private Long ownUserId;
 
+    @Column(nullable = false)
+    private boolean chatValid;
+
     @OneToOne(mappedBy = "chatRoom")
     private Post post;
 
     public ChatRoom(String uuid, User user) {
         this.uuid = uuid;
         this.ownUserId = user.getId();
+        this.chatValid = true;
+    }
+
+    public void updatechatValid(boolean chatValid) {
+        this.chatValid = chatValid;
     }
 }

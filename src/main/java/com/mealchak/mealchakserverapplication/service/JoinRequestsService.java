@@ -73,6 +73,7 @@ public class JoinRequestsService {
         return userInfoAndPostResponseDtoList;
     }
 
+    // 신청 승인 대기 리스트
     public List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinList(UserDetailsImpl userDetails) {
         Long userId = userDetails.getUser().getId();
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByUserId(userId);
@@ -126,7 +127,7 @@ public class JoinRequestsService {
 
     // allChatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId) {
-        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserId(user.getId());
+        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserIdOrderByIdDesc(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos) {
             if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
                 return true;

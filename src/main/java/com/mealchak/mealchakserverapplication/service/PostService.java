@@ -103,12 +103,15 @@ public class PostService {
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
-        if (!post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
-            throw new IllegalArgumentException(("삭제 권한이 없습니다."));
-        } else {
-            chatRoomService.deleteChatRoom(post.getChatRoom().getId());
+        if (post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
+            Long chatRoomId = post.getChatRoom().getId();
             post.getMenu().updateMenuCount(-1);
-            postRepository.deleteById(postId);
+            post.deleted(true);
+            post.expired(false);
+            chatRoomService.deleteAllChatInfo(chatRoomId, userDetails);
+            chatRoomService.updateChatValid(chatRoomId);
+        } else {
+            throw new IllegalArgumentException(("삭제 권한이 없습니다."));
         }
     }
 
@@ -222,7 +225,7 @@ public class PostService {
     public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
         if (userDetails != null) {
             User user = userDetails.getUser();
-            List<Post> posts = postRepository.findByUser_IdOrderByCreatedAtDesc(user.getId());
+            List<Post> posts = postRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
             List<PostResponseDto> listPost = new ArrayList<>();
             for (Post post : posts) {
                 updateHeadCount(post);

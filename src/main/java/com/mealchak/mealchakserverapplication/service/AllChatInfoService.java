@@ -26,5 +26,10 @@ public class AllChatInfoService {
         }
         return userList;
     }
+
+    public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {
+        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+        allChatInfoRepository.delete(allChatInfo);
+    }
 }
 

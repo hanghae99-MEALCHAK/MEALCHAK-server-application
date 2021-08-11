@@ -9,7 +9,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 public class SchedulerConfig implements SchedulingConfigurer {
 
     //스케쥴러 쓰레드 개수
-    private final static int THREAD_SIZE = 2;
+    private final static int THREAD_SIZE = 3;
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar){

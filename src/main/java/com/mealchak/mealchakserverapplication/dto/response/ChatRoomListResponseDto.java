@@ -12,13 +12,15 @@ public class ChatRoomListResponseDto {
     private final Long roomId;
     private final Long postId;
     private final Long headCountChat;
+    private final boolean chatValid;
 
     public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat) {
-        this.orderTime = post.getOrderTime();
         this.title = post.getTitle();
+        this.orderTime = post.getOrderTime();
         this.ownUserId = chatRoom.getOwnUserId();
         this.roomId = chatRoom.getId();
         this.postId = post.getId();
         this.headCountChat = headCountChat;
+        this.chatValid = chatRoom.isChatValid();
     }
 }

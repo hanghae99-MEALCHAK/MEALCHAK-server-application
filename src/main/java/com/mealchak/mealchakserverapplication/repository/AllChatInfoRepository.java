@@ -8,8 +8,7 @@ import java.util.List;
 
 public interface AllChatInfoRepository extends JpaRepository<AllChatInfo, Long> {
     Long countAllByChatRoom(ChatRoom chatRoom);
-    void deleteAllByChatRoom(ChatRoom chatRoom);
-    List<AllChatInfo> findAllByUserId(Long userId);
+    List<AllChatInfo> findAllByUserIdOrderByIdDesc(Long userId);
     List<AllChatInfo> findAllByChatRoom_Id(Long roomId);
     AllChatInfo findByChatRoom_IdAndUser_Id(Long roomId,Long userId);
 }
