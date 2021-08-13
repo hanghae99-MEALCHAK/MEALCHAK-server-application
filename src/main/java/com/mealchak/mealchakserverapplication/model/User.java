@@ -61,7 +61,8 @@ public class User extends Timestamped {
         this.username = username;
         this.password = password;
         this.email = username;
-        this.profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg";
+//        this.profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // Naver EC2
+        this.profileImg = "http://52.78.204.238/image/profileDefaultImg.jpg";  // AWS EC2
         this.location = new Location("강남구 항해리99", 37.49791, 127.027678);
         this.mannerScore = 5.0f;
     }

@@ -52,6 +52,6 @@ public class ChatMessageService {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt" );
         pageable = PageRequest.of(page, 150, sort );
-        return chatMessageRepository.findByRoomId(roomId, pageable);
+        return chatMessageRepository.findByRoomIdOrderByIdDesc(roomId, pageable);
     }
 }

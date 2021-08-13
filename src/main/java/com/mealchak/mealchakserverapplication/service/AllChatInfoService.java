@@ -7,8 +7,8 @@ import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,14 +17,10 @@ public class AllChatInfoService {
     private final AllChatInfoRepository allChatInfoRepository;
 
     public List<User> getUser(Long roomId) {
-        List<AllChatInfo> allChatInfoList = allChatInfoRepository.findAllByChatRoom_Id(roomId);
-        List<User> userList = new ArrayList<>();
-
-        for (AllChatInfo allChatInfo : allChatInfoList) {
-            User user = allChatInfo.getUser();
-            userList.add(user);
-        }
-        return userList;
+        return allChatInfoRepository.findAllByChatRoom_Id(roomId)
+                .stream()
+                .map(AllChatInfo::getUser)
+                .collect(Collectors.toList());
     }
 
     public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {

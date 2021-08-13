@@ -34,4 +34,9 @@ public class AllChatInfoController {
         allChatInfoService.deleteAllChatInfo(roomId, userDetails);
     }
 
+
+    @GetMapping("/test")
+    public void test(){
+    }
+
 }

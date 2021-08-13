@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByOrderTimeAsc(String title, String contents);
-    List<Post> findAllByCheckValidTrueOrderByCreatedAtDesc();
+    List<Post> findAllByCheckValidTrueOrderByOrderTimeAsc();
     List<Post> findAllByCheckValidTrue();
     List<Post> findByCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(String address);
     List<Post> findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContainingOrderByOrderTimeAsc(String address, String category);

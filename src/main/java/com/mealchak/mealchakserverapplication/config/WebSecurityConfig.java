@@ -50,6 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/posts").permitAll()
                 .antMatchers(HttpMethod.GET,"/posts/{postId}").permitAll()
                 .antMatchers("/menu").permitAll()
+
+                .antMatchers("/test").permitAll() // 부하 테스트용 api
                 //이미지파일 접근
                 .antMatchers("/image/**").permitAll()
                 //웹소켓 접근

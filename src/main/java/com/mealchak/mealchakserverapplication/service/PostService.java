@@ -51,9 +51,11 @@ public class PostService {
     }
 
     // 모집글 전체 조회
-    public List<PostResponseDto> getAllPost() {
-        List<Post> posts = postRepository.findAllByCheckValidTrueOrderByCreatedAtDesc();
+    public List<PostResponseDto> getAllPost(String category) {
+//        List<Post> posts = postRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
         List<PostResponseDto> listPost = new ArrayList<>();
+        List<Post> posts = getPostByCategory("", category);
+
         for (Post post : posts) {
             updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
@@ -130,7 +132,7 @@ public class PostService {
     public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, String category, String sort) {
         // 게스트 유저일 경우 모든 결과 조회
         if (userDetails == null) {
-            return getAllPost();
+            return getAllPost(category);
         }
         User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
@@ -189,6 +191,13 @@ public class PostService {
             }
         }
         return listPost;
+//                return  getPostByCategory(guName, category)
+//                .stream()
+//                .peek(this::updateHeadCount)
+//                .filter(p -> getDist(user, p) < RANGE)
+//                .peek(p -> p.updateDistance(getDist(user, p)))
+//                .map(PostResponseDto::new)
+//                .collect(Collectors.toList());
     }
 
     // 카테고리별 리스트 조회
