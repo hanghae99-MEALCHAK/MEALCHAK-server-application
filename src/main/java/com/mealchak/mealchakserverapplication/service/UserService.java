@@ -175,8 +175,8 @@ public class UserService {
                     String filePath = savePath + "/" + filename;
                     files.transferTo(new java.io.File(filePath));
 
-                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
-//                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
+//                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
+                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }

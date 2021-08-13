@@ -38,8 +38,8 @@ public class PostController {
     // 모집글 전체 불러오기
     @ApiOperation(value = "전체 모집글 조회", notes = "전체 모집글 조회합니다.")
     @GetMapping("/posts")
-    public List<PostResponseDto> getAllPost() {
-        return postService.getAllPost();
+    public List<PostResponseDto> getAllPost(@RequestParam(value = "category", required = false, defaultValue = "전체") String category) {
+        return postService.getAllPost(category);
     }
 
     // 해당 모집글 불러오기
