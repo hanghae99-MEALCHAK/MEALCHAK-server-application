@@ -25,6 +25,7 @@ public class PostService {
     private final ChatRoomService chatRoomService;
     private final AllChatInfoRepository allChatInfoRepository;
     private final AllChatInfoService allChatInfoService;
+    private final JoinRequestsService joinRequestsService;
     private static final int RANGE = 3;
 
     // 모집글 생성
@@ -110,6 +111,7 @@ public class PostService {
             post.getMenu().updateMenuCount(-1);
             post.deleted(true);
             post.expired(false);
+            joinRequestsService.deleteByPostId(post.getId());
             chatRoomService.deleteAllChatInfo(chatRoomId, userDetails);
             chatRoomService.updateChatValid(chatRoomId);
         } else {

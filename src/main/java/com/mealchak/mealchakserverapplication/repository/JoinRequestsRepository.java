@@ -11,4 +11,5 @@ public interface JoinRequestsRepository extends JpaRepository<JoinRequests,Long>
     List<JoinRequests> findByOwnUserId(Long ownUserId);
     List<JoinRequests> findByUserId(Long userId);
     Optional<JoinRequests> findByIdAndUserId(Long joinId, Long userId);
+    void deleteByPostId(Long postId);
 }

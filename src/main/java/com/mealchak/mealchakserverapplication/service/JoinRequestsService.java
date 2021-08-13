@@ -91,6 +91,7 @@ public class JoinRequestsService {
         return myAwaitRequestJoinResponseDtoList;
     }
 
+
     // 채팅방 참가 신청 승인/거절
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
         JoinRequests joinRequests = joinRequestsRepository.findById(joinRequestId).orElseThrow(
@@ -143,5 +144,10 @@ public class JoinRequestsService {
         JoinRequests joinRequests = joinRequestsRepository.findByIdAndUserId(joinId, userId)
                 .orElseThrow(()->new IllegalArgumentException("해당 신청이 존재하지 않습니다."));
         joinRequestsRepository.delete(joinRequests);
+    }
+
+    // 게시글 삭제시 승인대기 목록 삭제
+    public void deleteByPostId(Long id) {
+        joinRequestsRepository.deleteByPostId(id);
     }
 }
