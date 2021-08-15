@@ -118,14 +118,59 @@ public class PostService {
     }
 
     // 모집글 검색
-    public List<PostResponseDto> getSearch(String text) {
-        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByOrderTimeAsc(text, text);
+    public List<PostResponseDto> getSearch(UserDetailsImpl userDetails, String text, String sort) {
+        if (userDetails == null) {
+            return getSearchPost(text);
+        } else {
+            if (sort.equals("recent")) {
+                return getSearchPostBySortByRecent(text, userDetails.getUser());
+            } else if (sort.equals("nearBy")) {
+                return getSearchPostByUserDist(text, userDetails.getUser());
+            } else {
+                throw new IllegalArgumentException("잘못된 sort 요청입니다.");
+            }
+        }
+    }
+
+    // 비회원 검색
+    public List<PostResponseDto> getSearchPost(String text) {
+        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContainingOrderByOrderTimeAsc(text, text, text);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
+    }
+
+    // 회원 검색 (모집 마감임박순)
+    public List<PostResponseDto> getSearchPostBySortByRecent(String text, User user) {
+        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContainingOrderByOrderTimeAsc(text, text, text);
+        List<PostResponseDto> listPost = new ArrayList<>();
+        for (Post post : posts) {
+            updateHeadCount(post);
+            double dist = getDist(user, post);
+            if (dist < RANGE) {
+                post.updateDistance(dist);
+                listPost.add(new PostResponseDto(post));
+            }
+        }
+        return listPost;
+    }
+
+    // 회원 검색 (거리순)
+    public List<PostResponseDto> getSearchPostByUserDist(String text, User user) {
+        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContaining(text, text, text);
+        List<Post> listPost = new ArrayList<>();
+        for (Post post : posts) {
+            updateHeadCount(post);
+            double dist = getDist(user, post);
+            if (dist < RANGE) {
+                post.updateDistance(dist);
+                listPost.add(post);
+            }
+        }
+        return getNearByResultByList(listPost, user);
     }
 
     // 모집글 유저 위치 기반 조회
@@ -246,4 +291,30 @@ public class PostService {
         }
     }
 
+    public List<PostResponseDto> getNearByResultByList(List<Post> postList, User user) {
+        Map<Double, PostResponseDto> nearPost = new TreeMap<>();
+        List<Double> distChecker = new ArrayList<>();
+        for (Post post : postList) {
+            double dist = getDist(user, post);
+            updateHeadCount(post);
+            if (dist < RANGE) {
+                post.updateDistance(dist);
+                PostResponseDto responseDto = new PostResponseDto(post);
+                if (distChecker.contains(dist)) {
+                    for (int i = 0; i < 100; i++) {
+                        dist += 0.001;
+                        if (!distChecker.contains(dist)) {
+                            distChecker.add(dist);
+                            nearPost.put(dist, responseDto);
+                            break;
+                        }
+                    }
+                } else {
+                    distChecker.add(dist);
+                    nearPost.put(dist, responseDto);
+                }
+            }
+        }
+        return new ArrayList<>(nearPost.values());
+    }
 }

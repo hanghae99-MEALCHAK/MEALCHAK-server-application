@@ -59,8 +59,10 @@ public class PostController {
     // 검색하여 모집글 불러오기
     @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
     @PostMapping("/search")
-    public List<PostResponseDto> getSearch(@RequestBody String text) {
-        return postService.getSearch(text);
+    public List<PostResponseDto> getSearch(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                           @RequestParam(value = "text") String text,
+                                           @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
+        return postService.getSearch(userDetails, text, sort);
     }
 
     // 해당 모집글 수정
