@@ -156,8 +156,6 @@ public class UserService {
                     // 해당 위치에 이미지 저장
                     String savePath = System.getProperty("user.dir") + "/image";
                     // 파일이 저장되는 폴더가 없으면 폴더를 생성
-                    String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
-                    File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
                     if (!new java.io.File(savePath).exists()) {
                         try {
                             new java.io.File(savePath).mkdir();
@@ -165,11 +163,22 @@ public class UserService {
                             throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
                         }
                     }
-                    if (deleteFile.exists()) {
-                        try {
-                            deleteFile.delete();
-                        } catch (Exception e) {
-                            throw new IllegalArgumentException("기존 파일 삭제를 실패하였습니다.");
+                    String[] kakaoImg = userDetails.getUser().getProfileImg().split("/dn");
+                    String defaultImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
+//                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
+                    if (user.getProfileImg().contains(kakaoImg[0])) {
+                        filename = nameToMD5 + "_" + uuid;
+                    } else if (user.getProfileImg().equals(defaultImg)) {
+                        filename = nameToMD5 + "_" + uuid;
+                    } else {
+                        String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
+                        File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
+                        if (deleteFile.exists()) {
+                            try {
+                                deleteFile.delete();
+                            } catch (Exception e) {
+                                throw new IllegalArgumentException("기존 파일 삭제를 실패하였습니다.");
+                            }
                         }
                     }
                     String filePath = savePath + "/" + filename;
@@ -180,12 +189,22 @@ public class UserService {
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
-            } else { filename = user.getProfileImg(); }
+            } else {
+                filename = user.getProfileImg();
+            }
 
-            if (username == null) { username = user.getUsername(); }
-            if (comment == null) { comment = user.getComment(); }
-            if (user.getAge() == null) { user.updateAge(age); }
-            if (user.getGender() == null) { user.updateGender(gender); }
+            if (username == null) {
+                username = user.getUsername();
+            }
+            if (comment == null) {
+                comment = user.getComment();
+            }
+            if (user.getAge() == null) {
+                user.updateAge(age);
+            }
+            if (user.getGender() == null) {
+                user.updateGender(gender);
+            }
 
             user.updateUserInfo(username, comment, filename);
             return new UserInfoResponseDto(user);
