@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 @Api(tags = {"1. 모집글"}) // Swagger
@@ -56,13 +55,6 @@ public class PostController {
         return postService.getMyPost(userDetails);
     }
 
-    // 검색하여 모집글 불러오기
-    @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
-    @PostMapping("/search")
-    public List<PostResponseDto> getSearch(@RequestBody String text) {
-        return postService.getSearch(text);
-    }
-
     // 해당 모집글 수정
     @ApiOperation(value = "해당 모집글 수정", notes = "해당 모집글 수정합니다.")
     @PutMapping("/posts/{postId}")
@@ -77,12 +69,21 @@ public class PostController {
         postService.deletePost(postId, userDetails);
     }
 
+    // 검색하여 모집글 불러오기
+    @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
+    @PostMapping("/search")
+    public List<PostResponseDto> getSearch(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                           @RequestParam(value = "text") String text,
+                                           @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
+        return postService.getSearch(userDetails, text, sort);
+    }
+
     // 유저 근처에 작성된 게시글 조회
     @ApiOperation(value = "위치 기반 모집글 조회", notes = "사용자 위치를 기반으로 모집글을 조회합니다.")
     @GetMapping("/posts/around")
-    public Collection<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                         @RequestParam(value = "category", required = false, defaultValue = "전체") String category,
-                                                         @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
+    public List<PostResponseDto> getPostByUserDist(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @RequestParam(value = "category", required = false, defaultValue = "전체") String category,
+                                                   @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
         return postService.getPostByUserDist(userDetails, category, sort);
     }
 
