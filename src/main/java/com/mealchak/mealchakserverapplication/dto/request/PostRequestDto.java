@@ -1,7 +1,9 @@
 package com.mealchak.mealchakserverapplication.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public class PostRequestDto {
     private String title;
