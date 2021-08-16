@@ -6,6 +6,7 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ public class ChatRoomService {
 
     private final PostRepository postRepository;
 
-    // HashPerations 레디스에서 쓰는 자료형
+    // HashOperations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
     @Resource(name = "redisTemplate")
@@ -51,15 +52,16 @@ public class ChatRoomService {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
             Long headCountChat = allChatInfoRepository.countAllByChatRoom(chatRoom);
-            Long chatRoomId = chatRoom.getId();
+            String chatRoomId = Long.toString(chatRoom.getId());
             Long newMessageCount = allChatInfo.getNewMessageCount();
             Long nowMessageCount = chatMessageRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
             if (newMessageCount > nowMessageCount){
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
+                responseDtoList.add(responseDto);
             } else {
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,false);
+                responseDtoList.add(responseDto);
             }
-            responseDtoList.add(responseDto);
         }
         return responseDtoList;
     }
