@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContainingOrderByOrderTimeAsc(String title, String contents, String address);
-    List<Post> findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContaining(String title, String contents, String address);
+    List<Post> findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(String title, String contents, String address);
+    List<Post> findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(String title, String contents, String address);
     List<Post> findAllByCheckValidTrue();
-    List<Post> findByCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(String address);
-    List<Post> findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContainingOrderByOrderTimeAsc(String address, String category);
     List<Post> findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(Long userId);
+    List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(double latitudeStart, double latitudeEnd, double longitudeStart, double longitudeEnd);
+    List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryContainingOrderByOrderTimeAsc(double latitudeStart, double latitudeEnd, double longitudeStart, double longitudeEnd, String category);
+    List<Post> findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(String category);
 }

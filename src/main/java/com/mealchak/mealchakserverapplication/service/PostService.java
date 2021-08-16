@@ -52,9 +52,8 @@ public class PostService {
 
     // 모집글 전체 조회
     public List<PostResponseDto> getAllPost(String category) {
-//        List<Post> posts = postRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
         List<PostResponseDto> listPost = new ArrayList<>();
-        List<Post> posts = getPostByCategory("", category);
+        List<Post> posts = postRepository.findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(category);
 
         for (Post post : posts) {
             updateHeadCount(post);
@@ -71,15 +70,20 @@ public class PostService {
         return new PostDetailResponseDto(post, userList);
     }
 
-    // 모집글 HeadCount 추가
-    public void updateHeadCount(Post post) {
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
-        post.updateNowHeadCount(nowHeadCount);
-    }
-
-    // findById(postId)
-    public Post getPost(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+    // 내가 쓴 글 조회
+    public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            User user = userDetails.getUser();
+            List<Post> posts = postRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
+            List<PostResponseDto> listPost = new ArrayList<>();
+            for (Post post : posts) {
+                updateHeadCount(post);
+                listPost.add(new PostResponseDto(post));
+            }
+            return listPost;
+        } else {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
     }
 
     // 모집글 수정
@@ -117,24 +121,49 @@ public class PostService {
         }
     }
 
-    // 모집글 검색
+    // 검색하여 모집글 불러오기
     public List<PostResponseDto> getSearch(UserDetailsImpl userDetails, String text, String sort) {
         if (userDetails == null) {
             return getSearchPost(text);
         } else {
+            User user = userDetails.getUser();
             if (sort.equals("recent")) {
-                return getSearchPostBySortByRecent(text, userDetails.getUser());
+                return getSearchPostBySortByRecent(text, user);
             } else if (sort.equals("nearBy")) {
-                return getSearchPostByUserDist(text, userDetails.getUser());
+                return getSearchPostByUserDist(text, user);
             } else {
                 throw new IllegalArgumentException("잘못된 sort 요청입니다.");
             }
         }
     }
 
+    // 유저 근처에 작성된 게시글 조회
+    public List<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, String category, String sort) {
+        // 게스트 유저일 경우 모든 결과 조회
+        if (userDetails == null) {
+            return getAllPost(category);
+        }
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
+
+        double userLatitude = user.getLocation().getLatitude();
+        double userLongitude = user.getLocation().getLongitude();
+        List<Post> postList;
+        if (sort.equals("recent")) {
+            return getAllPostSortByRecent(user, userLatitude, userLongitude, category);
+        } else if (sort.equals("nearBy")) {
+            postList = getPostByCategory(category, userLatitude, userLongitude);
+        } else {
+            throw new IllegalArgumentException("잘못된 sort 요청입니다.");
+        }
+        return getNearByResult(postList, user);
+    }
+
     // 비회원 검색
     public List<PostResponseDto> getSearchPost(String text) {
-        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContainingOrderByOrderTimeAsc(text, text, text);
+        List<Post> posts =
+                postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
+                        text, text, text);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -145,22 +174,16 @@ public class PostService {
 
     // 회원 검색 (모집 마감임박순)
     public List<PostResponseDto> getSearchPostBySortByRecent(String text, User user) {
-        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContainingOrderByOrderTimeAsc(text, text, text);
-        List<PostResponseDto> listPost = new ArrayList<>();
-        for (Post post : posts) {
-            updateHeadCount(post);
-            double dist = getDist(user, post);
-            if (dist < RANGE) {
-                post.updateDistance(dist);
-                listPost.add(new PostResponseDto(post));
-            }
-        }
-        return listPost;
+        List<Post> posts =
+                postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
+                        text, text, text);
+        return getPostsDistance(user, posts);
     }
 
     // 회원 검색 (거리순)
     public List<PostResponseDto> getSearchPostByUserDist(String text, User user) {
-        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrContentsContainingOrLocation_AddressContaining(text, text, text);
+        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(
+                text, text, text);
         List<Post> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -170,128 +193,11 @@ public class PostService {
                 listPost.add(post);
             }
         }
-        return getNearByResultByList(listPost, user);
-    }
-
-    // 모집글 유저 위치 기반 조회
-    public Collection<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, String category, String sort) {
-        // 게스트 유저일 경우 모든 결과 조회
-        if (userDetails == null) {
-            return getAllPost(category);
-        }
-        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-
-        String[] userGuName = user.getLocation().getAddress().split(" ");
-        String guName = userGuName[1]; // 서울시 '강남구' 구 이름을 의미
-        List<Post> postList;
-        if (sort.equals("recent")) {
-            return getAllPostSortByRecent(user, guName, category);
-        } else if (sort.equals("nearBy")) {
-            postList = getPostByCategory(guName, category);
-        } else {
-            throw new IllegalArgumentException("잘못된 sort 요청입니다.");
-        }
-        return getNearByResult(postList, user);
+        return getNearByResult(listPost, user);
     }
 
     // 거리순 모집글 결과 리스트
-    public Collection<PostResponseDto> getNearByResult(List<Post> postList, User user) {
-        Map<Double, PostResponseDto> nearPost = new TreeMap<>();
-        List<Double> distChecker = new ArrayList<>();
-        for (Post post : postList) {
-            double dist = getDist(user, post);
-            updateHeadCount(post);
-            if (dist < RANGE) {
-                post.updateDistance(dist);
-                PostResponseDto responseDto = new PostResponseDto(post);
-                if (distChecker.contains(dist)) {
-                    for (int i = 0; i < 100; i++) {
-                        dist += 0.001;
-                        if (!distChecker.contains(dist)) {
-                            distChecker.add(dist);
-                            nearPost.put(dist, responseDto);
-                            break;
-                        }
-                    }
-                } else {
-                    distChecker.add(dist);
-                    nearPost.put(dist, responseDto);
-                }
-            }
-        }
-        return nearPost.values();
-    }
-
-    // 모집글 전체 최신순 조회(거리표시)
-    public List<PostResponseDto> getAllPostSortByRecent(User user, String guName, String category) {
-        List<Post> posts = getPostByCategory(guName, category);
-        List<PostResponseDto> listPost = new ArrayList<>();
-        for (Post post : posts) {
-            updateHeadCount(post);
-            double dist = getDist(user, post);
-            if (dist < RANGE) {
-                post.updateDistance(dist);
-                listPost.add(new PostResponseDto(post));
-            }
-        }
-        return listPost;
-//                return  getPostByCategory(guName, category)
-//                .stream()
-//                .peek(this::updateHeadCount)
-//                .filter(p -> getDist(user, p) < RANGE)
-//                .peek(p -> p.updateDistance(getDist(user, p)))
-//                .map(PostResponseDto::new)
-//                .collect(Collectors.toList());
-    }
-
-    // 카테고리별 리스트 조회
-    public List<Post> getPostByCategory(String guName, String category) {
-        if (category.equals("전체")) {
-            return postRepository.findByCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(guName);
-        } else
-            return postRepository.findByCheckValidTrueAndLocation_AddressContainingAndMenu_CategoryContainingOrderByOrderTimeAsc(guName, category);
-    }
-
-    private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
-    private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
-
-    // 유저와 게시글의 거리계산 로직
-    private static double getDist(User user, Post post) {
-        double lat1 = user.getLocation().getLatitude();
-        double lon1 = user.getLocation().getLongitude();
-        double lat2 = post.getLocation().getLatitude();
-        double lon2 = post.getLocation().getLongitude();
-
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
-                * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344;
-        dist = Math.round(dist * 1000) / 1000.0;
-        return dist;
-    }
-
-    // 내가 쓴 글 조회
-    public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
-        if (userDetails != null) {
-            User user = userDetails.getUser();
-            List<Post> posts = postRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
-            List<PostResponseDto> listPost = new ArrayList<>();
-            for (Post post : posts) {
-                updateHeadCount(post);
-                listPost.add(new PostResponseDto(post));
-            }
-            return listPost;
-        } else {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-    }
-
-    public List<PostResponseDto> getNearByResultByList(List<Post> postList, User user) {
+    public List<PostResponseDto> getNearByResult(List<Post> postList, User user) {
         Map<Double, PostResponseDto> nearPost = new TreeMap<>();
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
@@ -316,5 +222,78 @@ public class PostService {
             }
         }
         return new ArrayList<>(nearPost.values());
+    }
+
+    // 모집글 전체 최신순 조회
+    public List<PostResponseDto> getAllPostSortByRecent(User user, double userLatitude, double userLongitude, String category) {
+        List<Post> posts = getPostByCategory(category, userLatitude, userLongitude);
+        return getPostsDistance(user, posts);
+    }
+
+    // 모집글에 거리 표시
+    private List<PostResponseDto> getPostsDistance(User user, List<Post> posts) {
+        List<PostResponseDto> listPost = new ArrayList<>();
+        for (Post post : posts) {
+            updateHeadCount(post);
+            double dist = getDist(user, post);
+            if (dist < RANGE) {
+                post.updateDistance(dist);
+                listPost.add(new PostResponseDto(post));
+            }
+        }
+        return listPost;
+    }
+
+    // 카테고리별 리스트 조회
+    public List<Post> getPostByCategory(String category, double userLatitude, double userLongitude) {
+        if (category.equals("전체")) {
+            return postRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(
+                    userLatitude - 0.027,
+                    userLatitude + 0.027,
+                    userLongitude - 0.036,
+                    userLongitude + 0.036
+            );
+        } else {
+            return postRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryContainingOrderByOrderTimeAsc(
+                    userLatitude - 0.027,
+                    userLatitude + 0.027,
+                    userLongitude - 0.036,
+                    userLongitude + 0.036,
+                    category
+            );
+        }
+    }
+
+    // 유저와 게시글의 거리계산 로직
+    private static double getDist(User user, Post post) {
+        double lat1 = user.getLocation().getLatitude();
+        double lon1 = user.getLocation().getLongitude();
+        double lat2 = post.getLocation().getLatitude();
+        double lon2 = post.getLocation().getLongitude();
+
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1))
+                * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+        dist = Math.round(dist * 1000) / 1000.0;
+        return dist;
+    }
+
+    private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
+    private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
+
+    // 모집글 HeadCount 추가
+    public void updateHeadCount(Post post) {
+        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
+        post.updateNowHeadCount(nowHeadCount);
+    }
+
+    // findById(postId)
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
     }
 }
