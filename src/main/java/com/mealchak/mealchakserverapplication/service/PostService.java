@@ -85,10 +85,10 @@ public class PostService {
 
     // 모집글 수정
     @Transactional
-    public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto) {
+    public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         Location location = new Location(requestDto);
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findByCheckValidTrueAndIdAndUserId(postId, userDetails.getUser().getId()).orElseThrow(
+                () -> new IllegalArgumentException("postId가 존재하지 않거나 만료된 post 입니다."));
         Menu menu = post.getMenu();
         if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
@@ -121,7 +121,7 @@ public class PostService {
 
     // 모집글 검색
     public List<PostResponseDto> getSearch(String text) {
-        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrContentsContainingOrderByOrderTimeAsc(text, text);
+        List<Post> posts = postRepository.findAllByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrderByOrderTimeAsc(text, text);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);

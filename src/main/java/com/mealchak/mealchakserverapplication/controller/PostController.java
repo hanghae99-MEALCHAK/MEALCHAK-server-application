@@ -66,8 +66,8 @@ public class PostController {
     // 해당 모집글 수정
     @ApiOperation(value = "해당 모집글 수정", notes = "해당 모집글 수정합니다.")
     @PutMapping("/posts/{postId}")
-    public PostResponseDto updatePostDetail(@PathVariable Long postId, @RequestBody PostRequestDto requestDto) {
-        return postService.updatePostDetail(postId, requestDto);
+    public PostResponseDto updatePostDetail(@PathVariable Long postId, @RequestBody PostRequestDto requestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.updatePostDetail(postId, requestDto, userDetails);
     }
 
     // 특정 모집글 삭제
