@@ -1,14 +1,9 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
-import com.mealchak.mealchakserverapplication.model.ChatRoom;
-import com.mealchak.mealchakserverapplication.model.Post;
-import com.mealchak.mealchakserverapplication.model.User;
+import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
+import com.mealchak.mealchakserverapplication.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
@@ -29,10 +24,15 @@ public class ChatRoomService {
     // HashPerations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
+    @Resource(name = "redisTemplate")
+    private HashOperations<String, String, String> hashOpsUserInfo;
     private final ChatRoomRepository chatRoomRepository;
     private final AllChatInfoRepository allChatInfoRepository;
+    private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     public static final String ENTER_INFO = "ENTER_INFO";
+    public static final String USER_INFO = "USER_INFO";
 
     //채팅방생성
     @Transactional
@@ -51,15 +51,23 @@ public class ChatRoomService {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
             Long headCountChat = allChatInfoRepository.countAllByChatRoom(chatRoom);
-            ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat);
+            Long chatRoomId = chatRoom.getId();
+            Long newMessageCount = allChatInfo.getNewMessageCount();
+            Long nowMessageCount = chatMessageRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
+            if (newMessageCount > nowMessageCount){
+                ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
+            } else {
+                ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,false);
+            }
             responseDtoList.add(responseDto);
         }
         return responseDtoList;
     }
 
     // redisTemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
-    public void setUserEnterInfo(String sessionId, String roomId) {
+    public void setUserEnterInfo(String sessionId, String roomId, Long userId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
+        hashOpsUserInfo.put(USER_INFO, sessionId, Long.toString(userId));
     }
 
     public String getUserEnterRoomId(String sessionId) {
@@ -68,6 +76,13 @@ public class ChatRoomService {
 
     public void removeUserEnterInfo(String sessionId) {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
+        hashOpsUserInfo.delete(USER_INFO, sessionId);
+    }
+
+    public User chkSessionUser(String sessionId){
+        Long userId = Long.parseLong(hashOpsUserInfo.get(USER_INFO,sessionId));
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자"));
+        return user;
     }
 
     // 게시글 삭제시 채팅방도 삭제

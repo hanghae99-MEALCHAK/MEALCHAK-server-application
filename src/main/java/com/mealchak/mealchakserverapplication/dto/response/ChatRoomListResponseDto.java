@@ -13,8 +13,9 @@ public class ChatRoomListResponseDto {
     private final Long postId;
     private final Long headCountChat;
     private final boolean chatValid;
+    private final boolean newMessage;
 
-    public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat) {
+    public ChatRoomListResponseDto(ChatRoom chatRoom, Post post, Long headCountChat,boolean newMessage) {
         this.title = post.getTitle();
         this.orderTime = post.getOrderTime();
         this.ownUserId = chatRoom.getOwnUserId();
@@ -22,5 +23,6 @@ public class ChatRoomListResponseDto {
         this.postId = post.getId();
         this.headCountChat = headCountChat;
         this.chatValid = chatRoom.isChatValid();
+        this.newMessage = newMessage;
     }
 }

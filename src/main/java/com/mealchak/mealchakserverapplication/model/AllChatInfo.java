@@ -24,9 +24,16 @@ public class AllChatInfo {
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
+    @Column(nullable = false)
+    private Long newMessageCount;
 
     public AllChatInfo(User user, ChatRoom chatRoom) {
         this.user = user;
         this.chatRoom = chatRoom;
+        this.newMessageCount = 0L;
+    }
+
+    public void updateCount(Long newMessageCount){
+        this.newMessageCount = newMessageCount;
     }
 }
