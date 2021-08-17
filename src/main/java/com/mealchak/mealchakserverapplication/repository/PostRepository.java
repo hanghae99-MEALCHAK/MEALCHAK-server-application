@@ -16,4 +16,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(double latitudeStart, double latitudeEnd, double longitudeStart, double longitudeEnd);
     List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryContainingOrderByOrderTimeAsc(double latitudeStart, double latitudeEnd, double longitudeStart, double longitudeEnd, String category);
     List<Post> findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(String category);
+    List<Post> findAllByCheckValidTrueOrderByOrderTimeAsc();
 }

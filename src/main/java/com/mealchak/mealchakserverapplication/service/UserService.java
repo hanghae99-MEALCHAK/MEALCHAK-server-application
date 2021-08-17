@@ -163,14 +163,9 @@ public class UserService {
                             throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
                         }
                     }
-                    String[] kakaoImg = userDetails.getUser().getProfileImg().split("/dn");
-                    String defaultImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
-//                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
-                    if (user.getProfileImg().contains(kakaoImg[0])) {
-                        filename = nameToMD5 + "_" + uuid;
-                    } else if (user.getProfileImg().equals(defaultImg)) {
-                        filename = nameToMD5 + "_" + uuid;
-                    } else {
+//                    String defaultImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
+                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
+                    if (!user.getProfileImg().contains("k.kakaocdn.net/dn/") || !user.getProfileImg().contains(defaultImg)) {
                         String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
                         File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
                         if (deleteFile.exists()) {

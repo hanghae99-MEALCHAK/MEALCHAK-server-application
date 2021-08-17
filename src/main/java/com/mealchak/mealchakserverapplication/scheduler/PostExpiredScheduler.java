@@ -19,7 +19,7 @@ public class PostExpiredScheduler {
 
     private final PostRepository postRepository;
 
-    @Scheduled(cron ="* * * * * ?")
+    @Scheduled(cron ="0 0/1 * * * *")
     @Transactional
     @Async
     public void postValidationCheckScheduler() {

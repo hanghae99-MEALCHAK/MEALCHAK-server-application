@@ -71,11 +71,11 @@ public class PostController {
 
     // 검색하여 모집글 불러오기
     @ApiOperation(value = "모집글 검색 조회", notes = "모집글을 검색 조회 합니다.")
-    @PostMapping("/search")
+    @GetMapping("/search")
     public List<PostResponseDto> getSearch(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                           @RequestParam(value = "text") String text,
+                                           @RequestParam(value = "keyword") String keyword,
                                            @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort) {
-        return postService.getSearch(userDetails, text, sort);
+        return postService.getSearch(userDetails, keyword, sort);
     }
 
     // 유저 근처에 작성된 게시글 조회
