@@ -54,8 +54,12 @@ public class PostService {
     // 모집글 전체 조회
     public List<PostResponseDto> getAllPost(String category) {
         List<PostResponseDto> listPost = new ArrayList<>();
-        List<Post> posts = postRepository.findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(category);
-
+        List<Post> posts;
+        if (category.equals("전체")) {
+            posts = postRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
+        } else {
+            posts = postRepository.findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(category);
+        }
         for (Post post : posts) {
             updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
@@ -89,10 +93,10 @@ public class PostService {
 
     // 모집글 수정
     @Transactional
-    public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto) {
+    public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         Location location = new Location(requestDto);
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postRepository.findByCheckValidTrueAndIdAndUserId(postId, userDetails.getUser().getId()).orElseThrow(
+                () -> new IllegalArgumentException("postId가 존재하지 않거나 만료된 post 입니다."));
         Menu menu = post.getMenu();
         if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
@@ -124,15 +128,15 @@ public class PostService {
     }
 
     // 검색하여 모집글 불러오기
-    public List<PostResponseDto> getSearch(UserDetailsImpl userDetails, String text, String sort) {
+    public List<PostResponseDto> getSearch(UserDetailsImpl userDetails, String keyword, String sort) {
         if (userDetails == null) {
-            return getSearchPost(text);
+            return getSearchPost(keyword);
         } else {
             User user = userDetails.getUser();
             if (sort.equals("recent")) {
-                return getSearchPostBySortByRecent(text, user);
+                return getSearchPostBySortByRecent(keyword, user);
             } else if (sort.equals("nearBy")) {
-                return getSearchPostByUserDist(text, user);
+                return getSearchPostByUserDist(keyword, user);
             } else {
                 throw new IllegalArgumentException("잘못된 sort 요청입니다.");
             }
@@ -162,10 +166,10 @@ public class PostService {
     }
 
     // 비회원 검색
-    public List<PostResponseDto> getSearchPost(String text) {
+    public List<PostResponseDto> getSearchPost(String keyword) {
         List<Post> posts =
                 postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
-                        text, text, text);
+                        keyword, keyword, keyword);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -175,17 +179,17 @@ public class PostService {
     }
 
     // 회원 검색 (모집 마감임박순)
-    public List<PostResponseDto> getSearchPostBySortByRecent(String text, User user) {
+    public List<PostResponseDto> getSearchPostBySortByRecent(String keyword, User user) {
         List<Post> posts =
                 postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
-                        text, text, text);
+                        keyword, keyword, keyword);
         return getPostsDistance(user, posts);
     }
 
     // 회원 검색 (거리순)
-    public List<PostResponseDto> getSearchPostByUserDist(String text, User user) {
+    public List<PostResponseDto> getSearchPostByUserDist(String keyword, User user) {
         List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(
-                text, text, text);
+                keyword, keyword, keyword);
         List<Post> listPost = new ArrayList<>();
         for (Post post : posts) {
             updateHeadCount(post);
@@ -246,7 +250,7 @@ public class PostService {
         return listPost;
     }
 
-    // 카테고리별 리스트 조회
+    // 사용자 반경 3km 게시물 조회 및 카테고리별 리스트 조회
     public List<Post> getPostByCategory(String category, double userLatitude, double userLongitude) {
         if (category.equals("전체")) {
             return postRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(

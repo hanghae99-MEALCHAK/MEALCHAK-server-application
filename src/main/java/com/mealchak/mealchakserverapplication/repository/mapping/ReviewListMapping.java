@@ -15,6 +15,7 @@ public interface ReviewListMapping {
     default String getUsername() {
         return getWriterUsername();
     }
+    default Long getUserId() { return getWriterId(); }
     default String getProfileImg() {
         return getWriterProfileImg();
     }
@@ -31,6 +32,8 @@ public interface ReviewListMapping {
 
     @JsonIgnore
     String getWriterUsername();
+    @JsonIgnore
+    Long getWriterId();
     @JsonIgnore
     String getWriterProfileImg();
     @JsonIgnore
