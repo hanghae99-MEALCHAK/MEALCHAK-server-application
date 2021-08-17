@@ -1,9 +1,11 @@
 package com.mealchak.mealchakserverapplication.handler;
 
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
+import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.service.AllChatInfoService;
 import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class StompHandler implements ChannelInterceptor {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatService;
     private final UserRepository userRepository;
+    private final AllChatInfoService allChatInfoService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -41,7 +44,6 @@ public class StompHandler implements ChannelInterceptor {
 
             // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            chatRoomService.setUserEnterInfo(sessionId, roomId);
 
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
             //토큰 가져옴
@@ -54,6 +56,8 @@ public class StompHandler implements ChannelInterceptor {
             }else {
                 throw new IllegalArgumentException("유효하지 않은 token 입니다.");
             }
+            Long userId = user.getId();
+            chatRoomService.setUserEnterInfo(sessionId, roomId,userId);
             chatService.sendChatMessage(ChatMessage.builder()
                     .type(ChatMessage.MessageType.ENTER)
                     .roomId(roomId)
@@ -64,6 +68,8 @@ public class StompHandler implements ChannelInterceptor {
             // 연결이 종료된 클라이언트 sesssion Id 로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = chatRoomService.getUserEnterRoomId(sessionId);
+            User user = chatRoomService.chkSessionUser(sessionId);
+            String username = user.getUsername();
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             //토큰 가져옴
 //            String jwtToken = accessor.getFirstNativeHeader("token");
@@ -74,7 +80,8 @@ public class StompHandler implements ChannelInterceptor {
 //            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomService.removeUserEnterInfo(sessionId);
-            log.info("DISCONNECTED {}, {}", sessionId, roomId);
+            log.info("DISCONNECTED {}, {}", username, roomId);
+            allChatInfoService.updateReadMessage(user,roomId);
         }
         return message;
     }

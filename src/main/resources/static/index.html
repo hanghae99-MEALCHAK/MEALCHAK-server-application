@@ -70,10 +70,10 @@
         },
         methods: {
             findRoom: function() {
-                axios.get('api/chat/room/'+1).then(response => { this.room = response.data; });
+                axios.get('api/chat/room/'+2).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:1, sender:"test", asd:"this is asd",message:this.message}));
+                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:2, sender:"test", asd:"this is asd",message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -86,11 +86,11 @@
         // pub/sub event
         //각각 connect,subscribe 헤더
 
-        ws.connect({token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjowLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjgwNTAwNjUsImV4cCI6MTYyODA3MTY2NX0.hTP3xupCDQnD1CHs02fiF0oq3pPxoHjtFu1i0cUpaHc"}, function(frame) {
-            ws.subscribe("/sub/api/chat/rooms/"+1, function(message) {
+        ws.connect({token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjkxMTIzNjksImV4cCI6MTYyOTEzMzk2OX0.wrKlfHIbPj2i-VNs3zOMX9cfh5hj-ODCWNDFq3f2euc"}, function(frame) {
+            ws.subscribe("/sub/api/chat/rooms/"+2, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv)
-            },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjowLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjgwNTAwNjUsImV4cCI6MTYyODA3MTY2NX0.hTP3xupCDQnD1CHs02fiF0oq3pPxoHjtFu1i0cUpaHc"});
+            },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjkxMTIzNjksImV4cCI6MTYyOTEzMzk2OX0.wrKlfHIbPj2i-VNs3zOMX9cfh5hj-ODCWNDFq3f2euc"});
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {
