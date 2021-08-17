@@ -24,14 +24,14 @@ public class JoinRequestsService {
     private final ChatRoomRepository chatRoomRepository;
 
     //유저 신청정보 저장
-    public String requestJoin(UserDetailsImpl userDetails, Long id) {
+    public String requestJoin(UserDetailsImpl userDetails, Long postId) {
         Long userId = userDetails.getUser().getId();
-        if (joinRequestsRepository.findByUserIdAndPostId(userId, id) == null) {
-            Post post = postRepository.findById(id).orElseThrow(()
-                    -> new IllegalArgumentException("해당 아이디를 찾을 수 없습니다."));
+        if (joinRequestsRepository.findByUserIdAndPostId(userId, postId) == null) {
+            Post post = postRepository.findByCheckValidTrueAndId(postId).orElseThrow(()
+                    -> new IllegalArgumentException("해당 postId를 찾을 수 없습니다."));
             User user = post.getUser();
             Long ownUserId = user.getId();
-            JoinRequests joinRequests = new JoinRequests(userId, id, ownUserId);
+            JoinRequests joinRequests = new JoinRequests(userId, postId, ownUserId);
             Long roomId = post.getChatRoom().getId();
             if (allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
                 joinRequestsRepository.save(joinRequests);

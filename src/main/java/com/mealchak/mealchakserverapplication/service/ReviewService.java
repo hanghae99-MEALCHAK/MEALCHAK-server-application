@@ -40,10 +40,10 @@ public class ReviewService {
     public void createReview(UserDetailsImpl userDetails, ReviewRequestDto requestDto, Long userId) {
         User writer = getUser(userDetails);
         User user = userRepository.findById(userId).
-                orElseThrow(() -> new IllegalArgumentException("작성자가 존재하지 않습니다."));
-//        if (reviewRepository.findByUserIdAndWriterId(userId, writer.getId()).isPresent()) {
-//            throw new IllegalArgumentException("이미 리뷰를 작성한 유저입니다.");
-//        }
+                orElseThrow(() -> new IllegalArgumentException("UserId 가 존재하지 않습니다."));
+        if (reviewRepository.findByUserIdAndWriterId(userId, writer.getId()).isPresent()) {
+            throw new IllegalArgumentException("이미 리뷰를 작성한 유저입니다.");
+        }
         Review review = new Review(requestDto, user, writer);
         increaseMannerScore(review, user);
         reviewRepository.save(review);

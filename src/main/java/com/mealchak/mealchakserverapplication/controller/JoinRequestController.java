@@ -20,9 +20,9 @@ public class JoinRequestController {
     private final JoinRequestsService joinRequestsService;
 
     @ApiOperation(value = "게시글 입장 신청", notes = "게시글 입장 신청")
-    @GetMapping("/posts/join/request/{id}")
-    public String requestJoin(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
-        return joinRequestsService.requestJoin(userDetails, id);
+    @GetMapping("/posts/join/request/{postId}")
+    public String requestJoin(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long postId) {
+        return joinRequestsService.requestJoin(userDetails, postId);
     }
 
     @ApiOperation(value = "게시글 입장 신청 취소", notes = "게시글 입장 신청 취소")
