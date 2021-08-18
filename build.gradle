@@ -4,6 +4,8 @@ plugins {
     id 'java'
 }
 
+apply plugin: "io.spring.dependency-management"
+
 group = 'com.mealchak'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
@@ -19,6 +21,9 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -63,4 +68,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+def generated='src/main/generated'
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
+clean.doLast {
+    file(generated).deleteDir()
 }
