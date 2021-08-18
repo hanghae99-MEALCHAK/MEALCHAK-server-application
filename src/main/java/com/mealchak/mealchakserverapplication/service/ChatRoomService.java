@@ -114,6 +114,7 @@ public class ChatRoomService {
         } else {
             AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
             allChatInfoRepository.delete(allChatInfo);
+            post.subNowHeadCount();
         }
     }
 

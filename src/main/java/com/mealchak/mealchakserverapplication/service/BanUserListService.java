@@ -2,9 +2,11 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.BanUserList;
+import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.BanUserListRepository;
+import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ public class BanUserListService {
         banUserListRepository.save(banUserList);
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId,userId);
         allChatInfoRepository.delete(allChatInfo);
+        Post post = allChatInfo.getChatRoom().getPost();
+        post.subNowHeadCount();
     }
 
 }

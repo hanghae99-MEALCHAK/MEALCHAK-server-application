@@ -89,6 +89,7 @@ public class JoinRequestsService {
 
 
     // 채팅방 참가 신청 승인/거절
+    @Transactional
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
         JoinRequests joinRequests = joinRequestsRepository.findById(joinRequestId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 신청입니다.")
@@ -107,6 +108,8 @@ public class JoinRequestsService {
                 AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
                 allChatInfoRepository.save(allChatInfo);
                 joinRequestsRepository.delete(joinRequests);
+                Post post = chatRoom.getPost();
+                post.addNowHeadCount();
             } else {
                 throw new IllegalArgumentException("채팅방 인원 초과");
             }

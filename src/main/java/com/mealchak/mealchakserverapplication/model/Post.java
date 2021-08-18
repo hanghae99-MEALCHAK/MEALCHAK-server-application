@@ -55,7 +55,7 @@ public class Post extends Timestamped {
     @Transient
     private double distance;
 
-    @Transient
+    @Column(nullable = false)
     private Long nowHeadCount;
 
     public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
@@ -70,6 +70,7 @@ public class Post extends Timestamped {
         this.checkValid = true;
         this.checkDeleted = false;
         this.chatRoom = chatRoom;
+        this.nowHeadCount = 1L;
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
@@ -85,13 +86,14 @@ public class Post extends Timestamped {
     public void updateDistance(double distance) {
         this.distance = distance;
     }
-
-    public void updateNowHeadCount(Long nowHeadCount) {
-        this.nowHeadCount = nowHeadCount;
-    }
-
     public void expired(boolean checkValid){ this.checkValid = checkValid; }
     public void deleted(boolean checkDeleted){ this.checkDeleted = checkDeleted; }
+    public void addNowHeadCount(){
+        this.nowHeadCount = nowHeadCount + 1L;
+    }
+    public void subNowHeadCount(){
+        this.nowHeadCount = nowHeadCount - 1L;
+    }
 
 //    public Boolean getCheckValid() {
 //        return this.checkValid;

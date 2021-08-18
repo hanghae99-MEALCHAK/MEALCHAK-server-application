@@ -21,10 +21,8 @@ public class PostService {
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
-    private final AllChatInfoRepository allChatInfoRepository;
     private final AllChatInfoService allChatInfoService;
     private final JoinRequestsService joinRequestsService;
-    private final AllChatInfoQueryRepository allChatInfoQueryRepository;
     private static final int RANGE = 3;
 
     // 모집글 생성
@@ -60,7 +58,6 @@ public class PostService {
             posts = postQueryRepository.findByCheckValidTrueAndMenu_CategoryOrderByOrderTimeAsc(category);
         }
         for (Post post : posts) {
-            updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
@@ -70,7 +67,6 @@ public class PostService {
     public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
         List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
-        updateHeadCount(post);
         return new PostDetailResponseDto(post, userList);
     }
 
@@ -81,7 +77,6 @@ public class PostService {
             List<Post> posts = postQueryRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
             List<PostResponseDto> listPost = new ArrayList<>();
             for (Post post : posts) {
-                updateHeadCount(post);
                 listPost.add(new PostResponseDto(post));
             }
             return listPost;
@@ -102,7 +97,6 @@ public class PostService {
                     () -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
             menu.updateMenuCount(+1);
         }
-        updateHeadCount(post);
         post.update(requestDto, menu, location);
         return new PostResponseDto(post);
     }
@@ -169,7 +163,6 @@ public class PostService {
                         keyword);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
@@ -188,7 +181,6 @@ public class PostService {
         List<Post> posts = postQueryRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(keyword);
         List<Post> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             double dist = getDist(user, post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
@@ -204,7 +196,6 @@ public class PostService {
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
             double dist = getDist(user, post);
-            updateHeadCount(post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
                 PostResponseDto responseDto = new PostResponseDto(post);
@@ -236,7 +227,6 @@ public class PostService {
     private List<PostResponseDto> getPostsDistance(User user, List<Post> posts) {
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             double dist = getDist(user, post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
@@ -288,11 +278,6 @@ public class PostService {
     private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
     private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
 
-    // 모집글 HeadCount 추가
-    public void updateHeadCount(Post post) {
-        Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
-        post.updateNowHeadCount(nowHeadCount);
-    }
 
     // findById(postId)
     public Post getPost(Long postId) {
