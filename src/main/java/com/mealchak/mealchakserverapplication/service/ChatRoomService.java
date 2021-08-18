@@ -21,6 +21,7 @@ import java.util.UUID;
 public class ChatRoomService {
 
     private final PostQueryRepository postQueryRepository;
+    private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
     // HashOperations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
@@ -30,9 +31,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final AllChatInfoRepository allChatInfoRepository;
     private final UserRepository userRepository;
-    private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
-
 
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -50,11 +49,11 @@ public class ChatRoomService {
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtoList = new ArrayList<>();
-        List<AllChatInfo> allChatInfoList = allChatInfoRepository.findAllByUserIdOrderByIdDesc(user.getId());
+        List<AllChatInfo> allChatInfoList = allChatInfoQueryRepository.findAllByUserIdOrderByIdDesc(user.getId());
         for (AllChatInfo allChatInfo : allChatInfoList) {
             ChatRoom chatRoom = allChatInfo.getChatRoom();
             Post post = chatRoom.getPost();
-            Long headCountChat = allChatInfoRepository.countAllByChatRoom(chatRoom);
+            Long headCountChat = allChatInfoQueryRepository.countAllByChatRoom(chatRoom);
             String chatRoomId = Long.toString(chatRoom.getId());
             Long newMessageCount = allChatInfo.getNewMessageCount();
             Long nowMessageCount = chatMessageQueryRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
@@ -93,7 +92,7 @@ public class ChatRoomService {
     // 게시글 삭제시 채팅방도 삭제
     @Transactional
     public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {
-        AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+        AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
         allChatInfoRepository.delete(allChatInfo);
     }
 
@@ -113,7 +112,7 @@ public class ChatRoomService {
             deleteAllChatInfo(roomId, userDetails);
         // 일반 유저일 때 채팅방 나가기
         } else {
-            AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
+            AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
             allChatInfoRepository.delete(allChatInfo);
         }
     }

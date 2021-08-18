@@ -24,6 +24,7 @@ public class PostService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final AllChatInfoService allChatInfoService;
     private final JoinRequestsService joinRequestsService;
+    private final AllChatInfoQueryRepository allChatInfoQueryRepository;
     private static final int RANGE = 3;
 
     // 모집글 생성
@@ -289,7 +290,7 @@ public class PostService {
 
     // 모집글 HeadCount 추가
     public void updateHeadCount(Post post) {
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         post.updateNowHeadCount(nowHeadCount);
     }
 

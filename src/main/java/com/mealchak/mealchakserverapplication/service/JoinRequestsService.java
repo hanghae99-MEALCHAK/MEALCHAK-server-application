@@ -22,6 +22,7 @@ public class JoinRequestsService {
     private final UserRepository userRepository;
     private final AllChatInfoRepository allChatInfoRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
     //유저 신청정보 저장
     public String requestJoin(UserDetailsImpl userDetails, Long postId) {
@@ -32,7 +33,7 @@ public class JoinRequestsService {
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, postId, ownUserId);
             Long roomId = post.getChatRoom().getId();
-            if (allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
+            if (allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
                 joinRequestsRepository.save(joinRequests);
                 return "신청완료";
             } else {
@@ -117,13 +118,13 @@ public class JoinRequestsService {
     public Boolean checkHeadCount(Long postId) {
         Post post = postQueryRepository.findById(postId);
         int postHeadCount = post.getHeadCount();
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
     }
 
     // allChatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId) {
-        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserIdOrderByIdDesc(user.getId());
+        List<AllChatInfo> allChatInfos = allChatInfoQueryRepository.findAllByUserIdOrderByIdDesc(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos) {
             if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
                 return true;
