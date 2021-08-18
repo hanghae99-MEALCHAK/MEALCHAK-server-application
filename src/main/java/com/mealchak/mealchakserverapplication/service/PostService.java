@@ -5,10 +5,7 @@ import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
-import com.mealchak.mealchakserverapplication.repository.MenuRepository;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +17,7 @@ import java.util.*;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
@@ -56,7 +54,7 @@ public class PostService {
         List<PostResponseDto> listPost = new ArrayList<>();
         List<Post> posts;
         if (category.equals("전체")) {
-            posts = postRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
+            posts = postQueryRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
         } else {
             posts = postRepository.findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(category);
         }
