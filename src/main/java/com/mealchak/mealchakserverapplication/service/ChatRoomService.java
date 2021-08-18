@@ -31,6 +31,8 @@ public class ChatRoomService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatMessageQueryRepository chatMessageQueryRepository;
+
 
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -55,7 +57,7 @@ public class ChatRoomService {
             Long headCountChat = allChatInfoRepository.countAllByChatRoom(chatRoom);
             String chatRoomId = Long.toString(chatRoom.getId());
             Long newMessageCount = allChatInfo.getNewMessageCount();
-            Long nowMessageCount = chatMessageRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
+            Long nowMessageCount = chatMessageQueryRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
             if (newMessageCount > nowMessageCount){
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
                 responseDtoList.add(responseDto);

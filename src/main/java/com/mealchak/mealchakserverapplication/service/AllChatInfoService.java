@@ -5,6 +5,7 @@ import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
+import com.mealchak.mealchakserverapplication.repository.ChatMessageQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class AllChatInfoService {
 
     private final AllChatInfoRepository allChatInfoRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChatMessageQueryRepository chatMessageQueryRepository;
 
     public List<User> getUser(Long roomId) {
         return allChatInfoRepository.findAllByChatRoom_Id(roomId)
@@ -34,7 +35,7 @@ public class AllChatInfoService {
 
     @Transactional
     public void updateReadMessage(User user,String roomId){
-        Long count = chatMessageRepository.countAllByRoomIdAndType(roomId, ChatMessage.MessageType.TALK);
+        Long count = chatMessageQueryRepository.countAllByRoomIdAndType(roomId, ChatMessage.MessageType.TALK);
         AllChatInfo allChatInfo = allChatInfoRepository.findByChatRoom_IdAndUser_Id(Long.parseLong(roomId),user.getId());
         allChatInfo.updateCount(count);
     }
