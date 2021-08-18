@@ -57,7 +57,7 @@ public class ChatRoomService {
             String chatRoomId = Long.toString(chatRoom.getId());
             Long newMessageCount = allChatInfo.getNewMessageCount();
             Long nowMessageCount = chatMessageQueryRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
-            if (newMessageCount > nowMessageCount){
+            if (newMessageCount < nowMessageCount){
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
                 responseDtoList.add(responseDto);
             } else {
