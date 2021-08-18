@@ -109,8 +109,7 @@ public class PostService {
     // 모집글 삭제
     @Transactional
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postQueryRepository.findById(postId);
         if (post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
             Long chatRoomId = post.getChatRoom().getId();
             post.getMenu().updateMenuCount(-1);
@@ -296,6 +295,6 @@ public class PostService {
 
     // findById(postId)
     public Post getPost(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        return postQueryRepository.findById(postId);
     }
 }

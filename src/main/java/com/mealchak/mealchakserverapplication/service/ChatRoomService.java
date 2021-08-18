@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
 
     // HashOperations 레디스에서 쓰는 자료형
     @Resource(name = "redisTemplate")
@@ -31,6 +31,7 @@ public class ChatRoomService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
+
 
     public static final String ENTER_INFO = "ENTER_INFO";
     public static final String USER_INFO = "USER_INFO";
@@ -97,9 +98,7 @@ public class ChatRoomService {
     // 채팅방 나가기
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지않는게시글")
-        );
+        Post post = postQueryRepository.findById(postId);
         Long roomId = post.getChatRoom().getId();
         // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {

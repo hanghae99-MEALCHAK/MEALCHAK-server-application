@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JoinRequestsService {
 
-    private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
     private final JoinRequestsRepository joinRequestsRepository;
     private final UserRepository userRepository;
@@ -56,9 +55,7 @@ public class JoinRequestsService {
                     () -> new IllegalArgumentException("회원이 아닙니다.")
             );
 
-            Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
-            );
+            Post post = postQueryRepository.findById(joinRequests.getPostId());
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = UserInfoAndPostResponseDto.builder()
                     .userId(userInfoMapping.getId())
@@ -79,9 +76,7 @@ public class JoinRequestsService {
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByUserId(userId);
         List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinResponseDtoList = new ArrayList<>();
         for (JoinRequests joinRequests : joinRequestsList) {
-            Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
-            );
+            Post post = postQueryRepository.findById(joinRequests.getPostId());
             MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
                     .joinRequestId(joinRequests.getId())
                     .postTitle(post.getTitle())
@@ -120,7 +115,7 @@ public class JoinRequestsService {
 
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postQueryRepository.findById(postId);
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;

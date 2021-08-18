@@ -139,4 +139,9 @@ public class PostQueryRepository {
                 .fetch();
     }
 
+    public Post findById(Long id){
+        return queryFactory.selectFrom(post)
+                .where(post.id.eq(id))
+                .fetchOne();
+    }
 }

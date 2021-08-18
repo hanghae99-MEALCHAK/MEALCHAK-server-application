@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.scheduler;
 
 import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
