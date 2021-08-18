@@ -18,6 +18,7 @@ import java.util.List;
 public class JoinRequestsService {
 
     private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
     private final JoinRequestsRepository joinRequestsRepository;
     private final UserRepository userRepository;
     private final AllChatInfoRepository allChatInfoRepository;
@@ -27,8 +28,7 @@ public class JoinRequestsService {
     public String requestJoin(UserDetailsImpl userDetails, Long postId) {
         Long userId = userDetails.getUser().getId();
         if (joinRequestsRepository.findByUserIdAndPostId(userId, postId) == null) {
-            Post post = postRepository.findByCheckValidTrueAndId(postId).orElseThrow(()
-                    -> new IllegalArgumentException("해당 postId를 찾을 수 없습니다."));
+            Post post = postQueryRepository.findByCheckValidTrueAndId(postId);
             User user = post.getUser();
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, postId, ownUserId);
