@@ -5,7 +5,6 @@ import com.mealchak.mealchakserverapplication.model.ChatRoom;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatRoomQueryRepository;
-import com.mealchak.mealchakserverapplication.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,9 +30,7 @@ public class ChatRoomValidCheckScheduler {
         List<ChatRoom> chatRoomList = chatRoomQueryRepository.findAllByChatValidFalse();
         for (ChatRoom chatRoom : chatRoomList) {
             List<AllChatInfo> allChatInfoList = allChatInfoQueryRepository.findAllByChatRoom_Id(chatRoom.getId());
-            for (AllChatInfo allChatInfo : allChatInfoList) {
-                allChatInfoRepository.delete(allChatInfo);
-            }
+            allChatInfoRepository.deleteAll(allChatInfoList);
         }
     }
 }

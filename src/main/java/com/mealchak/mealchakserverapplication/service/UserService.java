@@ -163,8 +163,8 @@ public class UserService {
                             throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
                         }
                     }
-//                    String defaultImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
-                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
+                    String defaultImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
+//                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
                     if (!user.getProfileImg().contains("k.kakaocdn.net/dn/") || !user.getProfileImg().contains(defaultImg)) {
                         String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
                         File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
@@ -179,8 +179,8 @@ public class UserService {
                     String filePath = savePath + "/" + filename;
                     files.transferTo(new java.io.File(filePath));
 
-                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
-//                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
+//                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
+                    filename = "https://gorokke.shop/image/" + filename;   // AWS EC2
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }

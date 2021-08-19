@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.config;
 
 import com.mealchak.mealchakserverapplication.util.CORSFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +24,13 @@ public class WebMVCConfig implements WebMvcConfigurer {
         registry.addMapping("/**").allowedOriginPatterns("*://*").allowedHeaders("*").allowedMethods("*");
     }
 
-    // 경로 수정 필요
+    @Value("${spring.datasource.imageRoute}")
+    private String imageRoute;
+
+    // image 경로
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/image/**")
-//                .addResourceLocations("file:/home/ubuntu/image/");  // AWS EC2
-                  .addResourceLocations("file:/root/image/");   // NAVER EC2
+                  .addResourceLocations(imageRoute);
     }
 }

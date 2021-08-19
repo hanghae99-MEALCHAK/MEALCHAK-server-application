@@ -86,5 +86,6 @@ configurations {
 }
 
 compileQuerydsl{
+    delete(querydslSrcDir)
     options.annotationProcessorPath = configurations.querydsl
 }
