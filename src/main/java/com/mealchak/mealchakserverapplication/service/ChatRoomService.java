@@ -100,6 +100,9 @@ public class ChatRoomService {
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postQueryRepository.findById(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         Long roomId = post.getChatRoom().getId();
         // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {

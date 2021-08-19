@@ -66,6 +66,9 @@ public class PostService {
     // 모집글 상세 조회
     public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
         return new PostDetailResponseDto(post, userList);
     }
@@ -281,6 +284,10 @@ public class PostService {
 
     // findById(postId)
     public Post getPost(Long postId) {
-        return postQueryRepository.findById(postId);
+        Post post = postQueryRepository.findById(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
+        return post;
     }
 }

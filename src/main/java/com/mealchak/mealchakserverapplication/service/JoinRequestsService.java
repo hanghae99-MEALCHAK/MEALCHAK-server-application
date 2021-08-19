@@ -57,6 +57,9 @@ public class JoinRequestsService {
             );
 
             Post post = postQueryRepository.findById(joinRequests.getPostId());
+            if (post == null){
+                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            }
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = UserInfoAndPostResponseDto.builder()
                     .userId(userInfoMapping.getId())
@@ -78,6 +81,9 @@ public class JoinRequestsService {
         List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinResponseDtoList = new ArrayList<>();
         for (JoinRequests joinRequests : joinRequestsList) {
             Post post = postQueryRepository.findById(joinRequests.getPostId());
+            if (post == null){
+                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            }
             MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
                     .joinRequestId(joinRequests.getId())
                     .postTitle(post.getTitle())
@@ -120,6 +126,9 @@ public class JoinRequestsService {
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId) {
         Post post = postQueryRepository.findById(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
