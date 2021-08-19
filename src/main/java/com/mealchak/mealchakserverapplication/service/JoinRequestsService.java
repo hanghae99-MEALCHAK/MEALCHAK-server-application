@@ -17,23 +17,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JoinRequestsService {
 
-    private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
     private final JoinRequestsRepository joinRequestsRepository;
     private final UserRepository userRepository;
     private final AllChatInfoRepository allChatInfoRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
     //유저 신청정보 저장
     public String requestJoin(UserDetailsImpl userDetails, Long postId) {
         Long userId = userDetails.getUser().getId();
         if (joinRequestsRepository.findByUserIdAndPostId(userId, postId) == null) {
-            Post post = postRepository.findByCheckValidTrueAndId(postId).orElseThrow(()
-                    -> new IllegalArgumentException("해당 postId를 찾을 수 없습니다."));
+            Post post = postQueryRepository.findByCheckValidTrueAndId(postId);
             User user = post.getUser();
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, postId, ownUserId);
             Long roomId = post.getChatRoom().getId();
-            if (allChatInfoRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
+            if (allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
                 joinRequestsRepository.save(joinRequests);
                 return "신청완료";
             } else {
@@ -56,9 +56,10 @@ public class JoinRequestsService {
                     () -> new IllegalArgumentException("회원이 아닙니다.")
             );
 
-            Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
-            );
+            Post post = postQueryRepository.findById(joinRequests.getPostId());
+            if (post == null){
+                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            }
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = UserInfoAndPostResponseDto.builder()
                     .userId(userInfoMapping.getId())
@@ -79,9 +80,10 @@ public class JoinRequestsService {
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByUserId(userId);
         List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinResponseDtoList = new ArrayList<>();
         for (JoinRequests joinRequests : joinRequestsList) {
-            Post post = postRepository.findById(joinRequests.getPostId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
-            );
+            Post post = postQueryRepository.findById(joinRequests.getPostId());
+            if (post == null){
+                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+            }
             MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
                     .joinRequestId(joinRequests.getId())
                     .postTitle(post.getTitle())
@@ -93,6 +95,7 @@ public class JoinRequestsService {
 
 
     // 채팅방 참가 신청 승인/거절
+    @Transactional
     public String acceptJoinRequest(Long joinRequestId, boolean tOrF) {
         JoinRequests joinRequests = joinRequestsRepository.findById(joinRequestId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 신청입니다.")
@@ -111,6 +114,8 @@ public class JoinRequestsService {
                 AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);
                 allChatInfoRepository.save(allChatInfo);
                 joinRequestsRepository.delete(joinRequests);
+                Post post = chatRoom.getPost();
+                post.addNowHeadCount();
             } else {
                 throw new IllegalArgumentException("채팅방 인원 초과");
             }
@@ -120,15 +125,18 @@ public class JoinRequestsService {
 
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postQueryRepository.findById(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         int postHeadCount = post.getHeadCount();
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
+        Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
     }
 
     // allChatInfo 테이블 중복생성금지
     public Boolean checkDuplicate(User user, Long postId) {
-        List<AllChatInfo> allChatInfos = allChatInfoRepository.findAllByUserIdOrderByIdDesc(user.getId());
+        List<AllChatInfo> allChatInfos = allChatInfoQueryRepository.findAllByUserIdOrderByIdDesc(user.getId());
         for (AllChatInfo allChatInfo : allChatInfos) {
             if (allChatInfo.getChatRoom().getPost().getId().equals(postId)) {
                 return true;

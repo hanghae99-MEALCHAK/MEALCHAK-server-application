@@ -5,10 +5,7 @@ import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
-import com.mealchak.mealchakserverapplication.repository.MenuRepository;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.repository.UserRepository;
+import com.mealchak.mealchakserverapplication.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +17,10 @@ import java.util.*;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
-    private final AllChatInfoRepository allChatInfoRepository;
     private final AllChatInfoService allChatInfoService;
     private final JoinRequestsService joinRequestsService;
     private static final int RANGE = 3;
@@ -56,12 +53,11 @@ public class PostService {
         List<PostResponseDto> listPost = new ArrayList<>();
         List<Post> posts;
         if (category.equals("전체")) {
-            posts = postRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
+            posts = postQueryRepository.findAllOrderByOrderTimeAsc();
         } else {
-            posts = postRepository.findByCheckValidTrueAndMenu_CategoryContainingOrderByOrderTimeAsc(category);
+            posts = postQueryRepository.findByMenu_CategoryOrderByOrderTimeAsc(category);
         }
         for (Post post : posts) {
-            updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
@@ -70,8 +66,10 @@ public class PostService {
     // 모집글 상세 조회
     public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
-        updateHeadCount(post);
         return new PostDetailResponseDto(post, userList);
     }
 
@@ -79,10 +77,9 @@ public class PostService {
     public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
         if (userDetails != null) {
             User user = userDetails.getUser();
-            List<Post> posts = postRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
+            List<Post> posts = postQueryRepository.findByUser_IdOrderByCreatedAtDesc(user.getId());
             List<PostResponseDto> listPost = new ArrayList<>();
             for (Post post : posts) {
-                updateHeadCount(post);
                 listPost.add(new PostResponseDto(post));
             }
             return listPost;
@@ -95,8 +92,7 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         Location location = new Location(requestDto);
-        Post post = postRepository.findByCheckValidTrueAndIdAndUserId(postId, userDetails.getUser().getId()).orElseThrow(
-                () -> new IllegalArgumentException("postId가 존재하지 않거나 만료된 post 입니다."));
+        Post post = postQueryRepository.findByIdAndUserId(postId, userDetails.getUser().getId());
         Menu menu = post.getMenu();
         if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
@@ -104,7 +100,6 @@ public class PostService {
                     () -> new IllegalArgumentException("메뉴가 존재하지 않습니다"));
             menu.updateMenuCount(+1);
         }
-        updateHeadCount(post);
         post.update(requestDto, menu, location);
         return new PostResponseDto(post);
     }
@@ -112,8 +107,7 @@ public class PostService {
     // 모집글 삭제
     @Transactional
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postQueryRepository.findById(postId);
         if (post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
             Long chatRoomId = post.getChatRoom().getId();
             post.getMenu().updateMenuCount(-1);
@@ -168,11 +162,10 @@ public class PostService {
     // 비회원 검색
     public List<PostResponseDto> getSearchPost(String keyword) {
         List<Post> posts =
-                postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
-                        keyword, keyword, keyword);
+                postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(
+                        keyword);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             listPost.add(new PostResponseDto(post));
         }
         return listPost;
@@ -181,18 +174,16 @@ public class PostService {
     // 회원 검색 (모집 마감임박순)
     public List<PostResponseDto> getSearchPostBySortByRecent(String keyword, User user) {
         List<Post> posts =
-                postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
-                        keyword, keyword, keyword);
+                postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(
+                        keyword);
         return getPostsDistance(user, posts);
     }
 
     // 회원 검색 (거리순)
     public List<PostResponseDto> getSearchPostByUserDist(String keyword, User user) {
-        List<Post> posts = postRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(
-                keyword, keyword, keyword);
+        List<Post> posts = postQueryRepository.findBySearchKeyword(keyword);
         List<Post> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             double dist = getDist(user, post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
@@ -208,7 +199,6 @@ public class PostService {
         List<Double> distChecker = new ArrayList<>();
         for (Post post : postList) {
             double dist = getDist(user, post);
-            updateHeadCount(post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
                 PostResponseDto responseDto = new PostResponseDto(post);
@@ -240,7 +230,6 @@ public class PostService {
     private List<PostResponseDto> getPostsDistance(User user, List<Post> posts) {
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
-            updateHeadCount(post);
             double dist = getDist(user, post);
             if (dist < RANGE) {
                 post.updateDistance(dist);
@@ -253,14 +242,14 @@ public class PostService {
     // 사용자 반경 3km 게시물 조회 및 카테고리별 리스트 조회
     public List<Post> getPostByCategory(String category, double userLatitude, double userLongitude) {
         if (category.equals("전체")) {
-            return postRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(
+            return postQueryRepository.findByLocationOrderByOrderTimeAsc(
                     userLatitude - 0.027,
                     userLatitude + 0.027,
                     userLongitude - 0.036,
                     userLongitude + 0.036
             );
         } else {
-            return postRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryContainingOrderByOrderTimeAsc(
+            return postQueryRepository.findByLocationAndCategoryOrderByOrderTimeAsc(
                     userLatitude - 0.027,
                     userLatitude + 0.027,
                     userLongitude - 0.036,
@@ -292,14 +281,13 @@ public class PostService {
     private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
     private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
 
-    // 모집글 HeadCount 추가
-    public void updateHeadCount(Post post) {
-        Long nowHeadCount = allChatInfoRepository.countAllByChatRoom(post.getChatRoom());
-        post.updateNowHeadCount(nowHeadCount);
-    }
 
     // findById(postId)
     public Post getPost(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("postId가 존재하지 않습니다."));
+        Post post = postQueryRepository.findById(postId);
+        if (post == null){
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
+        return post;
     }
 }

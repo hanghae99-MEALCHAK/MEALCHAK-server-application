@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.5.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.mealchak'
@@ -47,6 +48,7 @@ dependencies {
     //스프링 redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     //embedded redis
+    implementation 'it.ozimov:embedded-redis:0.7.2'
     implementation 'com.google.code.gson:gson:2.8.0'
     implementation 'javax.xml.bind:jaxb-api'
 
@@ -55,9 +57,34 @@ dependencies {
     implementation 'org.webjars.bower:axios:0.17.1'
     implementation 'org.webjars:sockjs-client:1.1.2'
     implementation 'org.webjars:stomp-websocket:2.3.3-1'
-    implementation 'it.ozimov:embedded-redis:0.7.2'
+
+    //querydsl
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+
+
 }
 
 test {
     useJUnitPlatform()
+}
+
+def querydslSrcDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslSrcDir
+}
+
+sourceSets {
+    main.java.srcDirs querydslSrcDir
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
 }

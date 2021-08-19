@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    @Query(value = "select r from Review r join fetch r.user join fetch r.writer")
     <T> List<T> findAllByUserIdOrderByCreatedAtDesc(Long userId, Class <T> type);
     Optional<Review> findByUserIdAndWriterId(Long userId, Long writerId);
     void deleteByIdAndWriter_Id(Long reviewId, Long writerId);
