@@ -53,9 +53,9 @@ public class PostService {
         List<PostResponseDto> listPost = new ArrayList<>();
         List<Post> posts;
         if (category.equals("전체")) {
-            posts = postQueryRepository.findAllByCheckValidTrueOrderByOrderTimeAsc();
+            posts = postQueryRepository.findAllOrderByOrderTimeAsc();
         } else {
-            posts = postQueryRepository.findByCheckValidTrueAndMenu_CategoryOrderByOrderTimeAsc(category);
+            posts = postQueryRepository.findByMenu_CategoryOrderByOrderTimeAsc(category);
         }
         for (Post post : posts) {
             listPost.add(new PostResponseDto(post));
@@ -77,7 +77,7 @@ public class PostService {
     public List<PostResponseDto> getMyPost(UserDetailsImpl userDetails) {
         if (userDetails != null) {
             User user = userDetails.getUser();
-            List<Post> posts = postQueryRepository.findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(user.getId());
+            List<Post> posts = postQueryRepository.findByUser_IdOrderByCreatedAtDesc(user.getId());
             List<PostResponseDto> listPost = new ArrayList<>();
             for (Post post : posts) {
                 listPost.add(new PostResponseDto(post));
@@ -92,7 +92,7 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostDetail(Long postId, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         Location location = new Location(requestDto);
-        Post post = postQueryRepository.findByCheckValidTrueAndIdAndUserId(postId, userDetails.getUser().getId());
+        Post post = postQueryRepository.findByIdAndUserId(postId, userDetails.getUser().getId());
         Menu menu = post.getMenu();
         if (!requestDto.getCategory().equals(menu.getCategory())) {
             post.getMenu().updateMenuCount(-1);
@@ -162,7 +162,7 @@ public class PostService {
     // 비회원 검색
     public List<PostResponseDto> getSearchPost(String keyword) {
         List<Post> posts =
-                postQueryRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
+                postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(
                         keyword);
         List<PostResponseDto> listPost = new ArrayList<>();
         for (Post post : posts) {
@@ -174,14 +174,14 @@ public class PostService {
     // 회원 검색 (모집 마감임박순)
     public List<PostResponseDto> getSearchPostBySortByRecent(String keyword, User user) {
         List<Post> posts =
-                postQueryRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(
+                postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(
                         keyword);
         return getPostsDistance(user, posts);
     }
 
     // 회원 검색 (거리순)
     public List<PostResponseDto> getSearchPostByUserDist(String keyword, User user) {
-        List<Post> posts = postQueryRepository.findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(keyword);
+        List<Post> posts = postQueryRepository.findBySearchKeyword(keyword);
         List<Post> listPost = new ArrayList<>();
         for (Post post : posts) {
             double dist = getDist(user, post);
@@ -242,14 +242,14 @@ public class PostService {
     // 사용자 반경 3km 게시물 조회 및 카테고리별 리스트 조회
     public List<Post> getPostByCategory(String category, double userLatitude, double userLongitude) {
         if (category.equals("전체")) {
-            return postQueryRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(
+            return postQueryRepository.findByLocationOrderByOrderTimeAsc(
                     userLatitude - 0.027,
                     userLatitude + 0.027,
                     userLongitude - 0.036,
                     userLongitude + 0.036
             );
         } else {
-            return postQueryRepository.findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryOrderByOrderTimeAsc(
+            return postQueryRepository.findByLocationAndCategoryOrderByOrderTimeAsc(
                     userLatitude - 0.027,
                     userLatitude + 0.027,
                     userLongitude - 0.036,

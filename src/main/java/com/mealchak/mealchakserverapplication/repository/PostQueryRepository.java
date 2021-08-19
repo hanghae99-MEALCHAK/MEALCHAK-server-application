@@ -14,7 +14,7 @@ import static com.mealchak.mealchakserverapplication.model.QPost.post;
 public class PostQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<Post> findAllByCheckValidTrueOrderByOrderTimeAsc() {
+    public List<Post> findAllOrderByOrderTimeAsc() {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .orderBy(post.orderTime.asc())
@@ -25,7 +25,7 @@ public class PostQueryRepository {
                 .fetch();
     }
 
-    public List<Post> findByCheckValidTrueAndMenu_CategoryOrderByOrderTimeAsc(String category) {
+    public List<Post> findByMenu_CategoryOrderByOrderTimeAsc(String category) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.menu.category.eq(category))
@@ -37,11 +37,11 @@ public class PostQueryRepository {
                 .fetch();
     }
 
-    public List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenAndMenu_CategoryOrderByOrderTimeAsc(double latitudeStart,
-                                                                                                                                     double latitudeEnd,
-                                                                                                                                     double longitudeStart,
-                                                                                                                                     double longitudeEnd,
-                                                                                                                                     String category) {
+    public List<Post> findByLocationAndCategoryOrderByOrderTimeAsc(double latitudeStart,
+                                                                   double latitudeEnd,
+                                                                   double longitudeStart,
+                                                                   double longitudeEnd,
+                                                                   String category) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.menu.category.eq(category))
@@ -56,10 +56,10 @@ public class PostQueryRepository {
     }
 
 
-    public List<Post> findByCheckValidTrueAndLocation_LatitudeBetweenAndLocation_LongitudeBetweenOrderByOrderTimeAsc(double latitudeStart,
-                                                                                                                     double latitudeEnd,
-                                                                                                                     double longitudeStart,
-                                                                                                                     double longitudeEnd) {
+    public List<Post> findByLocationOrderByOrderTimeAsc(double latitudeStart,
+                                                        double latitudeEnd,
+                                                        double longitudeStart,
+                                                        double longitudeEnd) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.location.latitude.between(latitudeStart, latitudeEnd))
@@ -79,7 +79,7 @@ public class PostQueryRepository {
                 .fetchOne();
     }
 
-    public Post findByCheckValidTrueAndIdAndUserId(Long postId, Long userId) {
+    public Post findByIdAndUserId(Long postId, Long userId) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.id.eq(postId))
@@ -87,7 +87,7 @@ public class PostQueryRepository {
                 .fetchOne();
     }
 
-    public List<Post> findByCheckDeletedFalseAndUser_IdOrderByCreatedAtDesc(Long userId) {
+    public List<Post> findByUser_IdOrderByCreatedAtDesc(Long userId) {
         return queryFactory.selectFrom(post)
                 .where(post.checkDeleted.eq(false))
                 .where(post.user.id.eq(userId))
@@ -110,7 +110,7 @@ public class PostQueryRepository {
                 .fetch();
     }
 
-    public List<Post> findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContaining(String keyword) {
+    public List<Post> findBySearchKeyword(String keyword) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.title.contains(keyword)
@@ -124,7 +124,7 @@ public class PostQueryRepository {
                 .fetch();
     }
 
-    public List<Post> findByCheckValidTrueAndTitleContainingOrCheckValidTrueAndContentsContainingOrCheckValidTrueAndLocation_AddressContainingOrderByOrderTimeAsc(String keyword) {
+    public List<Post> findBySearchKeywordOrderByOrderTimeAsc(String keyword) {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.title.contains(keyword)
