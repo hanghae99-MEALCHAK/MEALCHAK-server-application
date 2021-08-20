@@ -25,15 +25,16 @@ public class AllChatInfo {
     private ChatRoom chatRoom;
 
     @Column(nullable = false)
-    private Long newMessageCount;
+    private Long lastMessageId;
 
     public AllChatInfo(User user, ChatRoom chatRoom) {
         this.user = user;
         this.chatRoom = chatRoom;
-        this.newMessageCount = 0L;
+        this.lastMessageId = 0L;
     }
 
-    public void updateCount(Long newMessageCount){
-        this.newMessageCount = newMessageCount;
+    public void updateLastMessageId(Long lastMessageId){
+        this.lastMessageId = lastMessageId;
+
     }
 }

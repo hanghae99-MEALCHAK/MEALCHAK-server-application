@@ -55,9 +55,9 @@ public class ChatRoomService {
             Post post = chatRoom.getPost();
             Long headCountChat = allChatInfoQueryRepository.countAllByChatRoom(chatRoom);
             String chatRoomId = Long.toString(chatRoom.getId());
-            Long newMessageCount = allChatInfo.getNewMessageCount();
-            Long nowMessageCount = chatMessageQueryRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
-            if (newMessageCount < nowMessageCount){
+            Long myLastMessageId = allChatInfo.getLastMessageId();
+            Long newLastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(chatRoomId);
+            if (myLastMessageId < newLastMessageId){
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
                 responseDtoList.add(responseDto);
             } else {
