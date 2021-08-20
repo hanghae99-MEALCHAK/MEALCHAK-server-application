@@ -37,9 +37,9 @@ public class AllChatInfoService {
 
     @Transactional
     public void updateReadMessage(User user,String roomId){
-        Long count = chatMessageQueryRepository.countAllByRoomIdAndType(roomId, ChatMessage.MessageType.TALK);
+        Long lastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(roomId);
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(Long.parseLong(roomId),user.getId());
-        allChatInfo.updateCount(count);
+        allChatInfo.updateLastMessageId(lastMessageId);
     }
 }
 

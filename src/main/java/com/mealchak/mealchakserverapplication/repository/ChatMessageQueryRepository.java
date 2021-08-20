@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Objects;
+
 import static com.mealchak.mealchakserverapplication.model.QChatMessage.chatMessage;
 
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ import static com.mealchak.mealchakserverapplication.model.QChatMessage.chatMess
 public class ChatMessageQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<ChatMessage> findByRoomIdOrderByIdDesc(String roomId, Pageable pageable){
+    public Page<ChatMessage> findByRoomIdOrderByIdDesc(String roomId, Pageable pageable) {
         QueryResults<ChatMessage> result = queryFactory.selectFrom(chatMessage)
                 .where(chatMessage.roomId.eq(roomId))
                 .orderBy(chatMessage.id.desc())
@@ -26,15 +28,24 @@ public class ChatMessageQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
-        return new PageImpl<>(result.getResults(),pageable,result.getTotal());
+        return new PageImpl<>(result.getResults(), pageable, result.getTotal());
     }
 
-    public Long countAllByRoomIdAndType(String roomId, ChatMessage.MessageType type){
+    public Long countAllByRoomIdAndType(String roomId, ChatMessage.MessageType type) {
         return queryFactory.selectFrom(chatMessage)
                 .where(chatMessage.roomId.eq(roomId))
                 .where(chatMessage.type.eq(type))
                 .join(chatMessage.sender)
                 .fetchJoin()
                 .fetchCount();
+    }
+
+    public Long findbyRoomIdAndTalk(String RoomId) {
+        return Objects.requireNonNull(queryFactory.selectFrom(chatMessage)
+                .where(chatMessage.roomId.eq(RoomId))
+                .where(chatMessage.type.eq(ChatMessage.MessageType.TALK))
+                .orderBy(chatMessage.id.desc())
+                .fetchOne())
+                .getId();
     }
 }
