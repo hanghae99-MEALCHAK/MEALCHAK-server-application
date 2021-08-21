@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.config;
 
 import com.mealchak.mealchakserverapplication.util.CORSFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +30,15 @@ public class WebMVCConfig implements WebMvcConfigurer {
                 .allowedMethods("*");
     }
 
+    @Value("${spring.datasource.imageRoute}")
+    private String imageRoute;
+
     @Override
     // 특정 경로와 로컬을 이어주고 해당 경로가 사용될때 캐시관련 헤더와 함께 내려줌
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         CacheControl cacheControl = CacheControl.noCache().mustRevalidate().cachePrivate().sMaxAge(Duration.ZERO);
         registry.addResourceHandler("/image/**")
-//                .addResourceLocations("file:/home/ubuntu/image/");  // AWS EC2
-                .addResourceLocations("file:/root/image/")   // NAVER EC2
+                .addResourceLocations(imageRoute)
                 .setCacheControl(cacheControl);
     }
 }

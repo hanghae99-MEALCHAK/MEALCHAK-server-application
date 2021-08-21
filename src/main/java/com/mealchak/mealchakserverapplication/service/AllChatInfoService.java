@@ -38,7 +38,7 @@ public class AllChatInfoService {
     // 채팅방 접속 종료시 해당 채팅방의 마지막 TALK 타입 메시지의 id를 저장함
     @Transactional
     public void updateReadMessage(User user,String roomId){
-        Long lastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(roomId);
+        Long lastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(roomId).getId();
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(Long.parseLong(roomId),user.getId());
         allChatInfo.updateLastMessageId(lastMessageId);
     }

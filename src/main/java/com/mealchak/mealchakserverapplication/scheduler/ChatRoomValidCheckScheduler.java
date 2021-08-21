@@ -31,9 +31,7 @@ public class ChatRoomValidCheckScheduler {
         List<ChatRoom> chatRoomList = chatRoomQueryRepository.findAllByChatValidFalse();
         for (ChatRoom chatRoom : chatRoomList) {
             List<AllChatInfo> allChatInfoList = allChatInfoQueryRepository.findAllByChatRoom_Id(chatRoom.getId());
-            for (AllChatInfo allChatInfo : allChatInfoList) {
-                allChatInfoRepository.delete(allChatInfo);
-            }
+            allChatInfoRepository.deleteAll(allChatInfoList);
         }
     }
 }

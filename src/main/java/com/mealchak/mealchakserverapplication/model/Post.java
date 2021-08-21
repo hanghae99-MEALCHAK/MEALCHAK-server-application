@@ -95,8 +95,4 @@ public class Post extends Timestamped {
         this.nowHeadCount = nowHeadCount - 1L;
     }
 
-//    public Boolean getCheckValid() {
-//        return this.checkValid;
-//    }
-
 }

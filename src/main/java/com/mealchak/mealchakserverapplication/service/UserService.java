@@ -25,9 +25,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -144,17 +149,17 @@ public class UserService {
             String filename;
             if (files != null) {
                 try {
-                    String originFilename = files.getOriginalFilename();
-                    String nameToMD5;
-                    if (originFilename != null) {
-                        nameToMD5 = new MD5Generator(originFilename).toString();
-                    } else {
-                        throw new IllegalArgumentException("파일명이 없어 업로드에 실패하였습니다.");
+                    String originFilename = Objects.requireNonNull(files.getOriginalFilename()).replaceAll(" ", "");
+                    String formatName = originFilename.substring(originFilename.lastIndexOf(".") + 1).toLowerCase();
+                    String[] supportFormat = { "bmp", "jpg", "jpeg", "png" };
+                    if (!Arrays.asList(supportFormat).contains(formatName)) {
+                        throw new IllegalArgumentException("지원하지 않는 format 입니다.");
                     }
+                    String nameToMD5 = new MD5Generator(originFilename).toString();
                     // 랜덤 키 생성
                     String uuid = UUID.randomUUID().toString();
                     // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
-                    filename = nameToMD5 + "_" + uuid;
+                    filename = nameToMD5 + "_" + uuid + originFilename;
                     // 해당 위치에 이미지 저장
                     String savePath = System.getProperty("user.dir") + "/image";
                     // 파일이 저장되는 폴더가 없으면 폴더를 생성
@@ -165,8 +170,8 @@ public class UserService {
                             throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
                         }
                     }
-//                    String defaultImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
-                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
+                    String defaultImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
+//                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
                     if (!user.getProfileImg().contains("k.kakaocdn.net/dn/") || !user.getProfileImg().contains(defaultImg)) {
                         String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
                         File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
@@ -179,10 +184,10 @@ public class UserService {
                         }
                     }
                     String filePath = savePath + "/" + filename;
-                    files.transferTo(new java.io.File(filePath));
+                    resizeImageFile(files, filePath, formatName);
 
-                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
-//                    filename = "http://52.78.204.238/image/" + filename;   // AWS EC2
+//                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
+                    filename = "https://gorokke.shop/image/" + filename;   // AWS EC2
                 } catch (Exception e) {
                     throw new IllegalArgumentException("파일 업로드에 실패하였습니다.");
                 }
@@ -207,6 +212,31 @@ public class UserService {
             return new UserInfoResponseDto(user);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
+        }
+    }
+
+    // 이미지 크기 줄이기
+    private void resizeImageFile(MultipartFile files, String filePath, String formatName) throws Exception {
+
+        BufferedImage inputImage = ImageIO.read(files.getInputStream());
+
+        int originWidth = inputImage.getWidth();
+        int originHeight = inputImage.getHeight();
+        int newWidth = 500;
+
+        if (originWidth > newWidth) {
+            int newHeight = (originHeight * newWidth) / originWidth;
+
+            Image resizeImage = inputImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics graphics = newImage.getGraphics();
+            graphics.drawImage(resizeImage, 0, 0, null);
+            graphics.dispose();
+
+            File newFile = new File(filePath);
+            ImageIO.write(newImage, formatName, newFile);
+        } else {
+                files.transferTo(new java.io.File(filePath));
         }
     }
 

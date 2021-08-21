@@ -18,6 +18,8 @@ public class PostDetailResponseDto {
     private final String restaurant;
     private final String orderTime;
     private final String address;
+    private final double latitude;
+    private final double longitude;
     private final Long userId;
     private final String username;
     private final String profileImg;
@@ -37,6 +39,8 @@ public class PostDetailResponseDto {
         this.contents = post.getContents();
         this.category = post.getMenu().getCategory();
         this.address = post.getLocation().getAddress();
+        this.latitude = post.getLocation().getLatitude();
+        this.longitude = post.getLocation().getLongitude();
         this.distance = post.getDistance();
         this.userId = post.getUser().getId();
         this.username = post.getUser().getUsername();
