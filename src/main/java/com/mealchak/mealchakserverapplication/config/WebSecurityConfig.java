@@ -53,6 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/test").permitAll() // 부하 테스트용 api
                 .antMatchers("/index.html").permitAll() // 테스트용
+                .antMatchers("/").permitAll() // 테스트용
+                .antMatchers("/favicon.ico").permitAll() // 테스트용
                 //이미지파일 접근
                 .antMatchers("/image/**").permitAll()
                 //웹소켓 접근
