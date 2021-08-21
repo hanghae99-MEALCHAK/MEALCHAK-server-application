@@ -6,7 +6,6 @@ import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.BanUserListRepository;
-import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ public class BanUserListService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
+    // userId 와 roomId 를 BanUserList DB 에 저장함
     @Transactional
     public void banUser(Long userId,Long roomId){
         BanUserList banUserList = BanUserList.builder()
@@ -29,6 +29,7 @@ public class BanUserListService {
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId,userId);
         allChatInfoRepository.delete(allChatInfo);
         Post post = allChatInfo.getChatRoom().getPost();
+        // 강퇴시 게시글의 nowHeadCount 를 줄임
         post.subNowHeadCount();
     }
 

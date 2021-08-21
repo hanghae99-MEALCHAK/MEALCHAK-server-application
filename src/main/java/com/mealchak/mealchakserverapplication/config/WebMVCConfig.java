@@ -23,11 +23,14 @@ public class WebMVCConfig implements WebMvcConfigurer {
     // CORS 추가
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOriginPatterns("*://*").allowedHeaders("*").allowedMethods("*");
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*://*")
+                .allowedHeaders("*")
+                .allowedMethods("*");
     }
 
-    // 경로 수정 필요
     @Override
+    // 특정 경로와 로컬을 이어주고 해당 경로가 사용될때 캐시관련 헤더와 함께 내려줌
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         CacheControl cacheControl = CacheControl.noCache().mustRevalidate().cachePrivate().sMaxAge(Duration.ZERO);
         registry.addResourceHandler("/image/**")

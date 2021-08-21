@@ -23,17 +23,20 @@ public class JoinRequestsService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;
+    private final PostService postService;
 
     //유저 신청정보 저장
     public String requestJoin(UserDetailsImpl userDetails, Long postId) {
         Long userId = userDetails.getUser().getId();
+        // 신청하려는 방과 자신의 아이디가 이미 JoinRequests DB에 있는지 확인
         if (joinRequestsRepository.findByUserIdAndPostId(userId, postId) == null) {
             Post post = postQueryRepository.findByCheckValidTrueAndId(postId);
             User user = post.getUser();
             Long ownUserId = user.getId();
             JoinRequests joinRequests = new JoinRequests(userId, postId, ownUserId);
             Long roomId = post.getChatRoom().getId();
-            if (allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId,userId) == null) {
+            // 신청하려는 방과 자신의 아이디가 이미 AllChatInfo DB에 있는지 확인
+            if (allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userId) == null) {
                 joinRequestsRepository.save(joinRequests);
                 return "신청완료";
             } else {
@@ -56,10 +59,7 @@ public class JoinRequestsService {
                     () -> new IllegalArgumentException("회원이 아닙니다.")
             );
 
-            Post post = postQueryRepository.findById(joinRequests.getPostId());
-            if (post == null){
-                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-            }
+            Post post = postService.getPost(joinRequests.getPostId());
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = UserInfoAndPostResponseDto.builder()
                     .userId(userInfoMapping.getId())
@@ -80,10 +80,7 @@ public class JoinRequestsService {
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByUserId(userId);
         List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinResponseDtoList = new ArrayList<>();
         for (JoinRequests joinRequests : joinRequestsList) {
-            Post post = postQueryRepository.findById(joinRequests.getPostId());
-            if (post == null){
-                throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-            }
+            Post post = postService.getPost(joinRequests.getPostId());
             MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
                     .joinRequestId(joinRequests.getId())
                     .postTitle(post.getTitle())
@@ -115,6 +112,7 @@ public class JoinRequestsService {
                 allChatInfoRepository.save(allChatInfo);
                 joinRequestsRepository.delete(joinRequests);
                 Post post = chatRoom.getPost();
+                // 승인시 게시글의 nowHeadCount 에 1이 추가됨
                 post.addNowHeadCount();
             } else {
                 throw new IllegalArgumentException("채팅방 인원 초과");
@@ -125,10 +123,7 @@ public class JoinRequestsService {
 
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId) {
-        Post post = postQueryRepository.findById(postId);
-        if (post == null){
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        }
+        Post post = postService.getPost(postId);
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
@@ -150,7 +145,7 @@ public class JoinRequestsService {
     public void requestJoinCancel(UserDetailsImpl userDetails, Long joinId) {
         Long userId = userDetails.getUser().getId();
         JoinRequests joinRequests = joinRequestsRepository.findByIdAndUserId(joinId, userId)
-                .orElseThrow(()->new IllegalArgumentException("해당 신청이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 신청이 존재하지 않습니다."));
         joinRequestsRepository.delete(joinRequests);
     }
 

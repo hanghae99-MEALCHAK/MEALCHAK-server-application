@@ -8,6 +8,7 @@ public class MD5Generator {
 
     private final String result;
 
+    // String 을 받아 해당 String 을 MD5 형식으로 변환함
     public MD5Generator(String input) throws NoSuchAlgorithmException {
         MessageDigest mdMD5 = MessageDigest.getInstance("MD5");
         mdMD5.update(input.getBytes(StandardCharsets.UTF_8));
@@ -20,6 +21,7 @@ public class MD5Generator {
         result = hexMD5hash.toString();
     }
 
+    // 변환한 값을 리턴함
     public String toString() {
         return result;
     }

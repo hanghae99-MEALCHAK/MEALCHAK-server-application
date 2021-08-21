@@ -11,6 +11,7 @@ public void init(FilterConfig filterConfig) throws ServletException {
 }
 
     @Override
+    // CORS 설정
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -19,6 +20,7 @@ public void init(FilterConfig filterConfig) throws ServletException {
         ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers","*");
 
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        // OPTIONS 요청을 받을경우 200 response 를 리턴
         if (request.getMethod().equals("OPTIONS")) {
             resp.setStatus(HttpServletResponse.SC_OK);
             return;

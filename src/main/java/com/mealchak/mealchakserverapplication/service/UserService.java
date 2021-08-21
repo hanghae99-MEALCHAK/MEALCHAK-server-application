@@ -41,6 +41,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    // 카카오 로그인
     public HeaderDto kakaoLogin(String authorizedCode) {
         // 카카오 OAuth2 를 통해 카카오 사용자 정보 조회
         KakaoUserInfo userInfo = kakaoOAuth2.getUserInfo(authorizedCode);
@@ -85,6 +86,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HeaderDto headerDto = new HeaderDto();
 
+        // 로그인 처리 후 해당 유저 정보를 바탕으로 JWT토큰을 발급하고 해당 토큰을 Dto에 담아서 넘김
         User member = userRepository.findByKakaoId(kakaoId).orElseThrow(()
                 -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         headerDto.setTOKEN(jwtTokenProvider.createToken(email, member.getId(), member.getUsername()));
@@ -208,6 +210,7 @@ public class UserService {
         }
     }
 
+    // 유저의 pk 값으로 유저 조회
     public User getUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("회원이 아닙니다."));
     }
