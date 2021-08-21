@@ -87,6 +87,7 @@ public class KakaoOAuth2 {
         String profileImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
 //        String profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg";  // NAVER EC2
 
+        // 넘어온 유저정보에서 프로필사진 / 연령 / 성별 정보를 추가로 처리함
         try {
             profileImg = body.getJSONObject("properties").getString("profile_image");
             throw new Exception("프로필 사진 없음 기본 이미지로 대체");

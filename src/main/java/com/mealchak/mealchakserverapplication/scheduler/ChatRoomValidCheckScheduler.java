@@ -26,6 +26,7 @@ public class ChatRoomValidCheckScheduler {
     @Scheduled(fixedDelay = 3000 * 1000L)
     @Transactional
     @Async
+    // 매일 0시마다 채팅방의 만료여부를 확인하고 만료시에 채팅방을 삭제함
     public void ChatRoomValidCheck() {
         List<ChatRoom> chatRoomList = chatRoomQueryRepository.findAllByChatValidFalse();
         for (ChatRoom chatRoom : chatRoomList) {

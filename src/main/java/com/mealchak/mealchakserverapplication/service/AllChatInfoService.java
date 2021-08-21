@@ -1,13 +1,11 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.AllChatInfo;
-import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageQueryRepository;
-import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +21,7 @@ public class AllChatInfoService {
     private final ChatMessageQueryRepository chatMessageQueryRepository;
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
+    // 특정 채팅방의 안에 있는 유저들의 리스트를 리턴
     public List<User> getUser(Long roomId) {
         return allChatInfoQueryRepository.findAllByChatRoom_Id(roomId)
                 .stream()
@@ -30,16 +29,18 @@ public class AllChatInfoService {
                 .collect(Collectors.toList());
     }
 
+    // 채팅방 나가기
     public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
         allChatInfoRepository.delete(allChatInfo);
     }
 
+    // 채팅방 접속 종료시 해당 채팅방의 마지막 TALK 타입 메시지의 id를 저장함
     @Transactional
     public void updateReadMessage(User user,String roomId){
-        Long count = chatMessageQueryRepository.countAllByRoomIdAndType(roomId, ChatMessage.MessageType.TALK);
+        Long lastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(roomId);
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(Long.parseLong(roomId),user.getId());
-        allChatInfo.updateCount(count);
+        allChatInfo.updateLastMessageId(lastMessageId);
     }
 }
 

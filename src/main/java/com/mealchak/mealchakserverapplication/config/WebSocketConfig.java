@@ -17,9 +17,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        //구독용(sub)
+        // 구독용(sub)
         registry.enableSimpleBroker("/sub");
-        //발행용(pub)
+        // 발행용(pub)
         registry.setApplicationDestinationPrefixes("/pub");
     }
 
@@ -31,6 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
+    // 메세지를 받았을때 최초에 stompHandler 가 인터셉트 하도록 설정
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompHandler);
 

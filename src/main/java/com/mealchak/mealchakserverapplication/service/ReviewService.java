@@ -19,26 +19,16 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
 
-    // find User
-    public User getUser(UserDetailsImpl userDetails) {
-        if (userDetails != null) {
-            return userRepository.findById(userDetails.getUser().getId()).
-                    orElseThrow(() -> new IllegalArgumentException("userId가 존재하지 않습니다."));
-        } else {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-    }
-
     // 본인 리뷰 조회
     public List<ReviewListMapping> getReview(UserDetailsImpl userDetails) {
-        User user = getUser(userDetails);
+        User user = userDetails.getUser();
         return reviewRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId(), ReviewListMapping.class);
     }
 
     // 리뷰 작성
     @Transactional
     public void createReview(UserDetailsImpl userDetails, ReviewRequestDto requestDto, Long userId) {
-        User writer = getUser(userDetails);
+        User writer = userDetails.getUser();
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new IllegalArgumentException("UserId 가 존재하지 않습니다."));
         if (reviewRepository.findByUserIdAndWriterId(userId, writer.getId()).isPresent()) {
@@ -52,7 +42,7 @@ public class ReviewService {
     // 리뷰 수정
     @Transactional
     public void updateReview(UserDetailsImpl userDetails, ReviewRequestDto requestDto, Long reviewId) {
-        User user = getUser(userDetails);
+        User user = userDetails.getUser();
         Review review = reviewRepository.findById(reviewId).
                 orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
         if (user.equals(review.getUser())) {
@@ -64,7 +54,7 @@ public class ReviewService {
         }
     }
 
-    // 리뷰 작성, 수정시 유저 mannerScore 증가
+    // 리뷰 작성, 수정시 유저 mannerScore 변동
     public static void increaseMannerScore(Review review, User user) {
         if (Review.MannerType.BEST.equals(review.getMannerType())) {
             user.updateMannerScore(+0.1f);
@@ -75,7 +65,7 @@ public class ReviewService {
         }
     }
 
-    // 리뷰 수정시 유저 mannerScore 감소
+    // 리뷰 수정시 유저 mannerScore 변동 취소
     public static void decreaseMannerScore(Review review, User user) {
         if (Review.MannerType.BEST.equals(review.getMannerType())) {
             user.updateMannerScore(-0.1f);
@@ -89,7 +79,7 @@ public class ReviewService {
     // 리뷰 삭제
     @Transactional
     public void deleteReview(UserDetailsImpl userDetails, Long reviewId) {
-        User writer = getUser(userDetails);
+        User writer = userDetails.getUser();
         reviewRepository.deleteByIdAndWriter_Id(reviewId, writer.getId());
     }
 }

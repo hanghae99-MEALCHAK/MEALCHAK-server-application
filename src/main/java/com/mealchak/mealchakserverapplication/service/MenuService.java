@@ -11,6 +11,8 @@ import java.util.List;
 @Service
 public class MenuService {
     private final MenuRepository menuRepository;
+
+    // 인기메뉴 3종류 조회
     public List<Menu> getPopular() {
          return menuRepository.findAllByOrderByCountDesc().subList(0,3);
     }

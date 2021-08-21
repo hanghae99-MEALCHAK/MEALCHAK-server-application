@@ -19,7 +19,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostQueryRepository postQueryRepository;
     private final MenuRepository menuRepository;
-    private final UserRepository userRepository;
     private final ChatRoomService chatRoomService;
     private final AllChatInfoService allChatInfoService;
     private final JoinRequestsService joinRequestsService;
@@ -52,6 +51,7 @@ public class PostService {
     public List<PostResponseDto> getAllPost(String category) {
         List<PostResponseDto> listPost = new ArrayList<>();
         List<Post> posts;
+        // 조회 카테고리의 선택여부에 따라 분기함
         if (category.equals("전체")) {
             posts = postQueryRepository.findAllOrderByOrderTimeAsc();
         } else {
@@ -66,9 +66,6 @@ public class PostService {
     // 모집글 상세 조회
     public PostDetailResponseDto getPostDetail(Long postId) {
         Post post = getPost(postId);
-        if (post == null){
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        }
         List<User> userList = allChatInfoService.getUser(post.getChatRoom().getId());
         return new PostDetailResponseDto(post, userList);
     }
@@ -108,7 +105,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
         Post post = postQueryRepository.findById(postId);
-        if (post.getChatRoom().getOwnUserId().equals(userDetails.getUser().getId())) {
+        if (post.getUser().getId().equals(userDetails.getUser().getId())) {
             Long chatRoomId = post.getChatRoom().getId();
             post.getMenu().updateMenuCount(-1);
             post.deleted(true);
@@ -143,9 +140,7 @@ public class PostService {
         if (userDetails == null) {
             return getAllPost(category);
         }
-        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 아이디가 존재하지 않습니다."));
-
+        User user = userDetails.getUser();
         double userLatitude = user.getLocation().getLatitude();
         double userLongitude = user.getLocation().getLongitude();
         List<Post> postList;

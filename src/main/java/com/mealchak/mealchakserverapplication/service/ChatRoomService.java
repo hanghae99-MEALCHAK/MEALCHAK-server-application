@@ -6,13 +6,13 @@ import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -20,7 +20,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final PostQueryRepository postQueryRepository;
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;
 
     // HashOperations 레디스에서 쓰는 자료형
@@ -32,6 +31,7 @@ public class ChatRoomService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final UserRepository userRepository;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
+    private final PostService postService;
 
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -55,9 +55,10 @@ public class ChatRoomService {
             Post post = chatRoom.getPost();
             Long headCountChat = allChatInfoQueryRepository.countAllByChatRoom(chatRoom);
             String chatRoomId = Long.toString(chatRoom.getId());
-            Long newMessageCount = allChatInfo.getNewMessageCount();
-            Long nowMessageCount = chatMessageQueryRepository.countAllByRoomIdAndType(chatRoomId, ChatMessage.MessageType.TALK);
-            if (newMessageCount < nowMessageCount){
+            Long myLastMessageId = allChatInfo.getLastMessageId();
+            Long newLastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(chatRoomId);
+            // myLastMessageId 와 newLastMessageId 를 비교하여 현재 채팅방에 새 메세지가 있는지 여부를 함께 내려줌
+            if (myLastMessageId < newLastMessageId){
                 ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
                 responseDtoList.add(responseDto);
             } else {
@@ -68,25 +69,27 @@ public class ChatRoomService {
         return responseDtoList;
     }
 
-    // redisTemplate 에 (입장 type) 누가 어떤방에 들어갔는지 정보를 리턴
+    // redis 에 입장정보로 sessionId 와 roomId를 저장하고 해단 sessionId 와 토큰에서 받아온 userId를 저장함
     public void setUserEnterInfo(String sessionId, String roomId, Long userId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);
         hashOpsUserInfo.put(USER_INFO, sessionId, Long.toString(userId));
     }
 
+    // redis 에 저장했던 sessionId 로 roomId를 리턴함
     public String getUserEnterRoomId(String sessionId) {
         return hashOpsEnterInfo.get(ENTER_INFO, sessionId);
     }
 
+    // 유저가 나갈때 redis 에 저장했던 해당 세션 / 유저의 정보를 삭제함
     public void removeUserEnterInfo(String sessionId) {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
         hashOpsUserInfo.delete(USER_INFO, sessionId);
     }
 
+    // redis 에 저장했던 sessionId 로 userId 를 얻어오고 해당 userId 로 User 객체를 찾아 리턴함
     public User chkSessionUser(String sessionId){
-        Long userId = Long.parseLong(hashOpsUserInfo.get(USER_INFO,sessionId));
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자"));
-        return user;
+        Long userId = Long.parseLong(Objects.requireNonNull(hashOpsUserInfo.get(USER_INFO, sessionId)));
+        return userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자"));
     }
 
     // 게시글 삭제시 채팅방도 삭제
@@ -99,10 +102,7 @@ public class ChatRoomService {
     // 채팅방 나가기
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
-        Post post = postQueryRepository.findById(postId);
-        if (post == null){
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        }
+        Post post = postService.getPost(postId);
         Long roomId = post.getChatRoom().getId();
         // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {
