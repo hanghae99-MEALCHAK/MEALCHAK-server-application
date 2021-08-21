@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserRoomService {
     private final AllChatInfoRepository allChatInfoRepository;
 
+    // 유저와 채팅방의 pk 를 엮어 DB에 저장
     @Transactional
     public void save(User user, ChatRoom chatRoom){
         AllChatInfo allChatInfo = new AllChatInfo(user, chatRoom);

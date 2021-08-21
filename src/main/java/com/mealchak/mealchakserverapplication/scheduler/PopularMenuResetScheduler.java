@@ -20,6 +20,7 @@ public class PopularMenuResetScheduler {
     @Scheduled(cron = "0 0 00 * * ?")
     @Transactional
     @Async
+    // 메뉴의 인기 순위를 매일 0시마다 초기화함
     public void popularMenuCountReset(){
         List<Menu> menuList = menuRepository.findAll();
         for (Menu menu : menuList){
