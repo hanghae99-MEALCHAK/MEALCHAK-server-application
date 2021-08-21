@@ -32,6 +32,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -148,15 +149,13 @@ public class UserService {
             String filename;
             if (files != null) {
                 try {
-                    String originFilename = files.getOriginalFilename();
-                    String formatName = originFilename != null ? originFilename.substring(originFilename.lastIndexOf(".") + 1).toLowerCase() : null;
+                    String originFilename = Objects.requireNonNull(files.getOriginalFilename()).replaceAll(" ", "");
+                    String formatName = originFilename.substring(originFilename.lastIndexOf(".") + 1).toLowerCase();
                     String[] supportFormat = { "bmp", "jpg", "jpeg", "png" };
                     if (!Arrays.asList(supportFormat).contains(formatName)) {
                         throw new IllegalArgumentException("지원하지 않는 format 입니다.");
                     }
-                    String nameToMD5;
-                    if (originFilename != null) { nameToMD5 = new MD5Generator(originFilename).toString();
-                    } else { throw new IllegalArgumentException("파일명이 없어 업로드에 실패하였습니다."); }
+                    String nameToMD5 = new MD5Generator(originFilename).toString();
                     // 랜덤 키 생성
                     String uuid = UUID.randomUUID().toString();
                     // 랜덤 키와 파일명을 합쳐 파일명 중복을 피함
@@ -185,7 +184,7 @@ public class UserService {
                         }
                     }
                     String filePath = savePath + "/" + filename;
-                    filename = resizeImageFile(files, filePath, formatName);
+                    resizeImageFile(files, filePath, formatName);
 
 //                    filename = "http://115.85.182.57/image/" + filename;  // NAVER EC2
                     filename = "https://gorokke.shop/image/" + filename;   // AWS EC2
@@ -217,7 +216,7 @@ public class UserService {
     }
 
     // 이미지 크기 줄이기
-    private String resizeImageFile(MultipartFile files, String filePath, String formatName) throws Exception {
+    private void resizeImageFile(MultipartFile files, String filePath, String formatName) throws Exception {
 
         BufferedImage inputImage = ImageIO.read(files.getInputStream());
 
@@ -235,11 +234,9 @@ public class UserService {
             graphics.dispose();
 
             File newFile = new File(filePath);
-            ImageIO.write(newImage, formatName.toLowerCase(), newFile);
-            return filePath;
+            ImageIO.write(newImage, formatName, newFile);
         } else {
                 files.transferTo(new java.io.File(filePath));
-            return filePath;
         }
     }
 

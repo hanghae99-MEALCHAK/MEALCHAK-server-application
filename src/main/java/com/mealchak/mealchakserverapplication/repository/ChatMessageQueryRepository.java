@@ -10,8 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
-
 import static com.mealchak.mealchakserverapplication.model.QChatMessage.chatMessage;
 
 @RequiredArgsConstructor
@@ -40,12 +38,11 @@ public class ChatMessageQueryRepository {
                 .fetchCount();
     }
 
-    public Long findbyRoomIdAndTalk(String RoomId) {
-        return Objects.requireNonNull(queryFactory.selectFrom(chatMessage)
+    public ChatMessage findbyRoomIdAndTalk(String RoomId) {
+        return queryFactory.selectFrom(chatMessage)
                 .where(chatMessage.roomId.eq(RoomId))
                 .where(chatMessage.type.eq(ChatMessage.MessageType.TALK))
                 .orderBy(chatMessage.id.desc())
-                .fetchOne())
-                .getId();
+                .fetchFirst();
     }
 }

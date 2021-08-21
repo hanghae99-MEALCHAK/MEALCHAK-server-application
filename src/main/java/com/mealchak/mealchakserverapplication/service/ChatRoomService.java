@@ -31,7 +31,7 @@ public class ChatRoomService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final UserRepository userRepository;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
-    private final PostService postService;
+    private final PostQueryRepository postQueryRepository;
 
 
     public static final String ENTER_INFO = "ENTER_INFO";
@@ -56,15 +56,20 @@ public class ChatRoomService {
             Long headCountChat = allChatInfoQueryRepository.countAllByChatRoom(chatRoom);
             String chatRoomId = Long.toString(chatRoom.getId());
             Long myLastMessageId = allChatInfo.getLastMessageId();
-            Long newLastMessageId = chatMessageQueryRepository.findbyRoomIdAndTalk(chatRoomId);
-            // myLastMessageId 와 newLastMessageId 를 비교하여 현재 채팅방에 새 메세지가 있는지 여부를 함께 내려줌
-            if (myLastMessageId < newLastMessageId){
-                ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,true);
-                responseDtoList.add(responseDto);
-            } else {
-                ChatRoomListResponseDto responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat,false);
-                responseDtoList.add(responseDto);
+            ChatMessage newLastMessage = chatMessageQueryRepository.findbyRoomIdAndTalk(chatRoomId);
+            Long newLastMessageId = 0L;
+            if (newLastMessage != null) {
+                newLastMessageId = newLastMessage.getId();
             }
+
+            // myLastMessageId 와 newLastMessageId 를 비교하여 현재 채팅방에 새 메세지가 있는지 여부를 함께 내려줌
+            ChatRoomListResponseDto responseDto;
+            if (myLastMessageId < newLastMessageId){
+                responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat, true);
+            } else {
+                responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat, false);
+            }
+            responseDtoList.add(responseDto);
         }
         return responseDtoList;
     }
@@ -96,13 +101,16 @@ public class ChatRoomService {
     @Transactional
     public void deleteAllChatInfo(Long roomId, UserDetailsImpl userDetails) {
         AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
-        allChatInfoRepository.delete(allChatInfo);
+        if (allChatInfo != null) {
+            allChatInfoRepository.delete(allChatInfo);
+        }
     }
 
     // 채팅방 나가기
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
-        Post post = postService.getPost(postId);
+        Post post = postQueryRepository.findById(postId);
+        if (post == null){ throw new IllegalArgumentException("존재하지 않는 게시글입니다."); }
         Long roomId = post.getChatRoom().getId();
         // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {
@@ -114,6 +122,7 @@ public class ChatRoomService {
         } else if (isChatRoomOwner(post, userDetails)) {
             deleteAllChatInfo(roomId, userDetails);
         // 일반 유저일 때 채팅방 나가기
+
         } else {
             AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
             allChatInfoRepository.delete(allChatInfo);
