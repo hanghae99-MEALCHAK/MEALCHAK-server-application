@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
+import com.mealchak.mealchakserverapplication.repository.ChatMessageQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatMessageService {
 
+    private final ChatMessageQueryRepository chatMessageQueryRepository;
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
@@ -52,6 +54,6 @@ public class ChatMessageService {
         int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt" );
         pageable = PageRequest.of(page, 150, sort );
-        return chatMessageRepository.findByRoomIdOrderByIdDesc(roomId, pageable);
+        return chatMessageQueryRepository.findByRoomIdOrderByIdDesc(roomId, pageable);
     }
 }

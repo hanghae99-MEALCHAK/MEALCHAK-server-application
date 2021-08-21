@@ -8,6 +8,4 @@ import java.util.List;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom,Long> {
     ChatRoom findByPostId(Long postId);
-    @Query("select c from ChatRoom c join fetch c.post")
-    List<ChatRoom> findAllByChatValidFalse();
 }

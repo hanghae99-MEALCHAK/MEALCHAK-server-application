@@ -1,7 +1,7 @@
 package com.mealchak.mealchakserverapplication.scheduler;
 
 import com.mealchak.mealchakserverapplication.model.Post;
-import com.mealchak.mealchakserverapplication.repository.PostRepository;
+import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,13 +17,13 @@ import java.util.List;
 @Service
 public class PostExpiredScheduler {
 
-    private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
 
     @Scheduled(cron ="0 0/1 * * * *")
     @Transactional
     @Async
     public void postValidationCheckScheduler() {
-        List<Post> notExpiredList = postRepository.findAllByCheckValidTrue();
+        List<Post> notExpiredList = postQueryRepository.findAllByCheckValidTrue();
         for (Post post : notExpiredList) {
             //orderTime 을 YYYY-MM-DD HH-MM-SS 형식으로 받았을때를 가정 (프론트와 합의후 추가 수정이 필요할수도있음)
             Date orderTime = java.sql.Timestamp.valueOf(post.getOrderTime());
