@@ -34,13 +34,13 @@ public class ChatMessageService {
 
     // 메세지의 type 을 확인하고 그에따라 작업을 분기시킴
     public void sendChatMessage(ChatMessage chatMessageRequestDto) {
+        // 채팅방 입장시
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 참여중입니다.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
-            // 채팅방 입장시
-        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
-            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
+//        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
+//            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
+//            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
             // 채팅방 퇴장시
         } else if (ChatMessage.MessageType.BAN.equals(chatMessageRequestDto.getType())){
             Long userId = Long.parseLong(chatMessageRequestDto.getMessage());

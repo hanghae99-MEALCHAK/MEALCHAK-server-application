@@ -23,11 +23,11 @@ public interface ReviewListMapping {
     default String getManner() {
         Review.MannerType manner = getMannerType();
         if (Review.MannerType.BEST.equals(manner)) {
-            return "최고에요!";
+            return "최고예요!";
         } else if (Review.MannerType.GOOD.equals(manner)) {
-            return "좋았어요";
+            return "좋아요~";
         }
-        return "별로에요";
+        return "별로예요:(";
     }
 
     @JsonIgnore

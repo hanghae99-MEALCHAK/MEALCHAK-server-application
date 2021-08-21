@@ -2,6 +2,7 @@ package com.mealchak.mealchakserverapplication.oauth2;
 
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,12 @@ public class KakaoOAuth2 {
         return getUserInfoByToken(accessToken);
     }
 
+    @Value("${spring.datasource.client_id}")
+    private String client_id;
+
+    @Value("${spring.datasource.redirect_uri}")
+    private String redirect_uri;
+
     public String getAccessToken(String authorizedCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -28,11 +35,9 @@ public class KakaoOAuth2 {
         // HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", "7bdd85c1e8d3b04bfc556d4b741605ec");
-        //테스트를 위한 url설정
-//        params.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
-        params.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
-//        params.add("redirect_uri", "http://surgo.kr/user/kakao/callback");
+        params.add("client_id", client_id);
+        // redirect url설정
+        params.add("redirect_uri", redirect_uri);
         params.add("code", authorizedCode);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -79,7 +84,7 @@ public class KakaoOAuth2 {
         String nickname = body.getJSONObject("properties").getString("nickname");
         String age = null;
         String gender = null;
-        String profileImg = "http://52.78.204.238/image/profileDefaultImg.jpg"; // AWS EC2
+        String profileImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
 //        String profileImg = "http://115.85.182.57/image/profileDefaultImg.jpg";  // NAVER EC2
 
         // 넘어온 유저정보에서 프로필사진 / 연령 / 성별 정보를 추가로 처리함

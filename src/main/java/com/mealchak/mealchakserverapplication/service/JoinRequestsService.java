@@ -23,7 +23,6 @@ public class JoinRequestsService {
     private final AllChatInfoRepository allChatInfoRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;
-    private final PostService postService;
 
     //유저 신청정보 저장
     public String requestJoin(UserDetailsImpl userDetails, Long postId) {
@@ -59,7 +58,7 @@ public class JoinRequestsService {
                     () -> new IllegalArgumentException("회원이 아닙니다.")
             );
 
-            Post post = postService.getPost(joinRequests.getPostId());
+            Post post = getPost(joinRequests.getPostId());
 
             UserInfoAndPostResponseDto userInfoAndPostResponseDto = UserInfoAndPostResponseDto.builder()
                     .userId(userInfoMapping.getId())
@@ -80,7 +79,7 @@ public class JoinRequestsService {
         List<JoinRequests> joinRequestsList = joinRequestsRepository.findByUserId(userId);
         List<MyAwaitRequestJoinResponseDto> myAwaitRequestJoinResponseDtoList = new ArrayList<>();
         for (JoinRequests joinRequests : joinRequestsList) {
-            Post post = postService.getPost(joinRequests.getPostId());
+            Post post = getPost(joinRequests.getPostId());
             MyAwaitRequestJoinResponseDto myAwaitRequestJoinResponseDto = MyAwaitRequestJoinResponseDto.builder()
                     .joinRequestId(joinRequests.getId())
                     .postTitle(post.getTitle())
@@ -123,7 +122,7 @@ public class JoinRequestsService {
 
     // 채팅방 인원수 제한
     public Boolean checkHeadCount(Long postId) {
-        Post post = postService.getPost(postId);
+        Post post = getPost(postId);
         int postHeadCount = post.getHeadCount();
         Long nowHeadCount = allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom());
         return postHeadCount > nowHeadCount;
@@ -152,5 +151,12 @@ public class JoinRequestsService {
     // 게시글 삭제시 승인대기 목록 삭제
     public void deleteByPostId(Long id) {
         joinRequestsRepository.deleteByPostId(id);
+    }
+
+    // findById(postId)
+    public Post getPost(Long postId) {
+        Post post = postQueryRepository.findById(postId);
+        if (post == null){ throw new IllegalArgumentException("존재하지 않는 게시글입니다."); }
+        return post;
     }
 }
