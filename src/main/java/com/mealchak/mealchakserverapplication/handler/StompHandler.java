@@ -1,7 +1,6 @@
 package com.mealchak.mealchakserverapplication.handler;
 
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
-import com.mealchak.mealchakserverapplication.model.AllChatInfo;
 import com.mealchak.mealchakserverapplication.model.ChatMessage;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
@@ -31,6 +30,7 @@ public class StompHandler implements ChannelInterceptor {
     private final AllChatInfoService allChatInfoService;
 
     @Override
+    // 클라이언트가 메세지를 발송하면 최초에 해당 메세지를 인터셉트하여 처리함
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
@@ -65,9 +65,10 @@ public class StompHandler implements ChannelInterceptor {
                     .build());
             log.info("SUBSCRIBED {}, {}", user.getUsername(), roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
-            // 연결이 종료된 클라이언트 sesssion Id 로 채팅방 id를 얻는다.
+            // 연결이 종료된 클라이언트 sessionId 로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = chatRoomService.getUserEnterRoomId(sessionId);
+            // 저장했던 sessionId 로 유저 객체를 받아옴
             User user = chatRoomService.chkSessionUser(sessionId);
             String username = user.getUsername();
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
@@ -81,6 +82,7 @@ public class StompHandler implements ChannelInterceptor {
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomService.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", username, roomId);
+            // 유저가 퇴장할 당시의 마지막 TALK 타입 메세지 id 를 저장함
             allChatInfoService.updateReadMessage(user,roomId);
         }
         return message;

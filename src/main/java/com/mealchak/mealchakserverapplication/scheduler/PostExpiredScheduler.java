@@ -22,6 +22,7 @@ public class PostExpiredScheduler {
     @Scheduled(cron ="0 0/1 * * * *")
     @Transactional
     @Async
+    // 현재 시간과 게시글의 만료시간을 비교하여 만료여부를 변경
     public void postValidationCheckScheduler() {
         List<Post> notExpiredList = postQueryRepository.findAllByCheckValidTrue();
         for (Post post : notExpiredList) {
