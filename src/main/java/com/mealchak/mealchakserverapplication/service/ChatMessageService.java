@@ -38,9 +38,9 @@ public class ChatMessageService {
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 참여중입니다.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
-//        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
-//            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender() + "님이 퇴장했습니다.");
-//            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
+        } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 퇴장했습니다.");
+            chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
             // 채팅방 퇴장시
         } else if (ChatMessage.MessageType.BAN.equals(chatMessageRequestDto.getType())){
             Long userId = Long.parseLong(chatMessageRequestDto.getMessage());

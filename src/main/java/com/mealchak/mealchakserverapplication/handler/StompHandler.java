@@ -71,14 +71,11 @@ public class StompHandler implements ChannelInterceptor {
             // 저장했던 sessionId 로 유저 객체를 받아옴
             User user = chatRoomService.chkSessionUser(sessionId);
             String username = user.getUsername();
-            // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-            //토큰 가져옴
-//            String jwtToken = accessor.getFirstNativeHeader("token");
-//            //토큰으로 userDetails 가져옴
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUserPk(jwtToken));
-//            //userDetails 에서 username 가져옴
-//            String name = userDetails.getUsername();
-//            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
+            chatService.sendChatMessage(ChatMessage.builder()
+                    .type(ChatMessage.MessageType.QUIT)
+                    .roomId(roomId)
+                    .sender(user)
+                    .build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomService.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", username, roomId);

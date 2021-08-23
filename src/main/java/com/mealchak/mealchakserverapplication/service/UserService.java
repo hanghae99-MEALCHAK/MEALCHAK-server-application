@@ -172,7 +172,7 @@ public class UserService {
                     }
                     String defaultImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
 //                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
-                    if (!user.getProfileImg().contains("k.kakaocdn.net/dn/") || !user.getProfileImg().contains(defaultImg)) {
+                    if (!user.getProfileImg().contains("k.kakaocdn.net/dn/") && !user.getProfileImg().contains(defaultImg)) {
                         String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
                         File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
                         if (deleteFile.exists()) {
@@ -227,7 +227,7 @@ public class UserService {
         if (originWidth > newWidth) {
             int newHeight = (originHeight * newWidth) / originWidth;
 
-            Image resizeImage = inputImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            Image resizeImage = inputImage.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
             BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
             Graphics graphics = newImage.getGraphics();
             graphics.drawImage(resizeImage, 0, 0, null);

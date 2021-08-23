@@ -36,7 +36,7 @@ public class KakaoOAuth2 {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", client_id);
-        // redirect url설정
+        // redirect url 설정
         params.add("redirect_uri", redirect_uri);
         params.add("code", authorizedCode);
 

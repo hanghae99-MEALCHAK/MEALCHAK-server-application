@@ -50,15 +50,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/posts").permitAll()
                 .antMatchers(HttpMethod.GET,"/posts/{postId}").permitAll()
                 .antMatchers("/menu").permitAll()
-
-                .antMatchers("/test").permitAll() // 부하 테스트용 api
-                .antMatchers("/index.html").permitAll() // 테스트용
-                .antMatchers("/").permitAll() // 테스트용
-                .antMatchers("/favicon.ico").permitAll() // 테스트용
+                .antMatchers("/").permitAll()
+                .antMatchers("/favicon.ico").permitAll()
                 //이미지파일 접근
                 .antMatchers("/image/**").permitAll()
                 //웹소켓 접근
-                .antMatchers("/chatting/**").permitAll()   // /** 을 추가함 수정 필요
+                .antMatchers("/chatting/**").permitAll()
                 .antMatchers("/sub/**").permitAll()
                 .antMatchers("/pub/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
