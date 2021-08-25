@@ -76,7 +76,7 @@ public class StompHandler implements ChannelInterceptor {
                     .roomId(roomId)
                     .sender(user)
                     .build());
-            // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
+           // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomService.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", username, roomId);
             // 유저가 퇴장할 당시의 마지막 TALK 타입 메세지 id 를 저장함

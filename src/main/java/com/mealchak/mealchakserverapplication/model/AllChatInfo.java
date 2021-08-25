@@ -35,6 +35,5 @@ public class AllChatInfo {
 
     public void updateLastMessageId(Long lastMessageId){
         this.lastMessageId = lastMessageId;
-
     }
 }
