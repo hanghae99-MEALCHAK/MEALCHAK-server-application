@@ -46,6 +46,16 @@ public class ChatRoomService {
         return chatRoom;
     }
 
+    public boolean newMessage(UserDetailsImpl userDetails) {
+        List<ChatRoomListResponseDto> chatRoomListResponseDtoList = getOnesChatRoom(userDetails.getUser());
+        for (ChatRoomListResponseDto chatRoomListResponseDto : chatRoomListResponseDtoList) {
+            if (chatRoomListResponseDto.isNewMessage()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     // 사용자별 채팅방 목록 조회
     public List<ChatRoomListResponseDto> getOnesChatRoom(User user) {
         List<ChatRoomListResponseDto> responseDtoList = new ArrayList<>();
@@ -64,7 +74,7 @@ public class ChatRoomService {
 
             // myLastMessageId 와 newLastMessageId 를 비교하여 현재 채팅방에 새 메세지가 있는지 여부를 함께 내려줌
             ChatRoomListResponseDto responseDto;
-            if (myLastMessageId < newLastMessageId){
+            if (myLastMessageId < newLastMessageId) {
                 responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat, true);
             } else {
                 responseDto = new ChatRoomListResponseDto(chatRoom, post, headCountChat, false);
@@ -92,9 +102,9 @@ public class ChatRoomService {
     }
 
     // redis 에 저장했던 sessionId 로 userId 를 얻어오고 해당 userId 로 User 객체를 찾아 리턴함
-    public User chkSessionUser(String sessionId){
+    public User chkSessionUser(String sessionId) {
         Long userId = Long.parseLong(Objects.requireNonNull(hashOpsUserInfo.get(USER_INFO, sessionId)));
-        return userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 사용자"));
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
     }
 
     // 게시글 삭제시 채팅방도 삭제
@@ -110,7 +120,9 @@ public class ChatRoomService {
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postQueryRepository.findById(postId);
-        if (post == null){ throw new IllegalArgumentException("존재하지 않는 게시글입니다."); }
+        if (post == null) {
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        }
         Long roomId = post.getChatRoom().getId();
         // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {
@@ -118,10 +130,10 @@ public class ChatRoomService {
             post.expired(false);
             post.deleted(true);
             deleteAllChatInfo(roomId, userDetails);
-        // 비활성화 게시글이고 글쓴이면 채팅방 비활성화
+            // 비활성화 게시글이고 글쓴이면 채팅방 비활성화
         } else if (isChatRoomOwner(post, userDetails)) {
             deleteAllChatInfo(roomId, userDetails);
-        // 일반 유저일 때 채팅방 나가기
+            // 일반 유저일 때 채팅방 나가기
 
         } else {
             AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
@@ -140,7 +152,7 @@ public class ChatRoomService {
     // 채팅방 chatValid -> false
     @Transactional
     public void updateChatValid(Long roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()->new IllegalArgumentException(""));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException(""));
         chatRoom.updatechatValid(false);
     }
 }
