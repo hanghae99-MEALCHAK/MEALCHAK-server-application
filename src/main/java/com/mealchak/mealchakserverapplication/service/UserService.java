@@ -12,7 +12,7 @@ import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
-import com.mealchak.mealchakserverapplication.repository.JoinRequestsRepository;
+import com.mealchak.mealchakserverapplication.repository.JoinRequestQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.ReviewRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.repository.mapping.ReviewListMapping;
@@ -43,8 +43,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
     private final AuthenticationManager authenticationManager;
-    private final JoinRequestsRepository joinRequestsRepository;
     private final ChatRoomService chatRoomService;
+    private final JoinRequestQueryRepository joinRequestQueryRepository;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     // 카카오 로그인
@@ -125,7 +125,7 @@ public class UserService {
         if (userDetails != null) {
             UserInfoMapping userInfoMapping = userRepository.findByEmail(userDetails.getUser().getEmail(), UserInfoMapping.class).orElseThrow(()
                     -> new IllegalArgumentException("회원이 아닙니다."));
-            boolean newJoinRequest = (joinRequestsRepository.countAllByOwnUserId(userInfoMapping.getId()) != 0);
+            boolean newJoinRequest = joinRequestQueryRepository.existByUserId(userInfoMapping.getId());
             boolean newMessage = chatRoomService.newMessage(userDetails);
             return new UserInfoMappingDto(userInfoMapping,newMessage,newJoinRequest);
         } else {
