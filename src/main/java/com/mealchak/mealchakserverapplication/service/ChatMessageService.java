@@ -36,10 +36,10 @@ public class ChatMessageService {
     public void sendChatMessage(ChatMessage chatMessageRequestDto) {
         // 채팅방 입장시
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 참여중입니다.");
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 들어왔어요.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
-            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 퇴장했습니다.");
+            chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 자리를 비웠어요.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
             // 채팅방 퇴장시
         } else if (ChatMessage.MessageType.BAN.equals(chatMessageRequestDto.getType())){

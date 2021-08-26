@@ -49,7 +49,7 @@ public class UserService {
         KakaoUserInfo userInfo = kakaoOAuth2.getUserInfo(authorizedCode);
         Long kakaoId = userInfo.getId();
         String email = userInfo.getEmail();
-        String address = "서울 강남구 가로수길 5";
+        String address = "여기를 클릭해서 주소를 설정하세요!";
         double latitude = 37.497910;
         double longitude = 127.027678;
         Location location = new Location(address, latitude, longitude);
