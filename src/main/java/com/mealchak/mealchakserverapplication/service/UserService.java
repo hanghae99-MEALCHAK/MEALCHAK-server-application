@@ -4,6 +4,7 @@ import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoMappingDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -11,6 +12,7 @@ import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.KakaoOAuth2;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.oauth2.provider.KakaoUserInfo;
+import com.mealchak.mealchakserverapplication.repository.JoinRequestQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.ReviewRepository;
 import com.mealchak.mealchakserverapplication.repository.UserRepository;
 import com.mealchak.mealchakserverapplication.repository.mapping.ReviewListMapping;
@@ -41,6 +43,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final KakaoOAuth2 kakaoOAuth2;
     private final AuthenticationManager authenticationManager;
+    private final ChatRoomService chatRoomService;
+    private final JoinRequestQueryRepository joinRequestQueryRepository;
     private static final String Pass_Salt = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     // 카카오 로그인
@@ -117,10 +121,13 @@ public class UserService {
 
     //유저 정보 조회
     @Transactional
-    public UserInfoMapping userInfo(UserDetailsImpl userDetails) {
+    public UserInfoMappingDto userInfo(UserDetailsImpl userDetails) {
         if (userDetails != null) {
-            return userRepository.findByEmail(userDetails.getUser().getEmail(), UserInfoMapping.class).orElseThrow(()
+            UserInfoMapping userInfoMapping = userRepository.findByEmail(userDetails.getUser().getEmail(), UserInfoMapping.class).orElseThrow(()
                     -> new IllegalArgumentException("회원이 아닙니다."));
+            boolean newJoinRequest = joinRequestQueryRepository.existByUserId(userInfoMapping.getId());
+            boolean newMessage = chatRoomService.newMessage(userDetails);
+            return new UserInfoMappingDto(userInfoMapping,newMessage,newJoinRequest);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }
@@ -148,7 +155,7 @@ public class UserService {
                 try {
                     String originFilename = Objects.requireNonNull(files.getOriginalFilename()).replaceAll(" ", "");
                     String formatName = originFilename.substring(originFilename.lastIndexOf(".") + 1).toLowerCase();
-                    String[] supportFormat = { "bmp", "jpg", "jpeg", "png" };
+                    String[] supportFormat = {"bmp", "jpg", "jpeg", "png"};
                     if (!Arrays.asList(supportFormat).contains(formatName)) {
                         throw new IllegalArgumentException("지원하지 않는 format 입니다.");
                     }

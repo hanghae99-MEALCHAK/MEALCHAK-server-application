@@ -4,6 +4,7 @@ import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
 import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
+import com.mealchak.mealchakserverapplication.dto.response.UserInfoMappingDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -34,7 +35,7 @@ public class UserController {
 
     @ApiOperation(value = "유저 정보 조회", notes = "유저 정보 조회")
     @GetMapping("/user/info")
-    public UserInfoMapping userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public UserInfoMappingDto userinfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
     }
 
