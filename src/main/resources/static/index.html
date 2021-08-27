@@ -49,7 +49,7 @@
     //alert(document.title);
     // websocket & stomp initialize
     var username = $('name').val()
-    var sock = new SockJS("/chatting");
+    var sock = new SockJS("https://gorokke.shop/chatting");
     var ws = Stomp.over(sock);
     var reconnect = 0;
     // vue.js
@@ -70,10 +70,10 @@
         },
         methods: {
             findRoom: function() {
-                axios.get('api/chat/room/'+2).then(response => { this.room = response.data; });
+                axios.get('https://gorokke.shop/api/chat/room/'+2).then(response => { this.room = response.data; });
             },
             sendMessage: function() {
-                ws.send("/pub/message", {}, JSON.stringify({type:'TALK', roomId:2, sender:"test", asd:"this is asd",message:this.message}));
+                ws.send("https://gorokke.shop/pub/message", {}, JSON.stringify({type:'TALK', roomId:2, sender:"test", asd:"this is asd",message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -87,7 +87,7 @@
         //각각 connect,subscribe 헤더
 
         ws.connect({token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjkyNzYyNzksImV4cCI6MTYyOTI5Nzg3OX0.8tVJC9cRZWwwZk_KPmRTQF-nvI0rBbrT-va_00mNnt0"}, function(frame) {
-            ws.subscribe("/sub/api/chat/rooms/"+2, function(message) {
+            ws.subscribe("https://gorokke.shop/sub/api/chat/rooms/"+2, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv)
             },{token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MjkyNzYyNzksImV4cCI6MTYyOTI5Nzg3OX0.8tVJC9cRZWwwZk_KPmRTQF-nvI0rBbrT-va_00mNnt0"});
@@ -95,7 +95,7 @@
             if(reconnect++ <= 5) {
                 setTimeout(function() {
                     console.log("connection reconnect");
-                    sock = new SockJS("/chatting");
+                    sock = new SockJS("https://gorokke.shop/chatting");
                     ws = Stomp.over(sock);
                     connect();
                 },10*1000);

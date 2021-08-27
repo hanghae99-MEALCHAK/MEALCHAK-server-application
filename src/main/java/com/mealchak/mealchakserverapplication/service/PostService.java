@@ -276,7 +276,6 @@ public class PostService {
     private static double deg2rad(double deg) {return (deg * Math.PI / 180.0);}
     private static double rad2deg(double rad) {return (rad * 180 / Math.PI);}
 
-
     // findById(postId)
     public Post getPost(Long postId) {
         Post post = postQueryRepository.findById(postId);

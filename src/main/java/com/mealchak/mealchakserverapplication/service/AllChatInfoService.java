@@ -43,4 +43,3 @@ public class AllChatInfoService {
         allChatInfo.updateLastMessageId(lastMessageId);
     }
 }
-
