@@ -1,6 +1,7 @@
-package com.mealchak.mealchakserverapplication;
+package com.mealchak.mealchakserverapplication.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
 import com.mealchak.mealchakserverapplication.controller.PostController;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
