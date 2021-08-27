@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.dto.request;
 
+import com.mealchak.mealchakserverapplication.model.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,5 @@ public class PostRequestDto {
     private String orderTime;
     private String contents;
     private String category;
+    private Post.meetingType meetingType;
 }

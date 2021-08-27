@@ -91,7 +91,7 @@ public class PostQueryRepository {
         return queryFactory.selectFrom(post)
                 .where(post.checkDeleted.eq(false))
                 .where(post.user.id.eq(userId))
-                .orderBy(post.createdAt.asc())
+                .orderBy(post.createdAt.desc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)

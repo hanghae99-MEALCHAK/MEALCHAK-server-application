@@ -12,6 +12,10 @@ import javax.persistence.*;
 @Getter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
 public class Post extends Timestamped {
+    public enum meetingType {
+        TOGETHER, SHARE, WHATEVER
+    }
+
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
@@ -58,6 +62,10 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private Long nowHeadCount;
 
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private Post.meetingType meetingType;
+
     public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
@@ -71,6 +79,7 @@ public class Post extends Timestamped {
         this.checkDeleted = false;
         this.chatRoom = chatRoom;
         this.nowHeadCount = 1L;
+        this.meetingType = requestDto.getMeetingType();
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
@@ -81,6 +90,7 @@ public class Post extends Timestamped {
         this.contents = requestDto.getContents();
         this.menu = menu;
         this.location = location;
+        this.meetingType = requestDto.getMeetingType();
     }
 
     public void updateDistance(double distance) {
