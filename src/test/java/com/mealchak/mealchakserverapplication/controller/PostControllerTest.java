@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -99,10 +100,12 @@ public class PostControllerTest {
         mvc.perform(post("/posts")
                         .content(postInfo)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
                         .principal(mockPrincipal)
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
 
     }
 

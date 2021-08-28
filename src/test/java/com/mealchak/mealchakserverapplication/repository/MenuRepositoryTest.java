@@ -38,11 +38,6 @@ class MenuRepositoryTest {
         menuRepository.save(menu1);
     }
 
-    @AfterEach
-    void done() {
-        menuRepository.deleteAll();
-    }
-
     @Test
     @DisplayName("findByCategory_중식_성공")
     void findByCategory01() {

@@ -9,29 +9,20 @@ import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryReposit
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
-import com.mealchak.mealchakserverapplication.service.AllChatInfoService;
-import com.mealchak.mealchakserverapplication.service.ChatRoomService;
-import com.mealchak.mealchakserverapplication.service.JoinRequestsService;
-import com.mealchak.mealchakserverapplication.service.PostService;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.relational.core.sql.TrueCondition;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.anyOf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -45,16 +36,11 @@ class PostServiceTest {
     private MenuRepository menuRepository;
 
     @Mock
-    private PostRepository postRepository;
-
-    @Mock
-    private PostQueryRepository postQueryRepository;;
+    private PostQueryRepository postQueryRepository;
 
     @Mock
     private AllChatInfoService allChatInfoService;
 
-    @Mock
-    private AllChatInfoQueryRepository allChatInfoQueryRepository;
 
     @Mock
     private JoinRequestsService joinRequestsService;
@@ -78,7 +64,7 @@ class PostServiceTest {
         userDetailsNull = null;
         // 사용자 존재 user01
         Location location01 = new Location("서울특별시 강남구", 37.111111, 126.111111);
-        User user01 = new User(100L,101L, "user01", "pw", "user01@test.com", "https://gorokke.shop/image/profileDefaultImg.jpg",
+        User user01 = new User(100L, 101L, "user01", "pw", "user01@test.com", "https://gorokke.shop/image/profileDefaultImg.jpg",
                 "10", "female", "comment11", 5F, location01);
         userDetails01 = new UserDetailsImpl(user01);
         // 사용자 user01 의 post01
@@ -93,17 +79,37 @@ class PostServiceTest {
                 "2021-09-01 00:00:00", "contents", "카페");
 
         // 사용자 존재 user02
-        Location location02 = new Location("부산시 사하구", 37.222222, 126.222222);
-        User user02 = new User(200L,202L, "user02", "pw", "user02@test.com", "https://gorokke.shop/image/profileDefaultImg.jpg",
-                "20", "female", "comment22", 6F, location02);
+        Location locationUser02 = new Location("부산시 사하구", 37.222222, 126.222222);
+        User user02 = new User(200L, 202L, "user02", "pw", "user02@test.com", "https://gorokke.shop/image/profileDefaultImg.jpg",
+                "20", "female", "comment22", 6F, locationUser02);
         userDetails02 = new UserDetailsImpl(user02);
         // 사용자 user01 의 post01
         Menu koreanFood = new Menu("한식", 1);
         chatRoom02 = new ChatRoom("UUID222", userDetails02.getUser());
+        Location locationPost02 = new Location("부산시 사하구", 37.222200, 126.222200);
         post02 = new Post(200L, "title", 3, "restaurant02", "2021-09-01 00:00:00",
-                "contents", true, false, chatRoom02, userDetails02.getUser(), koreanFood, location02,
-                2.00, 1L);
+                "contents", true, false, chatRoom02, userDetails02.getUser(), koreanFood, locationPost02,
+                0.003, 1L);
 
+    }
+
+    void compareAssertPostResponseDtoListAndPost01(List<PostResponseDto> results) {
+        assertThat(results.get(0).getPostId()).isEqualTo(post01.getId());
+        assertThat(results.get(0).getTitle()).isEqualTo(post01.getTitle());
+        assertThat(results.get(0).getContents()).isEqualTo(post01.getContents());
+        assertThat(results.get(0).getHeadCount()).isEqualTo(post01.getHeadCount());
+        assertThat(results.get(0).getCategory()).isEqualTo(post01.getMenu().getCategory());
+        assertThat(results.get(0).getRestaurant()).isEqualTo(post01.getRestaurant());
+        assertThat(results.get(0).getOrderTime()).isEqualTo(post01.getOrderTime());
+        assertThat(results.get(0).getAddress()).isEqualTo(post01.getLocation().getAddress());
+        assertThat(results.get(0).getDistance()).isEqualTo(post01.getDistance());
+        assertThat(results.get(0).getUserId()).isEqualTo(post01.getUser().getId());
+        assertThat(results.get(0).getUsername()).isEqualTo(post01.getUser().getUsername());
+        assertThat(results.get(0).getProfileImg()).isEqualTo(post01.getUser().getProfileImg());
+        assertThat(results.get(0).getCreatedAt()).isEqualTo(post01.getCreatedAt());
+        assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
+        assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
+        assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
     }
 
     @Test
@@ -115,7 +121,7 @@ class PostServiceTest {
 
         // then
         assertThrows(IllegalArgumentException.class,
-                () -> postService.createPost(userDetailsNull, postRequestDto, chatRoom),"로그인하지 않았습니다.");
+                () -> postService.createPost(userDetailsNull, postRequestDto, chatRoom), "로그인하지 않았습니다.");
     }
 
     @Test
@@ -141,7 +147,7 @@ class PostServiceTest {
     @DisplayName("모집글생성_사용자의_응답에_메뉴가 존재할_경우")
     public void createPostTest03() throws Exception {
         // given
-        Menu menu = new Menu(postRequestDto.getCategory(),1);
+        Menu menu = new Menu(postRequestDto.getCategory(), 1);
         Post post = new Post();
 
         // mocking
@@ -276,25 +282,10 @@ class PostServiceTest {
         // mocking
         when(postQueryRepository.findByUser_IdOrderByCreatedAtDesc(userDetails01.getUser().getId())).thenReturn(posts);
         // when
-        List<PostResponseDto> resultPostList = postService.getMyPost(userDetails01);
+        List<PostResponseDto> results = postService.getMyPost(userDetails01);
         //then
         verify(postQueryRepository).findByUser_IdOrderByCreatedAtDesc(userDetails01.getUser().getId());
-        assertThat(resultPostList.get(0).getPostId()).isEqualTo(post01.getId());
-        assertThat(resultPostList.get(0).getTitle()).isEqualTo(post01.getTitle());
-        assertThat(resultPostList.get(0).getContents()).isEqualTo(post01.getContents());
-        assertThat(resultPostList.get(0).getHeadCount()).isEqualTo(post01.getHeadCount());
-        assertThat(resultPostList.get(0).getCategory()).isEqualTo(post01.getMenu().getCategory());
-        assertThat(resultPostList.get(0).getRestaurant()).isEqualTo(post01.getRestaurant());
-        assertThat(resultPostList.get(0).getOrderTime()).isEqualTo(post01.getOrderTime());
-        assertThat(resultPostList.get(0).getAddress()).isEqualTo(post01.getLocation().getAddress());
-        assertThat(resultPostList.get(0).getDistance()).isEqualTo(post01.getDistance());
-        assertThat(resultPostList.get(0).getUserId()).isEqualTo(post01.getUser().getId());
-        assertThat(resultPostList.get(0).getUsername()).isEqualTo(post01.getUser().getUsername());
-        assertThat(resultPostList.get(0).getProfileImg()).isEqualTo(post01.getUser().getProfileImg());
-        assertThat(resultPostList.get(0).getCreatedAt()).isEqualTo(post01.getCreatedAt());
-        assertThat(resultPostList.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
-        assertThat(resultPostList.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-        assertThat(resultPostList.get(0).getValid()).isEqualTo(post01.isCheckValid());
+        compareAssertPostResponseDtoListAndPost01(results);
 
     }
 
@@ -389,7 +380,7 @@ class PostServiceTest {
         // when
         // then
         assertThrows(IllegalArgumentException.class,
-                () -> postService.updatePostDetail(post01.getId(), updateDto, userDetails01),"메뉴가 존재하지 않습니다");
+                () -> postService.updatePostDetail(post01.getId(), updateDto, userDetails01), "메뉴가 존재하지 않습니다");
     }
 
     @Test
@@ -401,7 +392,7 @@ class PostServiceTest {
         when(postQueryRepository.findById(post01.getId())).thenReturn(post01);
 
         // when
-       assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> postService.deletePost(post01.getId(), userDetails02), "삭제 권한이 없습니다.");
         //then
     }
@@ -444,23 +435,7 @@ class PostServiceTest {
         //then
         verify(postQueryRepository, times(1)).findBySearchKeywordOrderByOrderTimeAsc(keyword);
 
-        assertThat(results.get(0).getPostId()).isEqualTo(post01.getId());
-        assertThat(results.get(0).getTitle()).isEqualTo(post01.getTitle());
-        assertThat(results.get(0).getContents()).isEqualTo(post01.getContents());
-        assertThat(results.get(0).getHeadCount()).isEqualTo(post01.getHeadCount());
-        assertThat(results.get(0).getCategory()).isEqualTo(post01.getMenu().getCategory());
-        assertThat(results.get(0).getRestaurant()).isEqualTo(post01.getRestaurant());
-        assertThat(results.get(0).getOrderTime()).isEqualTo(post01.getOrderTime());
-        assertThat(results.get(0).getAddress()).isEqualTo(post01.getLocation().getAddress());
-        assertThat(results.get(0).getDistance()).isEqualTo(post01.getDistance());
-        assertThat(results.get(0).getUserId()).isEqualTo(post01.getUser().getId());
-        assertThat(results.get(0).getUsername()).isEqualTo(post01.getUser().getUsername());
-        assertThat(results.get(0).getProfileImg()).isEqualTo(post01.getUser().getProfileImg());
-        assertThat(results.get(0).getCreatedAt()).isEqualTo(post01.getCreatedAt());
-        assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
-        assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-        assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
-
+        compareAssertPostResponseDtoListAndPost01(results);
     }
 
     @Test
@@ -481,22 +456,7 @@ class PostServiceTest {
         //then
         verify(postQueryRepository, times(1)).findBySearchKeywordOrderByOrderTimeAsc(keyword);
         verify(postQueryRepository, never()).findBySearchKeyword(keyword);
-        assertThat(results.get(0).getPostId()).isEqualTo(post01.getId());
-        assertThat(results.get(0).getTitle()).isEqualTo(post01.getTitle());
-        assertThat(results.get(0).getContents()).isEqualTo(post01.getContents());
-        assertThat(results.get(0).getHeadCount()).isEqualTo(post01.getHeadCount());
-        assertThat(results.get(0).getCategory()).isEqualTo(post01.getMenu().getCategory());
-        assertThat(results.get(0).getRestaurant()).isEqualTo(post01.getRestaurant());
-        assertThat(results.get(0).getOrderTime()).isEqualTo(post01.getOrderTime());
-        assertThat(results.get(0).getAddress()).isEqualTo(post01.getLocation().getAddress());
-        assertThat(results.get(0).getDistance()).isEqualTo(post01.getDistance());
-        assertThat(results.get(0).getUserId()).isEqualTo(post01.getUser().getId());
-        assertThat(results.get(0).getUsername()).isEqualTo(post01.getUser().getUsername());
-        assertThat(results.get(0).getProfileImg()).isEqualTo(post01.getUser().getProfileImg());
-        assertThat(results.get(0).getCreatedAt()).isEqualTo(post01.getCreatedAt());
-        assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
-        assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-        assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
+        compareAssertPostResponseDtoListAndPost01(results);
 
     }
 
@@ -518,22 +478,7 @@ class PostServiceTest {
         //then
         verify(postQueryRepository, times(1)).findBySearchKeyword(keyword);
         verify(postQueryRepository, never()).findBySearchKeywordOrderByOrderTimeAsc(keyword);
-        assertThat(results.get(0).getPostId()).isEqualTo(post01.getId());
-        assertThat(results.get(0).getTitle()).isEqualTo(post01.getTitle());
-        assertThat(results.get(0).getContents()).isEqualTo(post01.getContents());
-        assertThat(results.get(0).getHeadCount()).isEqualTo(post01.getHeadCount());
-        assertThat(results.get(0).getCategory()).isEqualTo(post01.getMenu().getCategory());
-        assertThat(results.get(0).getRestaurant()).isEqualTo(post01.getRestaurant());
-        assertThat(results.get(0).getOrderTime()).isEqualTo(post01.getOrderTime());
-        assertThat(results.get(0).getAddress()).isEqualTo(post01.getLocation().getAddress());
-        assertThat(results.get(0).getDistance()).isEqualTo(post01.getDistance());
-        assertThat(results.get(0).getUserId()).isEqualTo(post01.getUser().getId());
-        assertThat(results.get(0).getUsername()).isEqualTo(post01.getUser().getUsername());
-        assertThat(results.get(0).getProfileImg()).isEqualTo(post01.getUser().getProfileImg());
-        assertThat(results.get(0).getCreatedAt()).isEqualTo(post01.getCreatedAt());
-        assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
-        assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-        assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
+        compareAssertPostResponseDtoListAndPost01(results);
 
     }
 
@@ -555,16 +500,275 @@ class PostServiceTest {
         verify(postQueryRepository, never()).findBySearchKeyword(keyword);
         verify(postQueryRepository, never()).findBySearchKeywordOrderByOrderTimeAsc(keyword);
         assertThrows(IllegalArgumentException.class,
-                () ->  postService.getSearch(userDetails01, keyword, sort), "잘못된 sort 요청입니다.");
+                () -> postService.getSearch(userDetails01, keyword, sort), "잘못된 sort 요청입니다.");
     }
 
     @Test
-    @DisplayName("")
-    public void getPostByUserDist() throws Exception {
+    @DisplayName("유저근처_검색시_미로그인_상태일때_getAllPst가_실행됨")
+    public void getPostByUserDist01() throws Exception {
         // given
+        String category = "전체";
+        String sort = "recent";
 
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findAllOrderByOrderTimeAsc()).thenReturn(posts);
+
+        // when
+        List<PostResponseDto> results = postService.getPostByUserDist(userDetailsNull, category, sort);
+        //then
+        compareAssertPostResponseDtoListAndPost01(results);
+
+    }
+
+    @Test
+    @DisplayName("유저근처_검색시_sort가_recent일때_getAllPostSortByRecent가_실행됨")
+    public void getPostByUserDist02() throws Exception {
+        // given
+        String category = "전체";
+        String sort = "recent";
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(posts);
+
+        // when
+        List<PostResponseDto> results = postService.getPostByUserDist(userDetails01, category, sort);
+        //then
+        verify(postQueryRepository, times(1)).findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+        compareAssertPostResponseDtoListAndPost01(results);
+
+    }
+
+    @Test
+    @DisplayName("유저근처_검색시_sort가_nearBy일때_getPostByCategory가_실행됨")
+    public void getPostByUserDist03() throws Exception {
+        // given
+        String category = "전체";
+        String sort = "nearBy";
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(posts);
+
+        // when
+        List<PostResponseDto> results = postService.getPostByUserDist(userDetails01, category, sort);
+        //then
+        verify(postQueryRepository, times(1)).findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+        compareAssertPostResponseDtoListAndPost01(results);
+    }
+
+    @Test
+    @DisplayName("유저근처_검색시_sort가_잘못된_요청일때_IAE발생")
+    public void getPostByUserDist04() throws Exception {
+        // given
+        String category = "전체";
+        String sort = "aaaaa";
+
+        // mocking
+
+        // when
+        assertThrows(IllegalArgumentException.class,
+                () -> postService.getPostByUserDist(userDetails01, category, sort), "잘못된 sort 요청입니다.");
+        //then
+    }
+
+    @Test
+    @DisplayName("비회원검색")
+    public void getSearchPost01() throws Exception {
+        // given
+        String keyword = "keyword";
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(keyword)).thenReturn(posts);
+        // when
+        List<PostResponseDto> results = postService.getSearchPost(keyword);
+        //then
+        verify(postQueryRepository, times(1)).findBySearchKeywordOrderByOrderTimeAsc(keyword);
+        compareAssertPostResponseDtoListAndPost01(results);
+    }
+
+    @Test
+    @DisplayName("회원검색(모집_마감임박순)")
+    public void getSearchPostBySortByRecent() throws Exception {
+        // given
+        String keyword = "keyword";
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findBySearchKeywordOrderByOrderTimeAsc(keyword)).thenReturn(posts);
+        // when
+        List<PostResponseDto> results = postService.getSearchPostBySortByRecent(keyword, userDetails01.getUser());
+        //then
+        verify(postQueryRepository, times(1)).findBySearchKeywordOrderByOrderTimeAsc(keyword);
+        compareAssertPostResponseDtoListAndPost01(results);
+    }
+
+    @Test
+    @DisplayName("회원검색(거리순)")
+    public void getSearchPostByUserDist() throws Exception {
+        // given
+        String keyword = "keyword";
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // mocking
+        when(postQueryRepository.findBySearchKeyword(keyword)).thenReturn(posts);
+        // when
+        List<PostResponseDto> results = postService.getSearchPostByUserDist(keyword, userDetails01.getUser());
+        //then
+        verify(postQueryRepository, times(1)).findBySearchKeyword(keyword);
+        compareAssertPostResponseDtoListAndPost01(results);
+    }
+
+    @Test
+    @DisplayName("거리순_모집글_결과리스트_내려주기")
+    public void getNearByResult() throws Exception {
+        // given
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+        // when
+        List<PostResponseDto> results = postService.getNearByResult(posts, userDetails01.getUser());
+        //then
+        compareAssertPostResponseDtoListAndPost01(results);
+    }
+
+    @Test
+    @DisplayName("모집글_최신순_조회")
+    public void getAllPostSortByRecent() throws Exception {
+        // given
+        String category = "전체";
+        User user = userDetails01.getUser();
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+
+        // mocking
+        when(postQueryRepository.findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(posts);
+        // when
+        List<PostResponseDto> results = postService.getAllPostSortByRecent(user,
+                user.getLocation().getLatitude(), user.getLocation().getLatitude(), category);
+        //then
+        verify(postQueryRepository, times(1)).findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+        compareAssertPostResponseDtoListAndPost01(results);
+
+    }
+
+    @Test
+    @DisplayName("게시글에_거리_표시하기")
+    public void getPostsDistance() throws Exception {
+        // given
+        User user = userDetails01.getUser();
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+
+        // when
+        List<PostResponseDto> results = ReflectionTestUtils.invokeMethod(postService, "getPostsDistance", user, posts);
+
+        //then
+        compareAssertPostResponseDtoListAndPost01(results);
+
+    }
+
+    @Test
+    @DisplayName("사용자_반경_3Km_게시물_조회시_category가_전체일때")
+    public void getPostByCategory01() throws Exception {
+        // given
+        String category = "전체";
+        Location location =  userDetails01.getUser().getLocation();
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+
+        // mocking
+        when(postQueryRepository.findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+                .thenReturn(posts);
+        // when
+        postService.getPostByCategory(category, location.getLatitude(), location.getLongitude());
+        //then
+        verify(postQueryRepository, times(1)).findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+        verify(postQueryRepository, never()).findByLocationAndCategoryOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyString());
+
+    }
+
+
+    @Test
+    @DisplayName("사용자_반경_3Km_게시물_조회시_category가_전체이외_일때")
+    public void getPostByCategory02() throws Exception {
+        // given
+        String category = "기타";
+        Location location =  userDetails01.getUser().getLocation();
+
+        List<Post> posts = new ArrayList<>();
+        posts.add(post01);
+
+        // mocking
+        when(postQueryRepository.findByLocationAndCategoryOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyString()))
+                .thenReturn(posts);
+        // when
+        postService.getPostByCategory(category, location.getLatitude(), location.getLongitude());
+        //then
+        verify(postQueryRepository, times(1)).findByLocationAndCategoryOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyString());
+        verify(postQueryRepository, never()).findByLocationOrderByOrderTimeAsc(anyDouble(), anyDouble(), anyDouble(), anyDouble());
+
+    }
+
+    @Test
+    @DisplayName("거리_계산_로직")
+    public void getDist() throws Exception {
+        // given
+        User user = userDetails02.getUser();
+
+        // when
+        Double result = ReflectionTestUtils.invokeMethod(postService, "getDist", user, post02);
+
+        //then
+        assertThat(result).isEqualTo(post02.getDistance());
+    }
+
+    @Test
+    @DisplayName("post_찾지_못했을때_IAE발생")
+    public void getPost01() throws Exception {
+        // given
+        when(postQueryRepository.findById(post01.getId())).thenReturn(null);
         // when
 
         //then
+        assertThrows(IllegalArgumentException.class,
+                () -> postService.getPost(post01.getId()), "존재하지 않는 게시글입니다.");
+    }
+
+    @Test
+    @DisplayName("post_찾기_성공")
+    public void getPost02() throws Exception {
+        // given
+        when(postQueryRepository.findById(post01.getId())).thenReturn(post01);
+        // when
+        Post post = postService.getPost(post01.getId());
+        //then
+        verify(postQueryRepository, times(1)).findById(post01.getId());
+        assertThat(post.getId()).isEqualTo(post01.getId());
+        assertThat(post.getTitle()).isEqualTo(post01.getTitle());
+        assertThat(post.getHeadCount()).isEqualTo(post01.getHeadCount());
+        assertThat(post.getRestaurant()).isEqualTo(post01.getRestaurant());
+        assertThat(post.getOrderTime()).isEqualTo(post01.getOrderTime());
+        assertThat(post.getContents()).isEqualTo(post01.getContents());
+        assertThat(post.isCheckValid()).isEqualTo(post01.isCheckValid());
+        assertThat(post.isCheckDeleted()).isEqualTo(post01.isCheckDeleted());
+        assertThat(post.getChatRoom()).isEqualTo(post01.getChatRoom());
+        assertThat(post.getUser()).isEqualTo(post01.getUser());
+        assertThat(post.getMenu()).isEqualTo(post01.getMenu());
+        assertThat(post.getLocation()).isEqualTo(post01.getLocation());
+        assertThat(post.getDistance()).isEqualTo(post01.getDistance());
+        assertThat(post.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
+
     }
 }

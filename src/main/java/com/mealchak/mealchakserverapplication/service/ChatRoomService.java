@@ -134,7 +134,6 @@ public class ChatRoomService {
         } else if (isChatRoomOwner(post, userDetails)) {
             deleteAllChatInfo(roomId, userDetails);
             // 일반 유저일 때 채팅방 나가기
-
         } else {
             AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
             allChatInfoRepository.delete(allChatInfo);
