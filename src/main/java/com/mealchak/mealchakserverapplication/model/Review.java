@@ -2,11 +2,13 @@ package com.mealchak.mealchakserverapplication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mealchak.mealchakserverapplication.dto.request.ReviewRequestDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@AllArgsConstructor
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.

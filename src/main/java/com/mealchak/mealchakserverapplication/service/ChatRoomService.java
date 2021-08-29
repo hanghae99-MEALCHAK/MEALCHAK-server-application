@@ -4,6 +4,7 @@ import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseD
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class ChatRoomService {
 
     private final AllChatInfoQueryRepository allChatInfoQueryRepository;

@@ -1,9 +1,11 @@
 package com.mealchak.mealchakserverapplication.dto.response;
 
 import com.mealchak.mealchakserverapplication.model.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class UserInfoResponseDto {
     private final String username;
     private final String comment;

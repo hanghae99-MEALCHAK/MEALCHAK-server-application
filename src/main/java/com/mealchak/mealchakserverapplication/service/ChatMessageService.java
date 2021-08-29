@@ -38,19 +38,19 @@ public class ChatMessageService {
         if (ChatMessage.MessageType.ENTER.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 들어왔어요.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
+        // 채팅방 퇴장시
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessageRequestDto.getType())) {
             chatMessageRequestDto.setMessage(chatMessageRequestDto.getSender().getUsername() + "님이 자리를 비웠어요.");
             chatMessageRequestDto.setSender(chatMessageRequestDto.getSender());
-            // 채팅방 퇴장시
+        // 채팅방 강퇴시
         } else if (ChatMessage.MessageType.BAN.equals(chatMessageRequestDto.getType())){
             Long userId = Long.parseLong(chatMessageRequestDto.getMessage());
             Long roomId = Long.parseLong(chatMessageRequestDto.getRoomId());
             banUserListService.banUser(userId,roomId);
-            // 채팅방 강퇴시
+        // 채팅방 폭파시
         }else if (ChatMessage.MessageType.BREAK.equals(chatMessageRequestDto.getType())) {
             Long roomId = Long.parseLong(chatMessageRequestDto.getRoomId());
             chatRoomService.updateChatValid(roomId);
-            // 채팅방 폭파시
         }
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageRequestDto);
     }
