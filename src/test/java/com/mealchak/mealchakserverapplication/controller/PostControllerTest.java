@@ -3,7 +3,6 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.controller.PostController;
 import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
@@ -24,26 +23,18 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
@@ -65,6 +56,9 @@ public class PostControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private WebApplicationContext context;
+
     @MockBean
     private PostService postService;
 
@@ -73,9 +67,6 @@ public class PostControllerTest {
 
     @MockBean
     private UserRoomService userRoomService;
-
-    @Autowired
-    private WebApplicationContext context;
 
     private UserDetailsImpl testUserDetails;
     private Post post;
