@@ -29,6 +29,9 @@ import java.util.Collections;
 
 import static com.mealchak.mealchakserverapplication.model.Review.MannerType.BEST;
 import static com.mealchak.mealchakserverapplication.model.Review.MannerType.GOOD;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -61,6 +64,9 @@ class ReviewControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+    private User user;
+    private User writer;
+    private UserDetailsImpl testUserDetails;
 
     @BeforeEach
     public void setup() {
@@ -69,9 +75,11 @@ class ReviewControllerTest {
                 .build();
 
         // Create mock principal for the test user
-        User testUser = new User(102L, 103L, "user1", "password", "test@test.com",
+        user = new User(102L, 103L, "user1", "password", "test@test.com",
                 "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
+        writer = new User(100L, 101L, "user1", "password", "test@test.com",
+                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
+        testUserDetails = new UserDetailsImpl(user);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
     }
 
@@ -94,21 +102,18 @@ class ReviewControllerTest {
     @Test
     @DisplayName("리뷰 조회")
     public void getReview() throws Exception {
-        User user = new User(102L, 103L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        User writer = new User(100L, 101L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
-        Review review = new Review(90L, "review_test", user, writer, GOOD);
+
+        mvc.perform(get("/review")
+                        .principal(mockPrincipal))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(reviewService, atLeastOnce()).getReview(any());
     }
 
     @Test
     @DisplayName("리뷰 수정")
     public void updateReview() throws Exception {
-        User user = new User(102L, 103L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        User writer = new User(100L, 101L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
         ReviewRequestDto requestDto = new ReviewRequestDto("review_test_update", GOOD);
 
         String reviewInfo = objectMapper.writeValueAsString(requestDto);
@@ -125,13 +130,9 @@ class ReviewControllerTest {
     @Test
     @DisplayName("리뷰 삭제")
     public void deleteReview() throws Exception {
-        User user = new User(102L, 103L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        User writer = new User(100L, 101L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
         Review review = new Review(90L, "review_test", user, writer, BEST);
 
-        mvc.perform(delete("/review/{reviewId}", 90)
+        mvc.perform(delete("/review/{reviewId}", review.getId())
                         .principal(mockPrincipal)
                         .characterEncoding("utf-8"))
                 .andExpect(status().isOk())

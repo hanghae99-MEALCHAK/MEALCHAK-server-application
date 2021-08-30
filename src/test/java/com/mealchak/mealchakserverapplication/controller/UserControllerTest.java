@@ -3,8 +3,8 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
+import com.mealchak.mealchakserverapplication.dto.request.SignupRequestDto;
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
-import com.mealchak.mealchakserverapplication.dto.response.HeaderDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -32,9 +32,9 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
@@ -63,6 +63,8 @@ class UserControllerTest {
     private WebApplicationContext context;
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+    private User testUser;
+    private UserDetailsImpl testUserDetails;
 
     @BeforeEach
     public void setup() {
@@ -70,26 +72,31 @@ class UserControllerTest {
                 .apply(springSecurity(new MockSpringSecurityFilter()))
                 .build();
 
-        // Create mock principal for the test user
-        User testUser = new User(102L, 103L, "user1", "password", "test@test.com",
+
+        testUser = new User(102L, 103L, "user1", "password", "test@test.com",
                 "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
+        testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
     }
 
     @Test
     @DisplayName("kakao소셜 로그인")
     public void kakaoLogin() throws Exception {
-        String code = "kakaoLogin_test";
-        HeaderDto dto = new HeaderDto();
+        mvc.perform(get("/user/kakao/callback")
+                        .param("code", "code"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+        verify(userService, atLeastOnce()).kakaoLogin("code");
     }
 
     @Test
     @DisplayName("유저 정보 조회")
     public void userInfo() throws Exception {
-        User user = new User(100L, 101L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+        mvc.perform(get("/user/info")
+                        .principal(mockPrincipal))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+        verify(userService, atLeastOnce()).userInfo(testUserDetails);
     }
 
     @Test
@@ -102,7 +109,7 @@ class UserControllerTest {
 
         Location location = new Location(updateDto);
 
-        when(userService.updateUserLocation(any(),any())).thenReturn(location);
+        when(userService.updateUserLocation(any(), any())).thenReturn(location);
 
 
         mvc.perform(put("/user/location")
@@ -126,8 +133,7 @@ class UserControllerTest {
         String profileImg = "test_img";
         String age = "20대";
         String gender = "남성";
-        UserInfoResponseDto responseDto = new UserInfoResponseDto(username,comment,profileImg,age,gender);
-
+        UserInfoResponseDto responseDto = new UserInfoResponseDto(username, comment, profileImg, age, gender);
 
 
         when(userService.updateUserInfo(any(), any(), any(), any(), any(), any())).thenReturn(responseDto);
@@ -149,6 +155,44 @@ class UserControllerTest {
     @Test
     @DisplayName("타 유저 정보 조회")
     public void getOtherUserInfo() throws Exception {
-        Long userId = 10L;
+        mvc.perform(get("/userInfo/{userId}", testUser.getId())
+                        .principal(mockPrincipal))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+        verify(userService, atLeastOnce()).getOtherUserInfo(testUser.getId());
+    }
+
+    @Test
+    @DisplayName("로그인 요청")
+    public void login() throws Exception {
+        String username = "test";
+        String password = "test_password";
+        SignupRequestDto dto = new SignupRequestDto(username, password);
+        mvc.perform(post("/user/login")
+                        .content(objectMapper.writeValueAsString(dto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .principal(mockPrincipal)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        verify(userService, atLeastOnce()).login(refEq(dto));
+    }
+
+    @Test
+    @DisplayName("회원 가입 요청")
+    public void registerUser() throws Exception {
+        String username = "test";
+        String password = "test_password";
+        SignupRequestDto dto = new SignupRequestDto(username, password);
+        mvc.perform(post("/user/signup")
+                        .content(objectMapper.writeValueAsString(dto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .principal(mockPrincipal)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        verify(userService, atLeastOnce()).registerUser(refEq(dto));
     }
 }

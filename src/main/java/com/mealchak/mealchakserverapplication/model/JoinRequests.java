@@ -1,5 +1,6 @@
 package com.mealchak.mealchakserverapplication.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class JoinRequests {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
