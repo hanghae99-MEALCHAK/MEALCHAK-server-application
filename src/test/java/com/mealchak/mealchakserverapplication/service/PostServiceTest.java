@@ -48,6 +48,9 @@ class PostServiceTest {
     @Mock
     private ChatRoomService chatRoomService;
 
+    @Mock
+    private PostRepository postRepository;
+
     private UserDetailsImpl userDetailsNull;
     private UserDetailsImpl userDetails01;
     private ChatRoom chatRoom01;
@@ -305,7 +308,7 @@ class PostServiceTest {
         verify(postQueryRepository, times(1)).findByIdAndUserId(post01.getId(), userDetails01.getUser().getId());
         verify(menuRepository, never()).findByCategory(updateDto.getCategory());
 
-        assertThat(post01.getMenu().getCount()).isEqualTo(2);
+        assertThat(post01.getMenu().getCount()).isEqualTo(1);
         assertThat(post01.getMenu().getCategory()).isEqualTo(updateDto.getCategory());
 
         assertThat(postResponseDto.getPostId()).isEqualTo(post01.getId());

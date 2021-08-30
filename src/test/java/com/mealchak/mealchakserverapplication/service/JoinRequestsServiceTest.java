@@ -384,13 +384,13 @@ class JoinRequestsServiceTest {
         AllChatInfo allChatInfo = new AllChatInfo(userDetails02.getUser(), chatRoom);
         allChatInfos.add(allChatInfo);
         // mocking
-        when(allChatInfoQueryRepository.findAllByUserIdOrderByIdDesc(userDetails01.getUser().getId()))
+        when(allChatInfoQueryRepository.findAllByUserIdOrderByIdDesc(userDetails02.getUser().getId()))
                 .thenReturn(allChatInfos);
         // when
         Boolean result = joinRequestsService.checkDuplicate(userDetails02.getUser(), post.getId());
         //then
         verify(allChatInfoQueryRepository, times(1))
-                .findAllByUserIdOrderByIdDesc(userDetails01.getUser().getId());
+                .findAllByUserIdOrderByIdDesc(userDetails02.getUser().getId());
         assertThat(result).isEqualTo(true);
     }
 

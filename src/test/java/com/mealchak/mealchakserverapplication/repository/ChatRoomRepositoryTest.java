@@ -1,15 +1,10 @@
 package com.mealchak.mealchakserverapplication.repository;
 
-import com.mealchak.mealchakserverapplication.dto.request.PostRequestDto;
 import com.mealchak.mealchakserverapplication.model.*;
-import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
