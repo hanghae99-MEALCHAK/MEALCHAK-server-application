@@ -19,4 +19,5 @@ public class PostRequestDto {
     private String contents;
     private String category;
     private Post.meetingType meetingType;
+    private String placeUrl;
 }

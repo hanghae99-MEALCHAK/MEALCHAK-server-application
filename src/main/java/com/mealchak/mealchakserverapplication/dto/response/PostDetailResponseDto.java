@@ -30,6 +30,7 @@ public class PostDetailResponseDto {
     private final Long nowHeadCount;
     private final List<User> userList;
     private final Post.meetingType meetingType;
+    private final String placeUrl;
 
     public PostDetailResponseDto(Post post, List<User> userList) {
         this.postId = post.getId();
@@ -51,5 +52,6 @@ public class PostDetailResponseDto {
         this.nowHeadCount = post.getNowHeadCount();
         this.userList = userList;
         this.meetingType = post.getMeetingType();
+        this.placeUrl = post.getPlaceUrl();
     }
 }

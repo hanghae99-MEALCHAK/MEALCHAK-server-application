@@ -66,6 +66,9 @@ public class Post extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private Post.meetingType meetingType;
 
+    @Column(nullable = false)
+    private String placeUrl;
+
     public Post(PostRequestDto requestDto, User user, Menu menu, Location location, ChatRoom chatRoom) {
         this.title = requestDto.getTitle();
         this.headCount = requestDto.getHeadCount();
@@ -80,6 +83,7 @@ public class Post extends Timestamped {
         this.chatRoom = chatRoom;
         this.nowHeadCount = 1L;
         this.meetingType = requestDto.getMeetingType();
+        this.placeUrl = requestDto.getPlaceUrl();
     }
 
     public void update(PostRequestDto requestDto, Menu menu, Location location) {
@@ -91,6 +95,7 @@ public class Post extends Timestamped {
         this.menu = menu;
         this.location = location;
         this.meetingType = requestDto.getMeetingType();
+        this.placeUrl = requestDto.getPlaceUrl();
     }
 
     public void updateDistance(double distance) {
