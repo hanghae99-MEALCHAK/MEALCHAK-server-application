@@ -20,12 +20,14 @@ public class UserInfoMappingDto {
     private String age;
     private String gender;
     private float mannerScore;
+    private double longitude;
+    private double latitude;
 
     private boolean newMessage;
     private boolean newJoinRequest;
 
     public UserInfoMappingDto(UserInfoMapping userInfoMapping,boolean newMessage,boolean newJoinRequest){
-        this.address = userInfoMapping.getAddress();
+        this.address = userInfoMapping.getLocation().getAddress();
         this.id = userInfoMapping.getId();
         this.comment = userInfoMapping.getComment();
         this.username = userInfoMapping.getUsername();
@@ -35,5 +37,7 @@ public class UserInfoMappingDto {
         this.mannerScore = userInfoMapping.getMannerScore();
         this.newJoinRequest = newJoinRequest;
         this.newMessage = newMessage;
+        this.longitude = userInfoMapping.getLocation().getLongitude();
+        this.latitude = userInfoMapping.getLocation().getLatitude();
     }
 }

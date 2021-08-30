@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
 import com.mealchak.mealchakserverapplication.model.ChatRoom;
-import com.mealchak.mealchakserverapplication.model.Post;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.AllChatInfoService;
@@ -26,7 +25,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.security.Principal;
 import java.util.Collections;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,37 +70,32 @@ class AllChatInfoControllerTest {
         User testUser = new User("test-username", "test-pwd");
         testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
-
-        Post post = new Post();
-        chatRoom = new ChatRoom(111L, "UUID", testUserDetails.getUser().getId(), true, post);
-
     }
 
     @Test
     @DisplayName("채팅방_유저목록_불러오기")
     void getUser() throws Exception {
 
-        mvc.perform(get("/chat/user/{roomId}", chatRoom.getId())
+        mvc.perform(get("/chat/user/{roomId}", 100L)
                         .principal(mockPrincipal)
                 )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(allChatInfoService, times(1)).getUser(anyLong());
+        verify(allChatInfoService, times(1)).getUser(100L);
     }
 
     @Test
     @DisplayName("채팅방_목록_삭제하기")
     void deleteAllChatInfo() throws Exception {
 
-        mvc.perform(delete("/chat/user/{roomId}", chatRoom.getId())
+        mvc.perform(delete("/chat/user/{roomId}", 100L)
                         .principal(mockPrincipal)
                 )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(allChatInfoService, times(1)).deleteAllChatInfo(anyLong(), any());
+        verify(allChatInfoService, times(1)).deleteAllChatInfo(100L, testUserDetails);
+
     }
-
-
 }

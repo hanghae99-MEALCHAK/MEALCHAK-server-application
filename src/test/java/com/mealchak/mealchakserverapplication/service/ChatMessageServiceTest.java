@@ -57,12 +57,6 @@ class ChatMessageServiceTest {
     private PostQueryRepository postQueryRepository;
 
     @Test
-    @DisplayName("채팅방 ID 불러오기")
-    public void getRoomId() {
-
-    }
-
-    @Test
     @DisplayName("채팅방 입장")
     public void sendChatMessage_ENTER() {
         // given
@@ -114,7 +108,7 @@ class ChatMessageServiceTest {
         Location location = new Location("서울 강남구", 123.123, 123.123);
         ChatRoom chatRoom = new ChatRoom(20L, "2f48f241-9d64-4d16-bf56-70b9d4e0e79a", user.getId(), true, null);
         Post post = new Post(10L, "test_chatMessage", 4, "testRestaurant", "2021-11-21 11:21:00",
-                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L);
+                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE);
         chatRoom.setPost(post);
         ChatMessageRequestDto requestDto = new ChatMessageRequestDto(BAN, "20", user1.getId(), "102");
         AllChatInfo allChatInfo = new AllChatInfo(50L, user1, chatRoom, 102L);
@@ -150,39 +144,33 @@ class ChatMessageServiceTest {
         Location location = new Location("서울 강남구", 123.123, 123.123);
         ChatRoom chatRoom = new ChatRoom(20L, "2f48f241-9d64-4d16-bf56-70b9d4e0e79a", user.getId(), true, null);
         Post post = new Post(10L, "test_chatMessage", 4, "testRestaurant", "2021-11-21 11:21:00",
-                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L);
+                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE);
         chatRoom.setPost(post);
         ChatMessageRequestDto requestDto = new ChatMessageRequestDto(BREAK, "20", user.getId(), "test_sendMessage");
         ChatMessage chatMessage = new ChatMessage(140L, requestDto.getType(), requestDto.getRoomId(),
                 requestDto.getMessage(), userService.getUser(requestDto.getSenderId()));
 
         // mocking
-        ChatRoomService chatRoomService = new ChatRoomService(allChatInfoQueryRepository, hashOpsEnterInfo, hashOpsUserInfo, chatRoomRepository, allChatInfoRepository, userRepository, chatMessageQueryRepository, postQueryRepository);
+        ChatRoomService chatRoomService = new ChatRoomService(allChatInfoQueryRepository, chatRoomRepository, allChatInfoRepository, userRepository, chatMessageQueryRepository, postQueryRepository);
         when(chatRoomRepository.findById(chatRoom.getId())).thenReturn(Optional.of(chatRoom));
 
         // when
         chatMessageService.sendChatMessage(chatMessage);
         chatRoomService.updateChatValid(chatRoom.getId());
+        chatRoom.updatechatValid(false);
 
         // then
         assertFalse(chatRoom.isChatValid());
-        verify(chatRoomRepository, atLeastOnce()).findById(Long.parseLong(requestDto.getRoomId()));
+        verify(chatRoomRepository, atLeastOnce()).findById(chatRoom.getId());
     }
 
     @Test
     @DisplayName("채팅방 메세지 불러오기")
     public void getChatMessageByRoomId() {
-        // given
-        User user = new User(100L, 101L, "user1", "password", "test@test.com",
-                "profileImg.jpg", "30대", "남" ,"ㅎㅇ", 50f, null);
-        Menu menu = new Menu(30L, "떡볶이", "testImgUrl", 1);
-        Location location = new Location("서울 강남구", 123.123, 123.123);
-        ChatRoom chatRoom = new ChatRoom(20L, "2f48f241-9d64-4d16-bf56-70b9d4e0e79a", user.getId(), true, null);
-        Post post = new Post(10L, "test_chatMessage", 4, "testRestaurant", "2021-11-21 11:21:00",
-                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L);
-        chatRoom.setPost(post);
-        ChatMessageRequestDto requestDto = new ChatMessageRequestDto(BREAK, "20", user.getId(), "test_sendMessage");
-        ChatMessage chatMessage = new ChatMessage(140L, requestDto.getType(), requestDto.getRoomId(),
-                requestDto.getMessage(), userService.getUser(requestDto.getSenderId()));
+    }
+
+    @Test
+    @DisplayName("채팅방 ID 불러오기")
+    public void getRoomId() {
     }
 }

@@ -13,11 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static com.mealchak.mealchakserverapplication.model.Review.MannerType.*;
+import static com.mealchak.mealchakserverapplication.model.Review.MannerType.BEST;
+import static com.mealchak.mealchakserverapplication.model.Review.MannerType.GOOD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -61,36 +60,6 @@ class ReviewServiceTest{
         }
 
         @Test
-        @DisplayName("리뷰 불러오기")
-        public void getReview() {
-                // given
-                User user1 = new User(100L, 101L, "user1", "password", "test@test.com",
-                        "profileImg.jpg", "30대", "남" ,"ㅎㅇ", 50f, null);
-                User user2 = new User(102L, 103L, "user2", "password", "test@test.com",
-                        "profileImg.jpg", "30대", "남" ,"ㅎㅇ", 50f, null);
-                User user3 = new User(104L, 105L, "user2", "password", "test@test.com",
-                        "profileImg.jpg", "30대", "남" ,"ㅎㅇ", 50f, null);
-                User user4 = new User(106L, 107L, "user2", "password", "test@test.com",
-                        "profileImg.jpg", "30대", "남" ,"ㅎㅇ", 50f, null);
-
-                Review review1 = new Review(108L,"review_test_1", user1, user2, GOOD);
-                Review review2 = new Review(109L, "review_test_2", user1, user3, BAD);
-                Review review3 = new Review(110L, "review_test_3", user1, user4, BEST);
-                List<Review> reviewList = new ArrayList<>();
-                reviewList.add(review1);
-                reviewList.add(review2);
-                reviewList.add(review3);
-
-                // mocking
-//                when(reviewRepository.findAllByUserIdOrderByCreatedAtDesc(user1.getId(), ReviewListMapping.class))
-//                        .thenReturn(Optional.of(reviewList));
-
-                // when
-
-                // then
-                }
-
-        @Test
         @DisplayName("리뷰 수정하기")
         public void updateReview() {
                 // given
@@ -129,5 +98,20 @@ class ReviewServiceTest{
 
                 // then
                 verify(reviewRepository, atLeastOnce()).deleteByIdAndWriter_Id(review1.getId(), writer1.getUser().getId());
+        }
+
+        @Test
+        @DisplayName("리뷰 작성, 수정시 유저 mannerScore 변동")
+        public void increaseMannerScore() {
+        }
+
+        @Test
+        @DisplayName("리뷰 수정시 유저 mannerScore 변동 취소")
+        public void devreaseMannerScore() {
+        }
+
+        @Test
+        @DisplayName("리뷰 불러오기")
+        public void getReview() {
         }
 }

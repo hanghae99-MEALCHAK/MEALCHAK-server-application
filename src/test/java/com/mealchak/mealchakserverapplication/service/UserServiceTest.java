@@ -1,6 +1,7 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.request.UserLocationUpdateDto;
+import com.mealchak.mealchakserverapplication.dto.response.OtherUserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoResponseDto;
 import com.mealchak.mealchakserverapplication.jwt.JwtTokenProvider;
 import com.mealchak.mealchakserverapplication.model.Location;
@@ -69,12 +70,6 @@ class UserServiceTest {
         verify(userRepository, atLeastOnce()).findById(user.getId());
     }
 
-    @Test
-    @DisplayName("유저 정보 조회")
-    public void userInfo() {
-
-    }
-
     @Nested
     @DisplayName("유저 정보 수정 성공 케이스")
     class UpdateUserInfo_success {
@@ -82,7 +77,7 @@ class UserServiceTest {
         @DisplayName("이미지 첨부한 경우")
         public void updateUserInfo() throws Exception {
             User user = new User(100L, 101L, "테스트", "password", "test@test.com",
-                    "/image/38c1e9b2e392e80eb083f05286687462_eb5ff497-c4d6-4258-b10e-2f2ccfb8a7bbIMG_3690.jpeg", null, null, "안녕", 50f, null);
+                    "https://gorokke.shop/image/profileDefaultImg.jpg", null, null, "안녕", 50f, null);
             UserDetailsImpl userDetails = new UserDetailsImpl(user);
             String userName = "Test_Update_User_Info";
             String comment = "Test_Success";
@@ -230,7 +225,15 @@ class UserServiceTest {
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(reviewRepository.findAllByUserIdOrderByCreatedAtDesc(any(),any())).thenReturn(any());
 
-        userService.getOtherUserInfo(user.getId());
+        OtherUserInfoResponseDto result = userService.getOtherUserInfo(user.getId());
+
+        assertEquals(result.getAge(), user.getAge());
+        assertEquals(result.getUserId(), user.getId());
+        assertEquals(result.getGender(), user.getGender());
+        assertEquals(result.getComment(), user.getComment());
+        assertEquals(result.getUsername(), user.getUsername());
+        assertEquals(result.getProfileImg(), user.getProfileImg());
+        assertEquals(result.getMannerScore(), user.getMannerScore());
 
         verify(userRepository, atLeastOnce()).findById(user.getId());
         verify(reviewRepository, atLeastOnce()).findAllByUserIdOrderByCreatedAtDesc(user.getId(), ReviewListMapping.class);
@@ -250,17 +253,24 @@ class UserServiceTest {
         // then
         assertEquals("userId 가 존재하지 않습니다.", exception.getMessage());
     }
-//    @Test
-//    @DisplayName("로그인")
-//    public void login() throws Exception {
-//        User user = new User(100L, 101L, "user1", "123123123", "test@test.com",
-//                "profileImg.jpg", null, null, "ㅎㅇ", 50f, null);
-//        SignupRequestDto dto = new SignupRequestDto("user1", "123123123");
-//
-//        when(userRepository.findByUsername(dto.getUsername())).thenReturn(Optional.of(user));
-//
-//        userService.login(dto);
-//
-//        verify(userRepository, atLeastOnce()).findByUsername(dto.getUsername());
-//    }
+
+    @Test
+    @DisplayName("유저 정보 조회")
+    public void userInfo() {
+    }
+
+    @Test
+    @DisplayName("카카오 로그인")
+    public void kakaoLogin() {
+    }
+
+    @Test
+    @DisplayName("로그인")
+    public void login() {
+    }
+
+    @Test
+    @DisplayName("회원 가입")
+    public void registerUser() {
+    }
 }
