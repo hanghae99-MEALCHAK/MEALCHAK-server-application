@@ -106,14 +106,13 @@ public class PostControllerTest {
         String postInfo = objectMapper.writeValueAsString(postRequestDto);
 
         mvc.perform(post("/posts")
-                .content(postInfo)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .principal(mockPrincipal)
-        )
+                        .content(postInfo)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-
 
     }
 
@@ -124,9 +123,9 @@ public class PostControllerTest {
         when(postService.getAllPost("전체")).thenReturn(postResponseDtoList);
 
         mvc.perform(get("/posts")
-                .param("category", "전체")
-                .principal(mockPrincipal)
-        )
+                        .param("category", "전체")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -160,8 +159,8 @@ public class PostControllerTest {
         when(postService.getPostDetail(post.getId())).thenReturn(postDetailResponseDto);
 
         mvc.perform(get("/posts/{postId}", post.getId())
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(jsonPath("$.postId").value(post.getId()))
@@ -193,8 +192,8 @@ public class PostControllerTest {
         when(postService.getMyPost(testUserDetails)).thenReturn(postResponseDtoList);
 
         mvc.perform(get("/posts/myPosts")
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].postId").value(postResponseDto.getPostId()))
                 .andExpect(jsonPath("$.[0].title").value(postResponseDto.getTitle()))
@@ -230,11 +229,11 @@ public class PostControllerTest {
         String postInfo = objectMapper.writeValueAsString(postRequestDto);
 
         mvc.perform(put("/posts/{postId}", post.getId())
-                .content(postInfo)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8")
-                .principal(mockPrincipal)
-        )
+                        .content(postInfo)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print());
@@ -249,8 +248,8 @@ public class PostControllerTest {
     void getPostDelete() throws Exception {
 
         mvc.perform(delete("/posts/{postId}", post.getId())
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -264,11 +263,11 @@ public class PostControllerTest {
         when(postService.getSearch((any()), anyString(), anyString())).thenReturn(postResponseDtoList);
 
         mvc.perform(get("/search")
-                .param("keyword", "검색어")
-                .param("sort", "recent")
-                .characterEncoding("utf-8")
-                .principal(mockPrincipal)
-        )
+                        .param("keyword", "검색어")
+                        .param("sort", "recent")
+                        .characterEncoding("utf-8")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].postId").value(postResponseDto.getPostId()))
                 .andExpect(jsonPath("$.[0].title").value(postResponseDto.getTitle()))
@@ -297,10 +296,10 @@ public class PostControllerTest {
         when(postService.getPostByUserDist(any(), anyString(), anyString())).thenReturn(postResponseDtoList);
 
         mvc.perform(get("/posts/around")
-                .param("category", "전체")
-                .param("sort", "recent")
-                .principal(mockPrincipal)
-        )
+                        .param("category", "전체")
+                        .param("sort", "recent")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].postId").value(postResponseDto.getPostId()))
                 .andExpect(jsonPath("$.[0].title").value(postResponseDto.getTitle()))

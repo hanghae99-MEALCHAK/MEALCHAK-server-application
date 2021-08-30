@@ -2,8 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.5.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'jacoco'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.mealchak'
@@ -74,24 +74,8 @@ test {
     useJUnitPlatform()
 }
 
-def querydslSrcDir = "$buildDir/generated/querydsl"
-
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslSrcDir
-}
-
-sourceSets {
-    main.java.srcDirs querydslSrcDir
-}
-
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-
-compileQuerydsl{
-    delete(querydslSrcDir)
-    options.annotationProcessorPath = configurations.querydsl
+test {
+    useJUnitPlatform()
 }
 
 jacoco {
@@ -137,7 +121,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.80
+                minimum = 0.10
             }
 
             // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한한다.
@@ -150,8 +134,8 @@ jacocoTestCoverageVerification {
 
             // 커버리지 체크를 제외할 클래스들
             excludes = [
-//                    '*.test.*',
-//                    '*.Kotlin*'
+//                    '.test.',
+//                    '.Kotlin'
             ]
         }
     }
@@ -167,4 +151,24 @@ task testCoverage(type: Test) {
 
     tasks['jacocoTestReport'].mustRunAfter(tasks['test'])
     tasks['jacocoTestCoverageVerification'].mustRunAfter(tasks['jacocoTestReport'])
+}
+
+def querydslSrcDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslSrcDir
+}
+
+sourceSets {
+    main.java.srcDirs querydslSrcDir
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl{
+    delete(querydslSrcDir)
+    options.annotationProcessorPath = configurations.querydsl
 }

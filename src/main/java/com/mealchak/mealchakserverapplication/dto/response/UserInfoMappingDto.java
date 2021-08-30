@@ -1,11 +1,16 @@
 package com.mealchak.mealchakserverapplication.dto.response;
 
 import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class UserInfoMappingDto {
     private String address;
     private Long id;

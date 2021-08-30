@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
 import com.mealchak.mealchakserverapplication.dto.response.MyAwaitRequestJoinResponseDto;
-import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
@@ -30,8 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
@@ -72,13 +72,6 @@ class JoinRequestControllerTest {
         User testUser = new User("test-username", "test-pwd");
         testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
-
-//        Location location = new Location("서울특별시 강남구", 37.111111, 126.111111);
-//        Menu menu = new Menu("카페", 1);
-//        ChatRoom chatRoom = new ChatRoom("UUID111", testUserDetails.getUser());
-//        post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
-//                "contents", true, false, chatRoom, testUserDetails.getUser(), menu, location,
-//                2.00, 1L, Post.meetingType.SEPARATE);
     }
 
     @Test
@@ -87,8 +80,8 @@ class JoinRequestControllerTest {
         when(joinRequestsService.requestJoin(testUserDetails, 100L)).thenReturn("신청완료");
 
         mvc.perform(get("/posts/join/request/{postId}" ,100L)
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().string("신청완료"))
                 .andDo(MockMvcResultHandlers.print());
@@ -100,8 +93,8 @@ class JoinRequestControllerTest {
     @DisplayName("게시글 입장 신청 취소")
     void requestJoinCancel() throws Exception {
         mvc.perform(delete("/posts/join/request/{id}", 100L)
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -121,8 +114,8 @@ class JoinRequestControllerTest {
                 .thenReturn(userInfoAndPostResponseDtoList);
 
         mvc.perform(get("/posts/join/request/list")
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].joinRequestId").value(userInfoAndPostResponseDto.getJoinRequestId()))
                 .andExpect(jsonPath("$.[0].userId").value(100L))
@@ -141,9 +134,9 @@ class JoinRequestControllerTest {
 
         when(joinRequestsService.acceptJoinRequest(100L, true)).thenReturn("승인되었습니다");
         mvc.perform(get("/posts/join/request/accept/{joinRequestId}", 100L)
-                .param("accept", "true")
-                .principal(mockPrincipal)
-        )
+                        .param("accept", "true")
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().string("승인되었습니다"))
                 .andDo(MockMvcResultHandlers.print());
@@ -163,8 +156,8 @@ class JoinRequestControllerTest {
         when(joinRequestsService.myAwaitRequestJoinList(testUserDetails)).thenReturn(myAwaitRequestJoinResponseDtoList);
 
         mvc.perform(get("/posts/join/request/await")
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].joinRequestId").value(100L))
                 .andExpect(jsonPath("$.[0].postTitle").value("postTitle"))

@@ -3,8 +3,8 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
-import com.mealchak.mealchakserverapplication.model.*;
+import com.mealchak.mealchakserverapplication.model.ChatRoom;
+import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.service.AllChatInfoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +23,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
@@ -71,10 +70,6 @@ class AllChatInfoControllerTest {
         User testUser = new User("test-username", "test-pwd");
         testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
-
-//        Post post = new Post();
-//        chatRoom = new ChatRoom(111L, "UUID", testUserDetails.getUser().getId(), true, post);
-
     }
 
     @Test
@@ -82,8 +77,8 @@ class AllChatInfoControllerTest {
     void getUser() throws Exception {
 
         mvc.perform(get("/chat/user/{roomId}", 100L)
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -95,14 +90,12 @@ class AllChatInfoControllerTest {
     void deleteAllChatInfo() throws Exception {
 
         mvc.perform(delete("/chat/user/{roomId}", 100L)
-                .principal(mockPrincipal)
-        )
+                        .principal(mockPrincipal)
+                )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(allChatInfoService, times(1))
-                .deleteAllChatInfo(100L, testUserDetails);
+        verify(allChatInfoService, times(1)).deleteAllChatInfo(100L, testUserDetails);
+
     }
-
-
 }

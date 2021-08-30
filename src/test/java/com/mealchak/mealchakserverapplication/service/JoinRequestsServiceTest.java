@@ -1,17 +1,13 @@
 package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.dto.response.MyAwaitRequestJoinResponseDto;
-import com.mealchak.mealchakserverapplication.dto.response.UserInfoAndPostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.*;
-import com.mealchak.mealchakserverapplication.repository.mapping.UserInfoMapping;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,13 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.OPTIONAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JoinRequestsServiceTest {
-    
+
     @InjectMocks
     private JoinRequestsService joinRequestsService;
 
@@ -78,7 +73,7 @@ class JoinRequestsServiceTest {
                 2.00, 1L, Post.meetingType.SEPARATE);
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
 
-      joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
+        joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
 
     }
 
@@ -148,29 +143,9 @@ class JoinRequestsServiceTest {
         assertThat(result).isEqualTo("이미 속해있는 채팅방입니다");
     }
 
-//    @Test
-//    @DisplayName("신청대기리스트_불러올때_")
-//    void requestJoinList01() throws Exception {
-//        // given
-//        List<JoinRequests> joinRequestsList = new ArrayList<>();
-//        JoinRequests joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
-//        joinRequestsList.add(joinRequests);
-//
-//        // mocking
-//        when(joinRequestsRepository.findByOwnUserId(userDetails01.getUser().getId()))
-//                .thenReturn(joinRequestsList);
-//        when(userRepository.findById(joinRequests.getUserId(), UserInfoMapping.class))
-//                .thenReturn();
-//        // when
-//        List<UserInfoAndPostResponseDto> results = joinRequestsService.requestJoinList(userDetails01);
-//        //then
-//        verify(joinRequestsRepository, times(1))
-//                .findByOwnUserId(userDetails02.getUser().getId());
-//    }
-
     @Test
     @DisplayName("신청_대기_리스트")
-   void myAwaitRequestJoinList() throws Exception {
+    void myAwaitRequestJoinList() throws Exception {
         // given
         List<JoinRequests> joinRequestsList = new ArrayList<>();
         joinRequestsList.add(joinRequests);
@@ -189,7 +164,7 @@ class JoinRequestsServiceTest {
         assertThat(results.get(0).getJoinRequestId()).isEqualTo(userDetails02.getUser().getId());
         assertThat(results.get(0).getPostTitle()).isEqualTo((post.getTitle()));
     }
-    
+
     @Test
     @DisplayName("입장_신청목록_불러오기실패로_IAE발생")
     void acceptJoinRequest01() throws Exception {
@@ -327,7 +302,7 @@ class JoinRequestsServiceTest {
         when(postQueryRepository.findById(post.getId())).thenReturn(post);
         when(allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom())).thenReturn(4L);
         // when
-//        String result = joinRequestsService.acceptJoinRequest(joinRequests.getId(), true);
+
         //then
         assertThrows(IllegalArgumentException.class,
                 () -> joinRequestsService.acceptJoinRequest(joinRequests.getId(), true),
@@ -377,7 +352,7 @@ class JoinRequestsServiceTest {
     }
 
     @Test
-    @DisplayName("테이블_중복_생성_불가")
+    @DisplayName("테이블중복생성_불가")
     void checkDuplicate01() throws Exception {
         // given
         List<AllChatInfo> allChatInfos = new ArrayList<>();
@@ -481,7 +456,6 @@ class JoinRequestsServiceTest {
         assertThat(result.getLocation()).isEqualTo(post.getLocation());
         assertThat(result.getDistance()).isEqualTo(post.getDistance());
         assertThat(result.getNowHeadCount()).isEqualTo(post.getNowHeadCount());
-        assertThat(result.getMeetingType()).isEqualTo(post.getMeetingType());
 
     }
 

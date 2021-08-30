@@ -11,16 +11,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -251,7 +248,7 @@ class ChatRoomServiceTest {
         // mocking
 
         // when
-        boolean result = chatRoomService.isChatRoomOwner(post01, userDetails01);
+        boolean result = ChatRoomService.isChatRoomOwner(post01, userDetails01);
         //then
         assertThat(result).isEqualTo(true);
     }
@@ -264,17 +261,17 @@ class ChatRoomServiceTest {
         // mocking
 
         // when
-        boolean result = chatRoomService.isChatRoomOwner(post01, userDetails02);
+        boolean result = ChatRoomService.isChatRoomOwner(post01, userDetails02);
         //then
         assertThat(result).isEqualTo(false);
     }
-    
-    
+
+
     @Test
     @DisplayName("채팅방상태_true>false로_변경_성공")
     void updateChatValid01() throws Exception {
         // given
-        
+
         // mocking
         when(chatRoomRepository.findById(chatRoom01.getId())).thenReturn(Optional.of(chatRoom01));
         // when
