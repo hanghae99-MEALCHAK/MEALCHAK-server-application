@@ -1,14 +1,16 @@
-package com.mealchak.mealchakserverapplication;
+package com.mealchak.mealchakserverapplication.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.controller.PostController;
+import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
+import com.mealchak.mealchakserverapplication.service.ChatMessageService;
 import com.mealchak.mealchakserverapplication.service.ChatRoomService;
-import com.mealchak.mealchakserverapplication.service.PostService;
-import com.mealchak.mealchakserverapplication.service.UserRoomService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,16 +19,22 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
-        controllers = PostController.class,
+        controllers = ChatRoomController.class,
         excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
@@ -35,7 +43,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
         }
 )
 @MockBean(JpaMetamodelMappingContext.class)
-public class PostControllerTest {
+class ChatRoomControllerTest {
 
     private MockMvc mvc;
 
@@ -44,45 +52,53 @@ public class PostControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private PostService postService;
+    @Autowired
+    private WebApplicationContext context;
 
     @MockBean
     private ChatRoomService chatRoomService;
 
     @MockBean
-    private UserRoomService userRoomService;
+    private ChatMessageService chatMessageService;
 
-    @Autowired
-    private WebApplicationContext context;
+    private UserDetailsImpl testUserDetails;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity(new MockSpringSecurityFilter()))
                 .build();
 
         // Create mock principal for the test user
         User testUser = new User("test-username", "test-pwd");
-        UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
+        testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
+
     }
 
-//    @Test
-//    @DisplayName("포스트 생성")
-//    public void 포스트_생성() throws Exception {
-//        PostRequestDto postRequestDto = new PostRequestDto("title", 4,
-//                "서울시 강남구", 37.24352, 126.87986, "restaurant",
-//                "2021 08 11 10 00", "contents", "분식", "TOGETHER");
-//
-//        String postInfo = objectMapper.writeValueAsString(postRequestDto);
-//
-//        mvc.perform(post("/posts")
-//                        .content(postInfo)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .principal(mockPrincipal)
-//                )
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    @DisplayName("채팅방_사용자별_목록_조회")
+    void getOnesChatRoom() throws Exception {
+
+        mvc.perform(get("/chat/rooms/mine")
+                .principal(mockPrincipal)
+        )
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+        verify(chatRoomService, times(1)).getOnesChatRoom(testUserDetails.getUser());
+    }
+
+    @Test
+    @DisplayName("해당 채팅방 나가기")
+    void quitChat() throws Exception {
+        mvc.perform(delete("/chat/quit/{postId}", 100L)
+                .principal(mockPrincipal)
+        )
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        verify(chatRoomService, times(1)).quitChat(100L, testUserDetails);
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.mealchak.mealchakserverapplication;
+package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.Menu;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
