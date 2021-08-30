@@ -75,11 +75,11 @@ class PostServiceTest {
         chatRoom01 = new ChatRoom("UUID111", userDetails01.getUser());
         post01 = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom01, userDetails01.getUser(), cafe, location01,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
 
         postRequestDto = new PostRequestDto("title", 3,
                 "서울특별시 강남구", 37.111111, 126.111111, "restaurant01",
-                "2021-09-01 00:00:00", "contents", "카페");
+                "2021-09-01 00:00:00", "contents", "카페", Post.meetingType.SEPARATE);
 
         // 사용자 존재 user02
         Location locationUser02 = new Location("부산시 사하구", 37.222222, 126.222222);
@@ -92,7 +92,7 @@ class PostServiceTest {
         Location locationPost02 = new Location("부산시 사하구", 37.222200, 126.222200);
         post02 = new Post(200L, "title", 3, "restaurant02", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom02, userDetails02.getUser(), koreanFood, locationPost02,
-                0.003, 1L);
+                0.003, 1L, Post.meetingType.SEPARATE);
 
     }
 
@@ -113,6 +113,7 @@ class PostServiceTest {
         assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
+        assertThat(results.get(0).getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -210,19 +211,19 @@ class PostServiceTest {
 
     }
 
-//    @Test
-//    @DisplayName("모집글_상세_조회시_PostId가_없으면_IAE발생")
-//    public void getPostDetail01() throws Exception {
-//        // given
-//        Long postId = 100L;
-//        // mocking
-//
-//        // when
-//
-//        //then
-//        assertThrows(IllegalArgumentException.class,
-//                () -> postService.getPostDetail(postId));
-//    }
+    @Test
+    @DisplayName("모집글_상세_조회시_PostId가_없으면_IAE발생")
+    public void getPostDetail01() throws Exception {
+        // given
+
+        // mocking
+        when(postQueryRepository.findById(post01.getId())).thenReturn(null);
+        // when
+
+        //then
+        assertThrows(IllegalArgumentException.class,
+                () -> postService.getPostDetail(post01.getId()), "존재하지 않는 게시글입니다.");
+    }
 
     @Test
     @DisplayName("모집글_상세_조회")
@@ -260,6 +261,7 @@ class PostServiceTest {
         assertThat(postDetail.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postDetail.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postDetail.getUserList().size()).isEqualTo(1);
+        assertThat(postDetail.getMeetingType()).isEqualTo(post01.getMeetingType());
 
     }
 
@@ -298,7 +300,7 @@ class PostServiceTest {
         // given
         PostRequestDto updateDto = new PostRequestDto("updatetitle", 4,
                 "서울시 강남구 update", 37.24352, 126.87986, "updaterestaurant",
-                "2021-08-01 11:11:11", "updatecontents", "카페");
+                "2021-08-01 11:11:11", "updatecontents", "카페", Post.meetingType.SEPARATE);
 
         // mocking
         when(postQueryRepository.findByIdAndUserId(post01.getId(), userDetails01.getUser().getId())).thenReturn(post01);
@@ -327,6 +329,7 @@ class PostServiceTest {
         assertThat(postResponseDto.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postResponseDto.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postResponseDto.getValid()).isEqualTo(post01.isCheckValid());
+        assertThat(postResponseDto.getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -335,7 +338,7 @@ class PostServiceTest {
         // given
         PostRequestDto updateDto = new PostRequestDto("updatetitle", 4,
                 "서울시 강남구 update", 37.24352, 126.87986, "updaterestaurant",
-                "2021-08-01 11:11:11", "updatecontents", "분식");
+                "2021-08-01 11:11:11", "updatecontents", "분식", Post.meetingType.SEPARATE);
         Menu menu = new Menu("분식", 1);
 
         // mocking
@@ -366,6 +369,7 @@ class PostServiceTest {
         assertThat(postResponseDto.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postResponseDto.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postResponseDto.getValid()).isEqualTo(post01.isCheckValid());
+        assertThat(postResponseDto.getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -374,7 +378,7 @@ class PostServiceTest {
         // given
         PostRequestDto updateDto = new PostRequestDto("updatetitle", 4,
                 "서울시 강남구 update", 37.24352, 126.87986, "updaterestaurant",
-                "2021-08-01 11:11:11", "updatecontents", "분식");
+                "2021-08-01 11:11:11", "updatecontents", "분식", Post.meetingType.SEPARATE);
         Menu menu = new Menu("분식", 1);
 
         // mocking
@@ -772,6 +776,6 @@ class PostServiceTest {
         assertThat(post.getLocation()).isEqualTo(post01.getLocation());
         assertThat(post.getDistance()).isEqualTo(post01.getDistance());
         assertThat(post.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-
+        assertThat(post.getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 }

@@ -78,7 +78,7 @@ class JoinRequestControllerTest {
         ChatRoom chatRoom = new ChatRoom("UUID111", testUserDetails.getUser());
         post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom, testUserDetails.getUser(), menu, location,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
     }
 
     @Test

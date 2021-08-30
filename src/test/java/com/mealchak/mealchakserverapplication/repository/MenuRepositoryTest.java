@@ -94,12 +94,12 @@ class MenuRepositoryTest {
         assertEquals(result.get().getCount(), 1);
     }
 
-    @Test
-    @DisplayName("findByCategory_Optional_Null_반환")
-    void findByCategory08() {
-        assertThrows(NoSuchElementException.class,
-                () -> menuRepository.findByCategory("dd"));
-    }
+//    @Test
+//    @DisplayName("findByCategory_Optional_Null_반환")
+//    void findByCategory08() {
+//        assertThrows(NoSuchElementException.class,
+//                () -> menuRepository.findByCategory("dd"));
+//    }
 
     @Test
     @DisplayName("성공_테스트")

@@ -72,8 +72,8 @@ class AllChatInfoControllerTest {
         testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
 
-        Post post = new Post();
-        chatRoom = new ChatRoom(111L, "UUID", testUserDetails.getUser().getId(), true, post);
+//        Post post = new Post();
+//        chatRoom = new ChatRoom(111L, "UUID", testUserDetails.getUser().getId(), true, post);
 
     }
 
@@ -81,26 +81,27 @@ class AllChatInfoControllerTest {
     @DisplayName("채팅방_유저목록_불러오기")
     void getUser() throws Exception {
 
-        mvc.perform(get("/chat/user/{roomId}", chatRoom.getId())
+        mvc.perform(get("/chat/user/{roomId}", 100L)
                 .principal(mockPrincipal)
         )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(allChatInfoService, times(1)).getUser(anyLong());
+        verify(allChatInfoService, times(1)).getUser(100L);
     }
 
     @Test
     @DisplayName("채팅방_목록_삭제하기")
     void deleteAllChatInfo() throws Exception {
 
-        mvc.perform(delete("/chat/user/{roomId}", chatRoom.getId())
+        mvc.perform(delete("/chat/user/{roomId}", 100L)
                 .principal(mockPrincipal)
         )
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(allChatInfoService, times(1)).deleteAllChatInfo(anyLong(), any());
+        verify(allChatInfoService, times(1))
+                .deleteAllChatInfo(100L, testUserDetails);
     }
 
 

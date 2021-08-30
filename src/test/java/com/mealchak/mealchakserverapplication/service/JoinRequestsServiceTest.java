@@ -75,7 +75,7 @@ class JoinRequestsServiceTest {
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
         post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom, user01, cafe, location01,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
 
       joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
@@ -160,7 +160,7 @@ class JoinRequestsServiceTest {
 //        when(joinRequestsRepository.findByOwnUserId(userDetails01.getUser().getId()))
 //                .thenReturn(joinRequestsList);
 //        when(userRepository.findById(joinRequests.getUserId(), UserInfoMapping.class))
-//                .thenReturn()
+//                .thenReturn();
 //        // when
 //        List<UserInfoAndPostResponseDto> results = joinRequestsService.requestJoinList(userDetails01);
 //        //then
@@ -278,7 +278,7 @@ class JoinRequestsServiceTest {
         ChatRoom newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
         newPost = new Post(200L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, newChatRoom, userDetails02.getUser(), menu, location02,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
 
         List<AllChatInfo> allChatInfos = new ArrayList<>();
@@ -313,7 +313,7 @@ class JoinRequestsServiceTest {
         ChatRoom newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
         newPost = new Post(200L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, newChatRoom, userDetails02.getUser(), menu, location02,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
 
         List<AllChatInfo> allChatInfos = new ArrayList<>();
@@ -481,6 +481,7 @@ class JoinRequestsServiceTest {
         assertThat(result.getLocation()).isEqualTo(post.getLocation());
         assertThat(result.getDistance()).isEqualTo(post.getDistance());
         assertThat(result.getNowHeadCount()).isEqualTo(post.getNowHeadCount());
+        assertThat(result.getMeetingType()).isEqualTo(post.getMeetingType());
 
     }
 
