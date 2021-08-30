@@ -73,28 +73,27 @@ class JoinRequestControllerTest {
         testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
 
-        Location location = new Location("서울특별시 강남구", 37.111111, 126.111111);
-        Menu menu = new Menu("카페", 1);
-        ChatRoom chatRoom = new ChatRoom("UUID111", testUserDetails.getUser());
-        post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
-                "contents", true, false, chatRoom, testUserDetails.getUser(), menu, location,
-                2.00, 1L, Post.meetingType.SEPARATE);
+//        Location location = new Location("서울특별시 강남구", 37.111111, 126.111111);
+//        Menu menu = new Menu("카페", 1);
+//        ChatRoom chatRoom = new ChatRoom("UUID111", testUserDetails.getUser());
+//        post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
+//                "contents", true, false, chatRoom, testUserDetails.getUser(), menu, location,
+//                2.00, 1L, Post.meetingType.SEPARATE);
     }
 
     @Test
     @DisplayName("입장신청")
     void requestJoin() throws Exception {
+        when(joinRequestsService.requestJoin(testUserDetails, 100L)).thenReturn("신청완료");
 
-        when(joinRequestsService.requestJoin(any(), anyLong())).thenReturn("신청완료");
-
-        mvc.perform(get("/posts/join/request/{postId}" ,post.getId())
+        mvc.perform(get("/posts/join/request/{postId}" ,100L)
                 .principal(mockPrincipal)
         )
                 .andExpect(status().isOk())
                 .andExpect(content().string("신청완료"))
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(joinRequestsService, times(1)).requestJoin(any(), anyLong());
+        verify(joinRequestsService, times(1)).requestJoin(testUserDetails, 100L);
     }
 
     @Test
@@ -106,7 +105,7 @@ class JoinRequestControllerTest {
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(joinRequestsService, times(1)).requestJoinCancel(any(), anyLong());
+        verify(joinRequestsService, times(1)).requestJoinCancel(testUserDetails, 100L);
     }
 
     @Test

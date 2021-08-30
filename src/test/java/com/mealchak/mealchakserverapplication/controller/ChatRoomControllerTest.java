@@ -79,9 +79,6 @@ class ChatRoomControllerTest {
     @Test
     @DisplayName("채팅방_사용자별_목록_조회")
     void getOnesChatRoom() throws Exception {
-        List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
-
-        when(chatRoomService.getOnesChatRoom(testUserDetails.getUser())).thenReturn(chatRoomListResponseDtoList);
 
         mvc.perform(get("/chat/rooms/mine")
                 .principal(mockPrincipal)

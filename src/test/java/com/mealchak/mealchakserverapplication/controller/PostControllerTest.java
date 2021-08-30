@@ -114,6 +114,7 @@ public class PostControllerTest {
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
+
     }
 
     @Test
@@ -145,7 +146,6 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.[0].roomId").value(postResponseDto.getRoomId()))
                 .andExpect(jsonPath("$.[0].nowHeadCount").value(postResponseDto.getNowHeadCount()))
                 .andExpect(jsonPath("$.[0].valid").value(postResponseDto.getValid()))
-//                .andExpect(jsonPath("$.[0].meetingType").value(postResponseDto.getMeetingType()))
                 .andDo(MockMvcResultHandlers.print());
 
         verify(postService, times(1)).getAllPost("전체");
