@@ -40,7 +40,7 @@ class BanUserListServiceTest {
         ChatRoom chatRoom = new ChatRoom();
         Post post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom, user01, cafe, location01,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
 
         BanUserList banUserList = BanUserList.builder()

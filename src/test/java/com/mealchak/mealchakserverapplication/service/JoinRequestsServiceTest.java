@@ -70,7 +70,7 @@ class JoinRequestsServiceTest {
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
         post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom, user01, cafe, location01,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         chatRoom = new ChatRoom(111L, "UUID", user01.getId(), true, post);
 
         joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
@@ -142,26 +142,6 @@ class JoinRequestsServiceTest {
                 .findByChatRoom_IdAndUser_Id(chatRoom.getId(), userDetails02.getUser().getId());
         assertThat(result).isEqualTo("이미 속해있는 채팅방입니다");
     }
-
-//    @Test
-//    @DisplayName("신청대기리스트_불러올때_")
-//    void requestJoinList01() throws Exception {
-//        // given
-//        List<JoinRequests> joinRequestsList = new ArrayList<>();
-//        JoinRequests joinRequests = new JoinRequests(200L, userDetails02.getUser().getId(), post.getId(), userDetails01.getUser().getId());
-//        joinRequestsList.add(joinRequests);
-//
-//        // mocking
-//        when(joinRequestsRepository.findByOwnUserId(userDetails01.getUser().getId()))
-//                .thenReturn(joinRequestsList);
-//        when(userRepository.findById(joinRequests.getUserId(), UserInfoMapping.class))
-//                .thenReturn()
-//        // when
-//        List<UserInfoAndPostResponseDto> results = joinRequestsService.requestJoinList(userDetails01);
-//        //then
-//        verify(joinRequestsRepository, times(1))
-//                .findByOwnUserId(userDetails02.getUser().getId());
-//    }
 
     @Test
     @DisplayName("신청_대기_리스트")
@@ -273,7 +253,7 @@ class JoinRequestsServiceTest {
         ChatRoom newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
         newPost = new Post(200L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, newChatRoom, userDetails02.getUser(), menu, location02,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
 
         List<AllChatInfo> allChatInfos = new ArrayList<>();
@@ -308,7 +288,7 @@ class JoinRequestsServiceTest {
         ChatRoom newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
         newPost = new Post(200L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, newChatRoom, userDetails02.getUser(), menu, location02,
-                2.00, 1L);
+                2.00, 1L, Post.meetingType.SEPARATE);
         newChatRoom = new ChatRoom(222L, "UUID", userDetails02.getUser().getId(), true, newPost);
 
         List<AllChatInfo> allChatInfos = new ArrayList<>();
@@ -322,7 +302,7 @@ class JoinRequestsServiceTest {
         when(postQueryRepository.findById(post.getId())).thenReturn(post);
         when(allChatInfoQueryRepository.countAllByChatRoom(post.getChatRoom())).thenReturn(4L);
         // when
-//        String result = joinRequestsService.acceptJoinRequest(joinRequests.getId(), true);
+
         //then
         assertThrows(IllegalArgumentException.class,
                 () -> joinRequestsService.acceptJoinRequest(joinRequests.getId(), true),
