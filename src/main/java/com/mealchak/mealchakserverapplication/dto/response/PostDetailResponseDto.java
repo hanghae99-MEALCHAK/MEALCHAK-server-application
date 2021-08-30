@@ -29,6 +29,7 @@ public class PostDetailResponseDto {
     private final Long roomId;
     private final Long nowHeadCount;
     private final List<User> userList;
+    private final Post.meetingType meetingType;
 
     public PostDetailResponseDto(Post post, List<User> userList) {
         this.postId = post.getId();
@@ -49,5 +50,6 @@ public class PostDetailResponseDto {
         this.roomId = post.getChatRoom().getId();
         this.nowHeadCount = post.getNowHeadCount();
         this.userList = userList;
+        this.meetingType = post.getMeetingType();
     }
 }

@@ -1,6 +1,6 @@
 package com.mealchak.mealchakserverapplication.repository.mapping;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mealchak.mealchakserverapplication.model.Location;
 
 public interface UserInfoMapping {
     Long getId();
@@ -10,10 +10,5 @@ public interface UserInfoMapping {
     String getGender();
     String getComment();
     float getMannerScore();
-
-    default String getAddress() {
-        return getLocationAddress();
-    }
-    @JsonIgnore
-    String getLocationAddress();
+    Location getLocation();
 }

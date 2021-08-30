@@ -25,6 +25,7 @@ public class PostResponseDto {
     private final Long roomId;
     private final Long nowHeadCount;
     private final Boolean valid;
+    private final Post.meetingType meetingType;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -43,5 +44,6 @@ public class PostResponseDto {
         this.roomId = post.getChatRoom().getId();
         this.nowHeadCount = post.getNowHeadCount();
         this.valid = post.isCheckValid();
+        this.meetingType = post.getMeetingType();
     }
 }
