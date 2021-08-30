@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
 public class Post extends Timestamped {
     public enum meetingType {
-        TOGETHER, SHARE, WHATEVER
+        TOGETHER, SEPARATE
     }
 
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -17,11 +17,11 @@ public class PostQueryRepository {
     public List<Post> findAllOrderByOrderTimeAsc() {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
-                .orderBy(post.orderTime.asc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.orderTime.asc())
                 .fetch();
     }
 
@@ -29,11 +29,11 @@ public class PostQueryRepository {
         return queryFactory.selectFrom(post)
                 .where(post.checkValid.eq(true))
                 .where(post.menu.category.eq(category))
-                .orderBy(post.orderTime.asc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.orderTime.asc())
                 .fetch();
     }
 
@@ -47,11 +47,11 @@ public class PostQueryRepository {
                 .where(post.menu.category.eq(category))
                 .where(post.location.latitude.between(latitudeStart, latitudeEnd))
                 .where(post.location.longitude.between(longitudeStart, longitudeEnd))
-                .orderBy(post.orderTime.asc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.orderTime.asc())
                 .fetch();
     }
 
@@ -64,11 +64,11 @@ public class PostQueryRepository {
                 .where(post.checkValid.eq(true))
                 .where(post.location.latitude.between(latitudeStart, latitudeEnd))
                 .where(post.location.longitude.between(longitudeStart, longitudeEnd))
-                .orderBy(post.orderTime.asc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.orderTime.asc())
                 .fetch();
     }
 
@@ -91,13 +91,12 @@ public class PostQueryRepository {
         return queryFactory.selectFrom(post)
                 .where(post.checkDeleted.eq(false))
                 .where(post.user.id.eq(userId))
-                .orderBy(post.createdAt.desc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.createdAt.desc())
                 .fetch();
-
     }
 
     public List<Post> findAllByCheckValidTrue() {
@@ -129,11 +128,11 @@ public class PostQueryRepository {
                 .where(post.title.contains(keyword)
                         .or(post.contents.contains(keyword))
                 )
-                .orderBy(post.orderTime.asc())
                 .join(post.user)
                 .join(post.menu)
                 .join(post.chatRoom)
                 .fetchJoin()
+                .orderBy(post.orderTime.asc())
                 .fetch();
     }
 
