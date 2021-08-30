@@ -58,8 +58,6 @@ public class UserService {
         double longitude = 127.027678;
         Location location = new Location(address, latitude, longitude);
 
-        // 우리 DB 에서 회원 Id 와 패스워드
-        // 회원 Id = 카카오 nickname
         // 패스워드 = 카카오 Id + ADMIN TOKEN
         String password = kakaoId + Pass_Salt;
 
@@ -127,7 +125,7 @@ public class UserService {
                     -> new IllegalArgumentException("회원이 아닙니다."));
             boolean newJoinRequest = joinRequestQueryRepository.existByUserId(userInfoMapping.getId());
             boolean newMessage = chatRoomService.newMessage(userDetails);
-            return new UserInfoMappingDto(userInfoMapping,newMessage,newJoinRequest);
+            return new UserInfoMappingDto(userInfoMapping, newMessage, newJoinRequest);
         } else {
             throw new IllegalArgumentException("로그인 하지 않았습니다.");
         }

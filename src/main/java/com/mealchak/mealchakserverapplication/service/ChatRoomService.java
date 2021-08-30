@@ -124,17 +124,17 @@ public class ChatRoomService {
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
         Long roomId = post.getChatRoom().getId();
-        // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
         if (post.isCheckValid() && isChatRoomOwner(post, userDetails)) {
+            // 활성화 게시글이고 글쓴이면 게시글, 채팅방 비활성화
             post.getMenu().updateMenuCount(-1);
             post.expired(false);
             post.deleted(true);
             deleteAllChatInfo(roomId, userDetails);
-            // 비활성화 게시글이고 글쓴이면 채팅방 비활성화
         } else if (isChatRoomOwner(post, userDetails)) {
+            // 비활성화 게시글이고 글쓴이면 채팅방 삭제
             deleteAllChatInfo(roomId, userDetails);
-            // 일반 유저일 때 채팅방 나가기
         } else {
+            // 일반 유저일 때 채팅방 나가기
             AllChatInfo allChatInfo = allChatInfoQueryRepository.findByChatRoom_IdAndUser_Id(roomId, userDetails.getUser().getId());
             allChatInfoRepository.delete(allChatInfo);
             post.subNowHeadCount();
