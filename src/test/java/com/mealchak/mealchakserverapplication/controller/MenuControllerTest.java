@@ -3,11 +3,11 @@ package com.mealchak.mealchakserverapplication.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealchak.mealchakserverapplication.MockSpringSecurityFilter;
 import com.mealchak.mealchakserverapplication.config.WebSecurityConfig;
-import com.mealchak.mealchakserverapplication.dto.response.ChatRoomListResponseDto;
+import com.mealchak.mealchakserverapplication.model.Menu;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.service.ChatMessageService;
-import com.mealchak.mealchakserverapplication.service.ChatRoomService;
+import com.mealchak.mealchakserverapplication.repository.MenuRepository;
+import com.mealchak.mealchakserverapplication.service.MenuService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -30,11 +31,11 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
-        controllers = ChatRoomController.class,
+        controllers = MenuController.class,
         excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
@@ -43,26 +44,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         }
 )
 @MockBean(JpaMetamodelMappingContext.class)
-class ChatRoomControllerTest {
-
+class MenuControllerTest {
     private MockMvc mvc;
-
     private Principal mockPrincipal;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private WebApplicationContext context;
-
     @MockBean
-    private ChatRoomService chatRoomService;
-
+    private MenuService menuService;
     @MockBean
-    private ChatMessageService chatMessageService;
-
-    private UserDetailsImpl testUserDetails;
-    private User testUser;
+    private MenuRepository menuRepository;
 
     @BeforeEach
     void setUp() {
@@ -71,38 +63,40 @@ class ChatRoomControllerTest {
                 .build();
 
         // Create mock principal for the test user
-        testUser = new User("test-username", "test-pwd");
-        testUserDetails = new UserDetailsImpl(testUser);
+        User testUser = new User(102L, 103L, "user1", "password", "test@test.com",
+                "profileImg.jpg", "30대", "남", "ㅎㅇ", 50f, null);
+        UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
         mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "", Collections.emptyList());
-
     }
 
     @Test
-    @DisplayName("채팅방_사용자별_목록_조회")
-    void getOnesChatRoom() throws Exception {
-        List<ChatRoomListResponseDto> chatRoomListResponseDtoList = new ArrayList<>();
+    @DisplayName("인기 메뉴 조회")
+    void getPopularMenu() throws Exception {
+        List<Menu> menuList = new ArrayList<>();
+        Menu menu1 = new Menu("중식", 4);
+        Menu menu2 = new Menu("일식", 3);
+        Menu menu3 = new Menu("한식", 2);
+        Menu menu4 = new Menu("양식", 1);
+        menuList.add(menu1);
+        menuList.add(menu2);
+        menuList.add(menu3);
+        menuList.add(menu4);
 
-        when(chatRoomService.getOnesChatRoom(testUserDetails.getUser())).thenReturn(chatRoomListResponseDtoList);
 
-        mvc.perform(get("/chat/rooms/mine")
+        when(menuService.getPopular()).thenReturn(menuList);
+
+        mvc.perform(get("/menu")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .principal(mockPrincipal)
-                )
+                        .characterEncoding("utf-8"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-        verify(chatRoomService, times(1)).getOnesChatRoom(testUserDetails.getUser());
-    }
-
-    @Test
-    @DisplayName("해당 채팅방 나가기")
-    void quitChat() throws Exception {
-        mvc.perform(delete("/chat/quit/{postId}", 100L)
-                        .principal(mockPrincipal)
-                )
-                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].category").value(menuList.get(0).getCategory()))
+                .andExpect(jsonPath("$[1].category").value(menuList.get(1).getCategory()))
+                .andExpect(jsonPath("$[2].category").value(menuList.get(2).getCategory()))
+                .andExpect(jsonPath("$[3].category").value(menuList.get(3).getCategory()))
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(chatRoomService, times(1)).quitChat(100L, testUserDetails);
+        verify(menuService, atLeastOnce()).getPopular();
     }
-
-
 }

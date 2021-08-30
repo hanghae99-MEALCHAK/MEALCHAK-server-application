@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.mealchak.mealchakserverapplication.model.ChatMessage.MessageType.TALK;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

@@ -166,11 +166,7 @@ public class UserService {
                     String savePath = System.getProperty("user.dir") + "/image";
                     // 파일이 저장되는 폴더가 없으면 폴더를 생성
                     if (!new java.io.File(savePath).exists()) {
-                        try {
-                            new java.io.File(savePath).mkdir();
-                        } catch (Exception e) {
-                            throw new IllegalArgumentException("디렉토리 생성에 실패하였습니다.");
-                        }
+                        new java.io.File(savePath).mkdir();
                     }
                     String defaultImg = "https://gorokke.shop/image/profileDefaultImg.jpg"; // AWS EC2
 //                    String defaultImg = "http://115.85.182.57/image/profileDefaultImg.jpg"; // NAVER EC2
@@ -178,11 +174,7 @@ public class UserService {
                         String[] deleteImg = userDetails.getUser().getProfileImg().split("/image");
                         File deleteFile = new File(System.getProperty("user.dir") + "/image" + deleteImg[1]);
                         if (deleteFile.exists()) {
-                            try {
-                                deleteFile.delete();
-                            } catch (Exception e) {
-                                throw new IllegalArgumentException("기존 파일 삭제를 실패하였습니다.");
-                            }
+                            deleteFile.delete();
                         }
                     }
                     // 이미지 저장

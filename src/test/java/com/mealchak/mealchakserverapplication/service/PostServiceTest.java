@@ -5,7 +5,6 @@ import com.mealchak.mealchakserverapplication.dto.response.PostDetailResponseDto
 import com.mealchak.mealchakserverapplication.dto.response.PostResponseDto;
 import com.mealchak.mealchakserverapplication.model.*;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
-import com.mealchak.mealchakserverapplication.repository.AllChatInfoQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
 import com.mealchak.mealchakserverapplication.repository.PostQueryRepository;
 import com.mealchak.mealchakserverapplication.repository.PostRepository;
@@ -23,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -39,6 +38,9 @@ class PostServiceTest {
     private PostQueryRepository postQueryRepository;
 
     @Mock
+    private PostRepository postRepository;
+
+    @Mock
     private AllChatInfoService allChatInfoService;
 
 
@@ -47,9 +49,6 @@ class PostServiceTest {
 
     @Mock
     private ChatRoomService chatRoomService;
-
-    @Mock
-    private PostRepository postRepository;
 
     private UserDetailsImpl userDetailsNull;
     private UserDetailsImpl userDetails01;
@@ -113,7 +112,6 @@ class PostServiceTest {
         assertThat(results.get(0).getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(results.get(0).getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(results.get(0).getValid()).isEqualTo(post01.isCheckValid());
-        assertThat(results.get(0).getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -212,7 +210,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("모집글_상세_조회시_PostId가_없으면_IAE발생")
+    @DisplayName("모집글상세조회시PostId가없으면_IAE발생")
     public void getPostDetail01() throws Exception {
         // given
 
@@ -261,7 +259,6 @@ class PostServiceTest {
         assertThat(postDetail.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postDetail.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postDetail.getUserList().size()).isEqualTo(1);
-        assertThat(postDetail.getMeetingType()).isEqualTo(post01.getMeetingType());
 
     }
 
@@ -329,7 +326,6 @@ class PostServiceTest {
         assertThat(postResponseDto.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postResponseDto.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postResponseDto.getValid()).isEqualTo(post01.isCheckValid());
-        assertThat(postResponseDto.getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -369,7 +365,6 @@ class PostServiceTest {
         assertThat(postResponseDto.getRoomId()).isEqualTo(post01.getChatRoom().getId());
         assertThat(postResponseDto.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
         assertThat(postResponseDto.getValid()).isEqualTo(post01.isCheckValid());
-        assertThat(postResponseDto.getMeetingType()).isEqualTo(post01.getMeetingType());
     }
 
     @Test
@@ -776,6 +771,6 @@ class PostServiceTest {
         assertThat(post.getLocation()).isEqualTo(post01.getLocation());
         assertThat(post.getDistance()).isEqualTo(post01.getDistance());
         assertThat(post.getNowHeadCount()).isEqualTo(post01.getNowHeadCount());
-        assertThat(post.getMeetingType()).isEqualTo(post01.getMeetingType());
+
     }
 }

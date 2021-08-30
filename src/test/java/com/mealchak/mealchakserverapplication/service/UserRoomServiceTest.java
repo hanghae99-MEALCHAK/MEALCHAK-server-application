@@ -6,7 +6,6 @@ import com.mealchak.mealchakserverapplication.model.Location;
 import com.mealchak.mealchakserverapplication.model.User;
 import com.mealchak.mealchakserverapplication.oauth2.UserDetailsImpl;
 import com.mealchak.mealchakserverapplication.repository.AllChatInfoRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,7 +27,7 @@ class UserRoomServiceTest {
     private AllChatInfoRepository allChatInfoRepository;
 
     @Test
-    @DisplayName("사용자와_채팅방_pk를_db에_저장_성공")
+    @DisplayName("사용자와_채팅방_pk를db에저장_성공")
     void save01() throws Exception {
         // given
         Location location01 = new Location("서울특별시 강남구", 37.111111, 126.111111);

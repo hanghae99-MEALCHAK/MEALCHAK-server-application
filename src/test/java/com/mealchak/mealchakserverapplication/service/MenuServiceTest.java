@@ -2,7 +2,6 @@ package com.mealchak.mealchakserverapplication.service;
 
 import com.mealchak.mealchakserverapplication.model.Menu;
 import com.mealchak.mealchakserverapplication.repository.MenuRepository;
-import com.mealchak.mealchakserverapplication.service.MenuService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
