@@ -26,6 +26,7 @@ public class PostResponseDto {
     private final Long nowHeadCount;
     private final Boolean valid;
     private final Post.meetingType meetingType;
+    private final String placeUrl;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
@@ -45,5 +46,6 @@ public class PostResponseDto {
         this.nowHeadCount = post.getNowHeadCount();
         this.valid = post.isCheckValid();
         this.meetingType = post.getMeetingType();
+        this.placeUrl = post.getPlaceUrl();
     }
 }

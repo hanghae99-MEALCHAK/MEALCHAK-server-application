@@ -89,7 +89,7 @@ public class PostControllerTest {
         ChatRoom chatRoom = new ChatRoom("UUID111", testUserDetails.getUser());
         post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom, testUserDetails.getUser(), menu, location,
-                2.00, 1L, Post.meetingType.SEPARATE);
+                2.00, 1L, Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
 
         postResponseDtoList = new ArrayList<>();
         postResponseDto = new PostResponseDto(post);
@@ -101,7 +101,7 @@ public class PostControllerTest {
     public void createPost() throws Exception {
         PostRequestDto postRequestDto = new PostRequestDto("title", 4,
                 "서울시 강남구", 37.24352, 126.87986, "restaurant",
-                "2021 08 11 10 00", "contents", "분식", Post.meetingType.SEPARATE);
+                "2021 08 11 10 00", "contents", "분식", Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
 
         String postInfo = objectMapper.writeValueAsString(postRequestDto);
 
@@ -221,7 +221,7 @@ public class PostControllerTest {
     void updatePostDetail() throws Exception {
         PostRequestDto postRequestDto = new PostRequestDto("title", 4,
                 "서울시 강남구", 37.24352, 126.87986, "restaurant",
-                "2021 08 11 10 00", "contents", "분식", Post.meetingType.SEPARATE);
+                "2021 08 11 10 00", "contents", "분식", Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
 
         when(postService.updatePostDetail(refEq(post.getId()), refEq(postRequestDto), refEq(testUserDetails)))
                 .thenReturn(postResponseDto);
