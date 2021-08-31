@@ -58,7 +58,7 @@ class ChatRoomServiceTest {
         chatRoom01 = new ChatRoom("UUID111", userDetails01.getUser());
         post01 = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", true, false, chatRoom01, userDetails01.getUser(), cafe, location01,
-                2.00, 1L, Post.meetingType.SEPARATE);
+                2.00, 1L, Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
         chatRoom01 = new ChatRoom(111L, "UUID111", userDetails01.getUser().getId(), true, post01);
 
         // 사용자 존재 user02
@@ -200,7 +200,7 @@ class ChatRoomServiceTest {
         ChatRoom chatRoom = new ChatRoom("UUID111", userDetails01.getUser());
         Post post = new Post(100L, "title", 3, "restaurant01", "2021-09-01 00:00:00",
                 "contents", false, false, chatRoom, userDetails01.getUser(), menu, location01,
-                2.00, 1L, Post.meetingType.SEPARATE);
+                2.00, 1L, Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
         chatRoom = new ChatRoom(111L, "UUID111", userDetails01.getUser().getId(), true, post);
 
         AllChatInfo allChatInfo = new AllChatInfo(1L, userDetails01.getUser(), chatRoom, 10L);

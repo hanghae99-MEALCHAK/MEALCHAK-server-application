@@ -108,7 +108,7 @@ class ChatMessageServiceTest {
         Location location = new Location("서울 강남구", 123.123, 123.123);
         ChatRoom chatRoom = new ChatRoom(20L, "2f48f241-9d64-4d16-bf56-70b9d4e0e79a", user.getId(), true, null);
         Post post = new Post(10L, "test_chatMessage", 4, "testRestaurant", "2021-11-21 11:21:00",
-                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE);
+                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
         chatRoom.setPost(post);
         ChatMessageRequestDto requestDto = new ChatMessageRequestDto(BAN, "20", user1.getId(), "102");
         AllChatInfo allChatInfo = new AllChatInfo(50L, user1, chatRoom, 102L);
@@ -144,7 +144,7 @@ class ChatMessageServiceTest {
         Location location = new Location("서울 강남구", 123.123, 123.123);
         ChatRoom chatRoom = new ChatRoom(20L, "2f48f241-9d64-4d16-bf56-70b9d4e0e79a", user.getId(), true, null);
         Post post = new Post(10L, "test_chatMessage", 4, "testRestaurant", "2021-11-21 11:21:00",
-                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE);
+                "test_sendMessage", true, false, chatRoom, user, menu, location, 1000L, 2L, Post.meetingType.SEPARATE, "https://place.map.kakao.com/741391811");
         chatRoom.setPost(post);
         ChatMessageRequestDto requestDto = new ChatMessageRequestDto(BREAK, "20", user.getId(), "test_sendMessage");
         ChatMessage chatMessage = new ChatMessage(140L, requestDto.getType(), requestDto.getRoomId(),

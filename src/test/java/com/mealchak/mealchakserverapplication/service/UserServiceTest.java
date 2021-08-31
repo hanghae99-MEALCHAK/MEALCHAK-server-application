@@ -83,7 +83,7 @@ class UserServiceTest {
             String comment = "Test_Success";
             String age = "20대";
             String gender = "남성";
-            MultipartFile files = new MockMultipartFile("files", "IMG_3690.jpeg", "image/jpeg", new FileInputStream("image/IMG_3680.jpeg"));
+            MultipartFile files = new MockMultipartFile("files", "test.jpeg", "image/jpeg", new FileInputStream("image/test.jpeg"));
 
             // mocking
             when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
@@ -107,7 +107,7 @@ class UserServiceTest {
             String comment = "Test_Success";
             String age = "20대";
             String gender = "남성";
-            MultipartFile files = new MockMultipartFile("files", "IMG_3690.jpeg", "image/jpeg", new FileInputStream("image/IMG_3680.jpeg"));
+            MultipartFile files = new MockMultipartFile("files", "test.jpeg", "image/jpeg", new FileInputStream("image/test.jpeg"));
 
             // mocking
             when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
