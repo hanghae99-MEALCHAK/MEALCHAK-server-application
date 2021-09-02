@@ -160,13 +160,14 @@ BackEnd(Language & Framework & Library)
 그러나 인접한 다른 구에서 작성된 모집글과 유저의 거리가 가까움에도 구의 이름이 달라   
 모집글을 불러오지 못하는 경우가 발생 하였고 이를 해결 하고자 고민을 하였습니다.  
 
-![지역구 일러스트-1](https://user-images.githubusercontent.com/80080041/131770279-87ad977e-4b8e-4211-98c2-8d5e1b29cb3a.PNG)
+![지역구 일러스트-1](https://user-images.githubusercontent.com/80080041/131874047-ed621c8c-ac6b-46c1-989b-4a5ec4a1c52f.PNG)
   
       
 - TO-BE 사용자와 모집글의 주소와 상관없이 위도와 경도를 이용하여 사용자의 위치  
 - 주변 3KM이내의 모집글만 불러와서 해당 모집글들에 사용자와의 거리를 입력하고 그 거리를 KEY값으로 TreeMap을 통해 오름차순 정렬을 하였습니다.  
    
-![지역구 일러스트-2](https://user-images.githubusercontent.com/80080041/131770291-1dcb004d-c5b0-4b4d-8072-92e6d23ff5c7.PNG)
+![지역구 일러스트-2](https://user-images.githubusercontent.com/80080041/131874062-a40ba72a-decd-449e-97af-753dd1567923.PNG)
+
   
     
 　  　
