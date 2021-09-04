@@ -46,7 +46,7 @@ Project MealChak Notion : https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb
 
 #### 👨‍👨‍👦‍👦 [팀원][https://www.notion.so/2b83f0f273974545bfed5289c49c6c30)]
 
-- Frontend : 박건우, 이수진, 윤정현 `React`  
+- Frontend : 김건우, 이수진, 윤정현 `React`  
 - Backend : 박응수, 박강희, 이태경, 하연후 `SpringBoot`  
 - Designer : 박수진, 하유진 `UX/UI`  
 
