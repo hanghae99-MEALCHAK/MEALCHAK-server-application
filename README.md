@@ -42,9 +42,11 @@ Project MealChak Notion : https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb
 
 
 
-#### 🍕[프로젝트 개발 노션 링크][https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb0d414]  
+#### 🍕[프로젝트 개발 노션 링크]  
+https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb0d414  
 
-#### 👨‍👨‍👦‍👦 [팀원][https://www.notion.so/2b83f0f273974545bfed5289c49c6c30)]
+#### 👨‍👨‍👦‍👦 [팀원]  
+https://www.notion.so/2b83f0f273974545bfed5289c49c6c30  
 
 - Frontend : 김건우, 이수진, 윤정현 `React`  
 - Backend : 박응수, 박강희, 이태경, 하연후 `SpringBoot`  
@@ -54,9 +56,9 @@ Project MealChak Notion : https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb
 
 - 21.07.23(금) - 21.08.31(화)  
  
-#### 🎥 시연 영상
+#### 🎥 발표 영상  
 
-- 유툽링크링크  
+- https://youtu.be/upRrJW7sRLk    
 
 ### 🗣️ **커뮤니케이션 툴**
 
