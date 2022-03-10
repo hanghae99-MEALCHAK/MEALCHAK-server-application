@@ -2,14 +2,16 @@
   
 MealChak Link : https://mealchak.com/  
 FrontEnd Github : https://github.com/hanghae99-MEALCHAK/MEALCHAK-client-application  
-Project MealChak Notion : https://www.notion.so/Meal-4e2b5486d44e4123a1d352a63eb0d414
+Project MealChak Notion : https://bit.ly/mealchak-notion
 　  
 ## 🍽프로젝트 소개
 
 
-점심을 시켜먹고 싶은데 , 배달업소에 최소 주문 금액이 높아 1인분만 시킬 수가 없어서,   
-때론 배달비가 아깝거나 가격이 비싸서, 때론 양이 너무 많아서   
-메뉴를 바꾸거나 망설인적이 있으신가요?   
+점심을 시켜먹고 싶은데 ,
+- 최소 주문 금액이 높아 1인분만 시킬 수가 없어서,   
+- 배달비가 아깝거나 가격이 비싸서, 때론 양이 너무 많아서
+- 메뉴를 바꾸거나 망설인적이 있으신가요? 
+  
 그런 분들을 위한 배달 모임 서비스 밀착🍙입니다!   
 밀착으로 같이 배달을 시킬 친구👭를 찾아 보세요.    
 
