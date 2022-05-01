@@ -120,7 +120,7 @@ public class PostService {
 
     // 검색하여 모집글 불러오기
     public List<PostResponseDto> getSearch(UserDetailsImpl userDetails, String keyword, String sort) {
-        if (userDetails == null) {
+        if (Objects.isNull(userDetails)) {
             return getSearchPost(keyword);
         } else {
             User user = userDetails.getUser();
@@ -137,7 +137,7 @@ public class PostService {
     // 유저 근처에 작성된 게시글 조회
     public List<PostResponseDto> getPostByUserDist(UserDetailsImpl userDetails, String category, String sort) {
         // 게스트 유저일 경우 모든 결과 조회
-        if (userDetails == null) {
+        if (Objects.isNull(userDetails)) {
             return getAllPost(category);
         }
         User user = userDetails.getUser();
@@ -279,7 +279,7 @@ public class PostService {
     // findById(postId)
     public Post getPost(Long postId) {
         Post post = postQueryRepository.findById(postId);
-        if (post == null){
+        if (Objects.isNull(post)){
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
         return post;

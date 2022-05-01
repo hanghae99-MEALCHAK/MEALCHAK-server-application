@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JoinRequestsRepository extends JpaRepository<JoinRequests,Long> {
-    JoinRequests findByUserIdAndPostId(Long userid,Long postId);
+    Optional<JoinRequests> findByUserIdAndPostId(Long userid,Long postId);
     List<JoinRequests> findByOwnUserId(Long ownUserId);
     List<JoinRequests> findByUserId(Long userId);
     Optional<JoinRequests> findByIdAndUserId(Long joinId, Long userId);

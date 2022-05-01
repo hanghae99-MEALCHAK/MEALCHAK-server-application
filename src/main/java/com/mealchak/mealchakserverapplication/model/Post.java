@@ -45,11 +45,11 @@ public class Post extends Timestamped {
     @JoinColumn(name="Room_id")
     private ChatRoom chatRoom;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "User_ID")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Menu_ID")
     private Menu menu;
 

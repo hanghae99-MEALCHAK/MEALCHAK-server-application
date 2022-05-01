@@ -84,7 +84,7 @@ class JoinRequestsServiceTest {
 
         // mocking
         when(joinRequestsRepository.findByUserIdAndPostId(userDetails02.getUser().getId(), post.getId()))
-                .thenReturn(joinRequests);
+                .thenReturn(Optional.ofNullable(joinRequests));
         // when
         String result = joinRequestsService.requestJoin(userDetails02, post.getId());
         //then

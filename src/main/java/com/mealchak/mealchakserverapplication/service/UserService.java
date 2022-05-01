@@ -66,7 +66,7 @@ public class UserService {
                 .orElse(null);
 
         // 카카오 정보로 회원가입
-        if (kakaoUser == null) {
+        if (Objects.isNull(kakaoUser)) {
             // 패스워드 인코딩
             String encodedPassword = passwordEncoder.encode(password);
 
@@ -190,16 +190,16 @@ public class UserService {
                 filename = user.getProfileImg();
             }
 
-            if (username == null) {
+            if (Objects.isNull(username)) {
                 username = user.getUsername();
             }
-            if (comment == null) {
+            if (Objects.isNull(comment)) {
                 comment = user.getComment();
             }
-            if (user.getAge() == null) {
+            if (Objects.isNull(user.getAge())) {
                 user.updateAge(age);
             }
-            if (user.getGender() == null) {
+            if (Objects.isNull(user.getGender())) {
                 user.updateGender(gender);
             }
 
