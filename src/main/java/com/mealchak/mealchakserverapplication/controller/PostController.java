@@ -50,7 +50,7 @@ public class PostController {
 
     // 내가 쓴 모집글 불러오기
     @ApiOperation(value = "내가 쓴 모집글 불러오기", notes = "내가 쓴 모집글 조회합니다.")
-    @GetMapping("/posts/myPosts")
+    @GetMapping("http://localhost:8080/posts/myPosts")
     public List<PostResponseDto> getMyPost(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return postService.getMyPost(userDetails);
     }

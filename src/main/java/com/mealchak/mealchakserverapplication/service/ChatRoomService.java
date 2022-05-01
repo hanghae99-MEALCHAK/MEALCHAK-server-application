@@ -120,7 +120,7 @@ public class ChatRoomService {
     @Transactional
     public void quitChat(Long postId, UserDetailsImpl userDetails) {
         Post post = postQueryRepository.findById(postId);
-        if (post == null) {
+        if (Objects.isNull(post)) {
             throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
         }
         Long roomId = post.getChatRoom().getId();
